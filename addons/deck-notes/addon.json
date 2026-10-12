@@ -1,0 +1,20 @@
+{
+  "id": "deck-notes",
+  "name": "Deck notes",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "A notes page for each deck: ideas, to-dos and cards to fix, saved by itself as notes.md in the deck's folder. Can make a checklist of every card in the deck.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/deck-notes",
+  "license": "MIT",
+  "min_app_version": "0.11.0",
+  "tags": ["notes", "to-do", "checklist"],
+  "page": {
+    "module": "notes_page",
+    "class": "NotesPage",
+    "title": "Notes",
+    "icon": "edit",
+    "section": "Manage",
+    "tooltip": "Notes and to-dos for this deck"
+  }
+}

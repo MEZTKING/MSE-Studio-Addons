@@ -1,0 +1,12 @@
+{
+  "id": "my-cards",
+  "name": "My cards",
+  "version": "0.1.0",
+  "kind": "cards",
+  "description": "What sort of cards these are.",
+  "author": "your name",
+  "license": "CC0-1.0",
+  "min_app_version": "0.11.0",
+  "tags": ["example"],
+  "cards": ["lists/my-cards.json"]
+}

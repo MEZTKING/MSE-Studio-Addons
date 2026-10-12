@@ -1,0 +1,159 @@
+{
+ "name": "Gear and auras",
+ "description": "Equipment, Auras and the creatures that love them.",
+ "cards": [
+  {
+   "name": "Hero's Blade",
+   "casting_cost": "1",
+   "super_type": "Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature gets +2/+0.\nWhenever equipped creature attacks, it gains first strike until end of turn if it's legendary.\nEquip {2}",
+   "rarity": "uncommon",
+   "tags": [
+    "equipment",
+    "legendary"
+   ]
+  },
+  {
+   "name": "Traveler's Cloak",
+   "casting_cost": "1",
+   "super_type": "Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature has hexproof and can't be blocked by creatures with power 2 or greater.\nEquip {1}",
+   "rarity": "common",
+   "tags": [
+    "equipment",
+    "protection",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Dragonbone Armor",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature gets +2/+3 and has ward {2}.\nEquip {3}",
+   "rarity": "uncommon",
+   "tags": [
+    "equipment",
+    "protection"
+   ]
+  },
+  {
+   "name": "Spirit Lantern",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature has \"{T}: Add one mana of any color.\"\nWhenever equipped creature dies, draw a card.\nEquip {1}",
+   "rarity": "uncommon",
+   "tags": [
+    "equipment",
+    "ramp",
+    "draw"
+   ]
+  },
+  {
+   "name": "Blade of the Last Stand",
+   "casting_cost": "4",
+   "super_type": "Legendary Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature gets +3/+3 and has trample and indestructible.\nEquip legendary creature {2}\nEquip {5}",
+   "rarity": "rare",
+   "tags": [
+    "equipment",
+    "finisher",
+    "legendary"
+   ]
+  },
+  {
+   "name": "Gift of Wings",
+   "casting_cost": "1U",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature\nWhen CARDNAME enters, draw a card.\nEnchanted creature gets +1/+1 and has flying.",
+   "rarity": "common",
+   "tags": [
+    "aura",
+    "evasion",
+    "draw"
+   ]
+  },
+  {
+   "name": "Oath of Protection",
+   "casting_cost": "W",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature you control\nEnchanted creature has protection from the color of your choice. (Choose as CARDNAME enters.)",
+   "rarity": "uncommon",
+   "tags": [
+    "aura",
+    "protection"
+   ]
+  },
+  {
+   "name": "Shackles of Shadow",
+   "casting_cost": "1B",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature\nEnchanted creature can't attack or block, and its activated abilities can't be activated.\nWhen enchanted creature leaves the battlefield, you draw a card.",
+   "rarity": "common",
+   "tags": [
+    "aura",
+    "removal"
+   ]
+  },
+  {
+   "name": "Ignite the Spirit",
+   "casting_cost": "R",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature\nEnchanted creature gets +2/+0 and has haste.\nWhen enchanted creature dies, return CARDNAME to its owner's hand.",
+   "rarity": "common",
+   "tags": [
+    "aura",
+    "aggro"
+   ]
+  },
+  {
+   "name": "Overgrown Bond",
+   "casting_cost": "2G",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature\nEnchanted creature gets +3/+3 and has reach.\nEnchanted creature has \"{T}: Add {G}{G}.\"",
+   "rarity": "uncommon",
+   "tags": [
+    "aura",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Armory Keeper",
+   "casting_cost": "2W",
+   "super_type": "Creature",
+   "sub_type": "Dwarf Artificer",
+   "rule_text": "When CARDNAME enters, search your library for an Equipment card, reveal it, put it into your hand, then shuffle.\nEquip abilities you activate cost {1} less to activate.",
+   "rarity": "rare",
+   "tags": [
+    "equipment",
+    "tutor"
+   ],
+   "power": "2",
+   "toughness": "2"
+  },
+  {
+   "name": "Enchantress of the Grove",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "Whenever you cast an Aura spell, draw a card.\nAuras you control can't be the targets of spells or abilities your opponents control.",
+   "rarity": "rare",
+   "tags": [
+    "aura",
+    "draw",
+    "elf"
+   ],
+   "power": "1",
+   "toughness": "2"
+  }
+ ]
+}

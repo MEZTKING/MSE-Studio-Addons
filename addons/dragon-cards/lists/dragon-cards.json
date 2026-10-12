@@ -1,0 +1,172 @@
+{
+ "name": "Dragons",
+ "description": "Big flyers with a twist – and the cards that help them.",
+ "cards": [
+  {
+   "name": "Emberwing Matriarch",
+   "casting_cost": "3RR",
+   "super_type": "Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying\nWhenever another Dragon you control enters, it deals 2 damage to any target.",
+   "rarity": "rare",
+   "tags": [
+    "dragon",
+    "tribal",
+    "burn"
+   ],
+   "power": "5",
+   "toughness": "5"
+  },
+  {
+   "name": "Hatchling of the Ash Peaks",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying\n{R}: CARDNAME gets +1/+0 until end of turn.",
+   "rarity": "common",
+   "tags": [
+    "dragon",
+    "firebreathing"
+   ],
+   "power": "1",
+   "toughness": "1"
+  },
+  {
+   "name": "Glacier Wyrm",
+   "casting_cost": "4UU",
+   "super_type": "Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying, ward {2}\nWhen CARDNAME enters, tap up to two target creatures your opponents control. They don't untap during their controllers' next untap steps.",
+   "rarity": "rare",
+   "tags": [
+    "dragon",
+    "tempo"
+   ],
+   "power": "5",
+   "toughness": "6"
+  },
+  {
+   "name": "Tidecaller Drake",
+   "casting_cost": "2U",
+   "super_type": "Creature",
+   "sub_type": "Drake",
+   "rule_text": "Flying\nWhen CARDNAME enters, draw a card, then discard a card.",
+   "rarity": "common",
+   "tags": [
+    "drake",
+    "draw"
+   ],
+   "power": "2",
+   "toughness": "2"
+  },
+  {
+   "name": "Gravebound Dragon",
+   "casting_cost": "4BB",
+   "super_type": "Creature",
+   "sub_type": "Zombie Dragon",
+   "rule_text": "Flying\nWhen CARDNAME dies, return another target creature card from your graveyard to the battlefield.",
+   "rarity": "rare",
+   "tags": [
+    "dragon",
+    "zombie",
+    "recursion"
+   ],
+   "power": "5",
+   "toughness": "4"
+  },
+  {
+   "name": "Sunscale Guardian",
+   "casting_cost": "3WW",
+   "super_type": "Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying, vigilance\nOther creatures you control with flying get +1/+1.",
+   "rarity": "uncommon",
+   "tags": [
+    "dragon",
+    "anthem"
+   ],
+   "power": "4",
+   "toughness": "5"
+  },
+  {
+   "name": "Mossback Dragon",
+   "casting_cost": "4GG",
+   "super_type": "Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying, trample\nWhen CARDNAME enters, search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "rarity": "uncommon",
+   "tags": [
+    "dragon",
+    "ramp"
+   ],
+   "power": "6",
+   "toughness": "6"
+  },
+  {
+   "name": "Hoard Keeper",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "sub_type": "",
+   "rule_text": "{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast Dragon spells.\nDragon spells you cast cost {1} less to cast.",
+   "rarity": "rare",
+   "tags": [
+    "dragon",
+    "ramp",
+    "manarock"
+   ]
+  },
+  {
+   "name": "Dragon's Roost",
+   "casting_cost": "",
+   "super_type": "Land",
+   "sub_type": "",
+   "rule_text": "{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast a Dragon spell.",
+   "rarity": "uncommon",
+   "tags": [
+    "dragon",
+    "ramp",
+    "land"
+   ]
+  },
+  {
+   "name": "Call the Brood",
+   "casting_cost": "3RR",
+   "super_type": "Sorcery",
+   "sub_type": "",
+   "rule_text": "Create two 2/2 red Dragon creature tokens with flying and \"{R}: This creature gets +1/+0 until end of turn.\"",
+   "rarity": "uncommon",
+   "tags": [
+    "dragon",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Scales Like Iron",
+   "casting_cost": "1W",
+   "super_type": "Instant",
+   "sub_type": "",
+   "rule_text": "Creatures you control gain indestructible until end of turn. If you control a Dragon, untap those creatures.",
+   "rarity": "common",
+   "tags": [
+    "dragon",
+    "protection"
+   ]
+  },
+  {
+   "name": "Vyrrith, Sky Tyrant",
+   "casting_cost": "3BRG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Elder Dragon",
+   "rule_text": "Flying, trample\nWhenever a Dragon you control deals combat damage to a player, that player sacrifices a creature and you create a Treasure token.",
+   "rarity": "mythic rare",
+   "tags": [
+    "dragon",
+    "commander",
+    "removal",
+    "ramp"
+   ],
+   "power": "6",
+   "toughness": "6"
+  }
+ ]
+}

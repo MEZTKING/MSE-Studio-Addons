@@ -1,0 +1,13 @@
+{
+  "id": "my-engine",
+  "name": "My Engine",
+  "version": "0.1.0",
+  "kind": "game-engine",
+  "description": "Plays games with your MSE Studio decks.",
+  "author": "your name",
+  "homepage": "https://github.com/you/my-engine",
+  "license": "GPL-3.0",
+  "min_app_version": "0.11.0",
+  "tags": ["game"],
+  "run": {"windows": "bin/My Engine.exe", "args": ["--decks", "{decks}"]}
+}

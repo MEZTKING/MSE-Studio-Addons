@@ -1,0 +1,19 @@
+{
+  "id": "anime-archetypes",
+  "name": "Anime archetypes",
+  "version": "1.0.0",
+  "kind": "cards",
+  "description": "The characters every anime has – the hero who never gives up, the eternal rival, the wise mentor, the mascot, the sealed evil – as cards for your anime decks.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/anime-archetypes",
+  "license": "CC0-1.0",
+  "min_app_version": "0.11.0",
+  "tags": [
+    "anime",
+    "characters",
+    "commander"
+  ],
+  "cards": [
+    "lists/anime-archetypes.json"
+  ]
+}
