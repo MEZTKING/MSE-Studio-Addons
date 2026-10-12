@@ -1,5 +1,91 @@
 {
   "format": 1,
   "store": "https://github.com/MEZTKING/MSE-Studio-Addons",
-  "addons": []
+  "addons": [
+    {
+      "id": "anime-archetypes",
+      "name": "Anime archetypes",
+      "version": "1.0.0",
+      "kind": "cards",
+      "description": "The characters every anime has – the hero who never gives up, the eternal rival, the wise mentor, the mascot, the sealed evil – as cards for your anime decks.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/anime-archetypes",
+      "license": "CC0-1.0",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "anime",
+        "characters",
+        "commander"
+      ],
+      "cards": [
+        "lists/anime-archetypes.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip"
+    },
+    {
+      "id": "deck-notes",
+      "name": "Deck notes",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "A notes page for each deck: ideas, to-dos and cards to fix, saved by itself as notes.md in the deck's folder. Can make a checklist of every card in the deck.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/deck-notes",
+      "license": "MIT",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "notes",
+        "to-do",
+        "checklist"
+      ],
+      "page": {
+        "module": "notes_page",
+        "class": "NotesPage",
+        "title": "Notes",
+        "icon": "edit",
+        "section": "Manage",
+        "tooltip": "Notes and to-dos for this deck"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip"
+    },
+    {
+      "id": "dragon-cards",
+      "name": "Dragon cards",
+      "version": "1.0.0",
+      "kind": "cards",
+      "description": "Twelve dragon ideas in every colour, with a legendary dragon commander, ramp for dragon decks and dragon tokens.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/dragon-cards",
+      "license": "CC0-1.0",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "dragons",
+        "tribal",
+        "commander"
+      ],
+      "cards": [
+        "lists/dragon-cards.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip"
+    },
+    {
+      "id": "gear-and-auras",
+      "name": "Gear and auras",
+      "version": "1.0.0",
+      "kind": "cards",
+      "description": "Equipment and Auras for Voltron decks (one big creature with lots of gear), plus the creatures that find and pay for them.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/gear-and-auras",
+      "license": "CC0-1.0",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "equipment",
+        "auras",
+        "voltron"
+      ],
+      "cards": [
+        "lists/gear-and-auras.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip"
+    }
+  ]
 }
