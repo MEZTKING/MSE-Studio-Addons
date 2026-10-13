@@ -15,8 +15,7 @@ There are three sorts:
 
 Video capture (screenshots from videos into episode folders) and Pictures
 (pictures from web pages, the clipboard and your screenshots) are page add-ons
-that come with MSE Studio – switch them off on the Add-ons page if you don't
-use them.
+in the store (they came with MSE Studio until 0.14).
 
 ## What an add-on is
 
@@ -112,8 +111,8 @@ class HelloPage(QWidget):
   the page goes after that section's own pages. `icon` is one of the icon names
   in MSE Studio's `resources/icons` (without `.svg`).
 - `order` (optional, 50 if left out) places add-on pages of the same section:
-  lower numbers first, then by name. MSE Studio's own add-on pages use 10
-  (Video capture), 11 (Pictures) and 20 (Card ideas).
+  lower numbers first, then by name. Video capture uses 10, Pictures 11 and
+  Card ideas 20.
 - `load()`, `refresh()` and `shutdown()` are optional. Errors in them are logged
   and don't stop MSE Studio; an add-on whose page can't be made is listed as
   *couldn't start* with the error.
@@ -129,6 +128,12 @@ class HelloPage(QWidget):
 - Keep the jobs you start (`mse_studio.gui.common.Job` / `start`) in a list and
   call `mse_studio.gui.common.forget(jobs)` in `shutdown()` (MSE Studio
   0.13.0): they stop, and none calls the page back after it's gone.
+- **Real cards with your pictures** (MSE Studio 0.15.0): add them with
+  `mse_studio.core.decklists.add_to_project(project, entries)`, then
+  `mse_studio.pipeline.real_cards.use_picture(project, entry, picture, side,
+  credit)` prints each with a picture file (MPC's bleed is added when it
+  hasn't got it; `credit` – who made it, where from – stays with the card),
+  then `main.order_tab.real_pictures(entries)` makes the print files.
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight

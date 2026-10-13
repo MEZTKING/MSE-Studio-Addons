@@ -1,0 +1,26 @@
+{
+  "id": "picture-grabber",
+  "name": "Picture grabber",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "Collect card art from anywhere: every picture on a web page (Pinterest, ArtStation, a booru, Reddit, any site) saved full size with its credit, and live mode – every picture you copy and every new screenshot is saved into the deck's art folder by itself.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/picture-grabber",
+  "license": "MIT",
+  "min_app_version": "0.15.0",
+  "tags": [
+    "art",
+    "pictures",
+    "web",
+    "clipboard"
+  ],
+  "page": {
+    "module": "pictures_page",
+    "class": "PictureGrabberTab",
+    "title": "Pictures",
+    "icon": "add_photo_alternate",
+    "section": "Create",
+    "tooltip": "Picture grabber: pictures from web pages, the clipboard and screenshots",
+    "order": 11
+  }
+}

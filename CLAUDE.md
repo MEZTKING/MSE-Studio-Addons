@@ -84,6 +84,7 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `main.project.set.cards` | The cards. `card.name`, `card.text("rule_text")` (plain), `card.raw(field)` (MSE markup), `card.set_text(field, text)`, `card.image`, `card.stylesheet` (its frame). Fields use MSE's names: `name`, `casting_cost`, `super_type`, `sub_type`, `rule_text`, `flavor_text`, `power`, `toughness`, `loyalty`, `rarity`, `illustrator`, `secondary_copyright` |
 | `main.project.set.add_card()` / `.remove_card(card)` | Add / remove cards; then `main.cards_tab.reload(row)` |
 | `main.record("What changed")` | After changing cards: a step in the deck's history (undo) |
+| `decklists.add_to_project(p, entries)` + `real_cards.use_picture(p, entry, picture, side, credit)` + `main.order_tab.real_pictures(entries)` | Real cards printed with a picture file, the maker's credit kept with the card (0.15.0; see the mpc-proxies add-on) |
 | `main.tabs.setCurrentWidget(main.cards_tab)` + `main.cards_tab.select_row(i)` | Open a card |
 | `main.settings` | Read only: `mse_path`, `upscayl_path`, theme… Never write it, never read keys or tokens from it |
 | `main.known_frames()`, `mse_studio.core.styles` | The frames MSE has |

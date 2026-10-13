@@ -1,0 +1,25 @@
+{
+  "id": "capture",
+  "name": "Video capture",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "Take screenshots of episodes with a hotkey, straight into the right episode folder – even while the video is fullscreen. Adds the Video capture page.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/capture",
+  "license": "MIT",
+  "min_app_version": "0.15.0",
+  "tags": [
+    "art",
+    "screenshots",
+    "video"
+  ],
+  "page": {
+    "module": "capture_page",
+    "class": "CaptureTab",
+    "title": "Video capture",
+    "icon": "screenshot_monitor",
+    "section": "Create",
+    "tooltip": "Capture screenshots of episodes into episode folders",
+    "order": 10
+  }
+}
