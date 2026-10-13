@@ -1,39 +1,60 @@
 # Proxy decks
 
-Decks people share on [r/mpcproxies](https://www.reddit.com/r/mpcproxies/) and
-Ko-fi – real Magic cards with new art and frames – browsed straight from their
-public Google Drive folders, inside MSE Studio.
+Decks people share on [r/mpcproxies](https://www.reddit.com/r/mpcproxies/), Ko-fi
+and Discord – real Magic cards with new art and frames – from their public
+Google Drive folders, and proxy folders or zips you downloaded to your PC.
 
 The decks are grouped:
 
-- **Free** – open them straight away.
+- **Free** – import them straight away.
 - **Paid – on Ko-fi** – **Buy on Ko-fi** opens the maker's page. After buying,
   Ko-fi gives you a Google Drive link: **I bought it – add my download link…**
   and the deck opens here like the free ones. The link stays on your computer.
-- **Added by you** – **Add a link…** (any Google Drive folder shared with
-  "anyone with the link", or a Ko-fi page) or **Find on r/mpcproxies…**
-  (search the subreddit, e.g. "EDH deck", and tick the posts to add).
+- **Added by you** – **Add a link or post…**: paste a Google Drive folder, a
+  Reddit post or a Ko-fi page, or a whole post copied from Reddit or Discord.
+  **Find the details** reads the deck's name, its maker and its decklist for
+  you (untick *Find the name and maker online* to type them yourself).
+  **Find on r/mpcproxies…** searches the subreddit; when Reddit won't answer,
+  **Search in my browser** and paste a post's link instead.
+- **On this PC** – **Add from this PC**: a deck's folder, a folder of decks
+  (each folder or zip in it is a deck; Google Drive's download zips like
+  `Monster Hunter Proxies-20250809T134712Z-1-001.zip` are named for you), or one
+  zip. Nothing is extracted. **Who made it…** adds the maker for the credit.
 
-Open a deck to see its cards (names come from the pictures' file names; when
-the folder has a decklist, its counts and commander are used). Then:
+**Import the deck** reads its cards (names come from the pictures' file names –
+`Anzrag, the Quake-Mole (Diablos, Tyrant of the Desert) (1).png` is Anzrag; when
+the folder has a decklist, its counts and commander are used). An imported
+deck stays imported – it's there when you come back, even after restarting.
 
-- **Add all to my deck** (or select some first) – they become real cards of
-  your deck, printed with these pictures: they're on the Order page and in
-  Print at home. Pictures without MPC's bleed get it added.
-- **Save as a decklist** – on the Decklists page, to view or playtest.
-- **Save the pictures…** anywhere you like.
-- **Use its card back**, when the folder has one.
-- **Copy the credit**.
+Then:
 
-Needs MSE Studio 0.15.0.
+- **Tick** the cards you want (all of the deck's are ticked; tokens and extras
+  aren't), or select some and right-click. Find a card by name, sort by name,
+  folder (Creature, Land…) or copies.
+- **Double-click** a card to see it full size (its back and other pictures with
+  ◀ ▶). Right-click → **Print it with…** when there are several pictures.
+- **Add the ticked to my deck** – real cards printed with these pictures: on the
+  Order page and in Print at home. Pictures without MPC's bleed get it added;
+  double-faced cards get their back face, even when it's a separate picture.
+- **Save as a decklist**, **Save the pictures…**, **Use its card back**,
+  **Copy the credit**.
+
+Needs MSE Studio 0.15.1.
+
+## Discord
+
+Discord servers (like Magic Proxies) can't be searched by an app without
+logging in as you, which breaks Discord's rules – so there's no Discord search.
+Copy a post there (its text, links and decklist) and paste the whole thing into
+**Add a link or post…**.
 
 ## Credits
 
-Every deck belongs to the person who made it. Its credit – the deck, who
-made it and where it's from (the Ko-fi page or Reddit post) – is shown with
-the deck, kept with every card printed from it (the Order page shows it) and
-can be copied. Please support the makers on their Ko-fi pages, and keep
-their pictures for your own printing.
+Every deck belongs to the person who made it. Its credit – the deck, who made
+it and where it's from (the Ko-fi page or Reddit post) – is shown with the
+deck, kept with every card printed from it (the Order page shows it) and can
+be copied. Please support the makers on their Ko-fi pages, and keep their
+pictures for your own printing.
 
 The decks in the store's list:
 
@@ -43,18 +64,21 @@ The decks in the store's list:
 | Persona 5 Royal EDH deck – Take Your Heart | shared on r/mpcproxies | [Reddit post](https://www.reddit.com/r/mpcproxies/comments/1wh04k5/complete_persona_5_royal_edh_deck_take_your_heart/) · [Ko-fi](https://ko-fi.com/s/9eb814d744) |
 
 To add a deck to the store's list (yours, or one shared for free), edit
-`catalogue.json` in a pull request: its title, maker, Ko-fi or Reddit link,
-the Google Drive folder and whether it's free or paid.
+`catalogue.json` in a pull request: its title, maker, Ko-fi or Reddit link, the
+Google Drive folder and whether it's free or paid.
 
 ## Network
 
 Only when you ask:
 
-- **Google Drive** – the deck's folder list, its thumbnails and pictures,
-  when you open, add or save a deck.
-- **Reddit** – only when you use **Find on r/mpcproxies…**.
+- **Google Drive** – a deck's folder list when you import it; its thumbnails
+  when you look at it (kept after the first time); its pictures when you see a
+  card full size or use them.
+- **Reddit** and **Ko-fi** – only when you search r/mpcproxies or read a link you
+  pasted.
 - **Scryfall** – to look the cards up when you add them to your deck (as the
   Decklists page does).
 
-Nothing about your deck is sent. Your own decks and download links are kept
-in the add-on's data folder.
+Decks on this PC are read from the folders and zips you picked. Nothing about
+your deck is sent. Your own decks, links and imported decks are kept in the
+add-on's data folder.

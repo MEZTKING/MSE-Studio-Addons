@@ -18,7 +18,7 @@ page under Review.
 - While it's installed, **Decklists** look cards up here first (no waiting for
   Scryfall).
 
-Needs MSE Studio 0.13.0. The database is kept in MSE Studio's add-on data
+Needs MSE Studio 0.15.1 (earlier Windows builds were missing a part of Python it uses, so the page couldn't start). The database is kept in MSE Studio's add-on data
 folder, so updating the add-on keeps it; removing the add-on offers to delete
 it.
 

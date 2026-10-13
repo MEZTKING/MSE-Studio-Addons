@@ -1,14 +1,21 @@
 {
   "id": "mpc-proxies",
   "name": "Proxy decks",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "kind": "page",
-  "description": "Decks people share on r/mpcproxies and Ko-fi – real Magic cards with new art and frames – straight from their public Google Drive folders. Free and paid decks are kept apart; add the download link you got after buying a paid one and it opens here too. Print them as real cards of your deck (every picture keeps its maker's credit), save them as a decklist, or save the pictures.",
+  "description": "Proxy decks people share on r/mpcproxies, Ko-fi and Discord – real Magic cards with new art and frames – from their Google Drive, and proxy folders or zips on your PC. Import a deck, see each card full size, tick the ones you want and add them to your deck: they're printed with those pictures, and every picture keeps its maker's credit. Paste a link or a whole post and the details are found for you.",
   "author": "MEZTKING",
   "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/mpc-proxies",
   "license": "MIT",
-  "min_app_version": "0.15.0",
-  "tags": ["proxies", "mpcproxies", "ko-fi", "google drive", "real cards", "printing"],
+  "min_app_version": "0.15.1",
+  "tags": [
+    "proxies",
+    "mpcproxies",
+    "ko-fi",
+    "google drive",
+    "real cards",
+    "printing"
+  ],
   "page": {
     "module": "proxies_page",
     "class": "ProxiesPage",
