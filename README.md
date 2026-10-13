@@ -17,6 +17,9 @@ get an **Update** button when a newer version is listed here.
 | Add-on | Kind | What it does |
 |---|---|---|
 | [Deck notes](addons/deck-notes) | Page | A notes page for each deck, saved as `notes.md` in the deck's folder, with a checklist of the deck's cards. |
+| [MPCFill](addons/mpcfill) | Page | MPCFill's print-ready card pictures, sorted by drive, name, quality or date: print one as a real card, use it as the card back, or save it. |
+| [Card database](addons/card-database) | Page | Every Magic card on your PC from Scryfall's bulk data: search, random cards, build a Commander deck around a commander, add cards as real or your own. |
+| [Card prices](addons/card-prices) | Page | What a deck's real cards cost at TCGplayer and Cardmarket: cheapest printings, totals per store, the cheapest mix, in your currency. |
 | [Dragon cards](addons/dragon-cards) | Card list | Twelve dragon ideas in every colour, with a dragon commander. |
 | [Anime archetypes](addons/anime-archetypes) | Card list | The hero, the rival, the mentor, the mascot, the sealed evil… as cards. |
 | [Gear and auras](addons/gear-and-auras) | Card list | Equipment and Auras for Voltron decks. |

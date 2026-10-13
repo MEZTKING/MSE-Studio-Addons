@@ -9,7 +9,9 @@ them that add-ons in this store are checked. So before merging a **page** or
 - [ ] It doesn't send anything anywhere without saying so on the page (no
       hidden network calls, analytics, or uploads of decks or settings).
 - [ ] It doesn't read or change files outside the open deck's folder, the
-      add-on's own folder and files the user picks.
+      add-on's own folder, its data folder (`addons.data_dir("<id>")`) and
+      files the user picks. (Reading another add-on's data folder is fine when
+      the description says so – Card prices reads the Card database.)
 - [ ] It doesn't run other programs, download code, or use `eval` / `exec`.
 - [ ] It doesn't touch MSE Studio's settings (API keys and tokens live there).
 - [ ] Programs: the zip is built from the linked source, and the release is
