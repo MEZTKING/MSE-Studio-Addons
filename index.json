@@ -24,6 +24,23 @@
       "downloads": 2
     },
     {
+      "id": "anime-upscaling-models",
+      "name": "Anime upscaling models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "Real-ESRGAN's AnimeVideo v3 models (2×, 3× and 4×: small and fast, made for anime) and 4xHFA2k (4×, trained on anime art). Upscayl's Digital Art model is still the default.",
+      "author": "xinntao, Real-ESRGAN, Phhofm – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/anime-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "anime",
+        "art",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip"
+    },
+    {
       "id": "deck-notes",
       "name": "Deck notes",
       "version": "1.0.0",
@@ -71,6 +88,23 @@
       "downloads": 2
     },
     {
+      "id": "fast-upscaling-models",
+      "name": "Fast upscaling models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "Light, quick 4× models for big batches: Real-ESRGAN General v3 (and its wide-and-deep version) and 4xLSDIRCompactC3.",
+      "author": "xinntao, Real-ESRGAN, Phhofm – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/fast-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "fast",
+        "general",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/fast-upscaling-models-v1.0.0/fast-upscaling-models-1.0.0.zip"
+    },
+    {
       "id": "gear-and-auras",
       "name": "Gear and auras",
       "version": "1.0.0",
@@ -90,6 +124,39 @@
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
       "downloads": 2
+    },
+    {
+      "id": "nmkd-upscaling-models",
+      "name": "NMKD upscaling models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "NMKD Siax (4×: a universal upscaler for clean and lightly compressed pictures) and NMKD Superscale (4×: sharp results on clean, artifact-free pictures).",
+      "author": "NMKD – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/nmkd-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "general",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip"
+    },
+    {
+      "id": "photo-upscaling-models",
+      "name": "Photo and restoration models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "4× models for photos, screenshots and damaged pictures: 4xNomos8kSC, 4xLSDIR, 4xLSDIRplusC, Uniscale Restore and \"Unknown\" (a model Upscayl once shipped by mistake that people liked).",
+      "author": "Phhofm, Kim2091, unknown – see Upscayl's notes – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/photo-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "photo",
+        "restore",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip"
     }
   ]
 }
