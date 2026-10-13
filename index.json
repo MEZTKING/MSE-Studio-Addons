@@ -239,6 +239,88 @@
         "upscaling"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip"
+    },
+    {
+      "id": "picture-grabber",
+      "name": "Picture grabber",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Collect card art from anywhere: every picture on a web page (Pinterest, ArtStation, a booru, Reddit, any site) saved full size with its credit, and live mode – every picture you copy and every new screenshot is saved into the deck's art folder by itself.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/picture-grabber",
+      "license": "MIT",
+      "min_app_version": "0.15.0",
+      "tags": [
+        "art",
+        "pictures",
+        "web",
+        "clipboard"
+      ],
+      "page": {
+        "module": "pictures_page",
+        "class": "PictureGrabberTab",
+        "title": "Pictures",
+        "icon": "add_photo_alternate",
+        "section": "Create",
+        "tooltip": "Picture grabber: pictures from web pages, the clipboard and screenshots",
+        "order": 11
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip"
+    },
+    {
+      "id": "mpc-proxies",
+      "name": "Proxy decks",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Decks people share on r/mpcproxies and Ko-fi – real Magic cards with new art and frames – straight from their public Google Drive folders. Free and paid decks are kept apart; add the download link you got after buying a paid one and it opens here too. Print them as real cards of your deck (every picture keeps its maker's credit), save them as a decklist, or save the pictures.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/mpc-proxies",
+      "license": "MIT",
+      "min_app_version": "0.15.0",
+      "tags": [
+        "proxies",
+        "mpcproxies",
+        "ko-fi",
+        "google drive",
+        "real cards",
+        "printing"
+      ],
+      "page": {
+        "module": "proxies_page",
+        "class": "ProxiesPage",
+        "title": "Proxy decks",
+        "icon": "layers",
+        "section": "Produce",
+        "order": 31,
+        "tooltip": "Proxy decks shared on r/mpcproxies and Ko-fi"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.0.0/mpc-proxies-1.0.0.zip"
+    },
+    {
+      "id": "capture",
+      "name": "Video capture",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Take screenshots of episodes with a hotkey, straight into the right episode folder – even while the video is fullscreen. Adds the Video capture page.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/capture",
+      "license": "MIT",
+      "min_app_version": "0.15.0",
+      "tags": [
+        "art",
+        "screenshots",
+        "video"
+      ],
+      "page": {
+        "module": "capture_page",
+        "class": "CaptureTab",
+        "title": "Video capture",
+        "icon": "screenshot_monitor",
+        "section": "Create",
+        "tooltip": "Capture screenshots of episodes into episode folders",
+        "order": 10
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/capture-v1.0.0/capture-1.0.0.zip"
     }
   ]
 }
