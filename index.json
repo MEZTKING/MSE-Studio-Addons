@@ -41,6 +41,61 @@
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip"
     },
     {
+      "id": "card-database",
+      "name": "Card database",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters, pick random cards, build a whole Commander deck around a commander, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-database",
+      "license": "MIT",
+      "min_app_version": "0.13.0",
+      "tags": [
+        "scryfall",
+        "cards",
+        "deck builder",
+        "random",
+        "search"
+      ],
+      "page": {
+        "module": "card_database_page",
+        "class": "CardDatabasePage",
+        "title": "Card database",
+        "icon": "storage",
+        "section": "Review",
+        "order": 40,
+        "tooltip": "Every Magic card: search, random cards, build a deck"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.0/card-database-1.0.0.zip"
+    },
+    {
+      "id": "card-prices",
+      "name": "Card prices",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "What the real cards of your deck, or a decklist, cost at TCGplayer and Cardmarket: the cheapest printing of each, totals per store and the cheapest mix, in your currency – with a TCGplayer Mass Entry link and a Cardmarket wants list. Uses the Card database add-on's prices when it's installed.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-prices",
+      "license": "MIT",
+      "min_app_version": "0.13.0",
+      "tags": [
+        "prices",
+        "tcgplayer",
+        "cardmarket",
+        "buying"
+      ],
+      "page": {
+        "module": "card_prices_page",
+        "class": "CardPricesPage",
+        "title": "Card prices",
+        "icon": "payments",
+        "section": "Review",
+        "order": 45,
+        "tooltip": "What the real cards cost at TCGplayer and Cardmarket"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.0/card-prices-1.0.0.zip"
+    },
+    {
       "id": "deck-notes",
       "name": "Deck notes",
       "version": "1.0.0",
@@ -124,6 +179,33 @@
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
       "downloads": 2
+    },
+    {
+      "id": "mpcfill",
+      "name": "MPCFill",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Browse MPCFill's print-ready card pictures from the community's drives, as on mpcfill.com/explore – sorted by drive, name, quality or date. Print one as a real card in your deck, use it as your card back, or save it.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/mpcfill",
+      "license": "MIT",
+      "min_app_version": "0.13.0",
+      "tags": [
+        "mpcfill",
+        "proxies",
+        "real cards",
+        "card backs"
+      ],
+      "page": {
+        "module": "mpcfill_page",
+        "class": "MpcfillPage",
+        "title": "MPCFill",
+        "icon": "cloud_download",
+        "section": "Produce",
+        "order": 30,
+        "tooltip": "Print-ready card pictures from MPCFill"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v1.0.0/mpcfill-1.0.0.zip"
     },
     {
       "id": "nmkd-upscaling-models",
