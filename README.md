@@ -75,6 +75,8 @@ templates/              starting points for the three sorts
 external.json           add-ons hosted elsewhere
 index.json              written by the action – don't edit by hand
 ADDONS.md               the full add-on guide (addon.json, pages, card lists, programs)
+CLAUDE.md               notes for working on add-ons with Claude (API, rules, testing)
+plans/                  ideas for future add-ons (not published), e.g. Frame studio
 tools/build_index.py    the checker / publisher (python tools/build_index.py --check)
 ```
 

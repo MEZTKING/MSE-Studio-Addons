@@ -12,8 +12,10 @@ There are three sorts:
 | **Page** | `page` | A new page in MSE Studio's side rail, written in Python with PySide6. Runs **inside** MSE Studio. |
 | **Card list** | `cards` | Example cards (JSON) for the card idea maker. No code. |
 
-Capture (screenshots into episode folders) is a page add-on that comes with
-MSE Studio – switch it off on the Add-ons page if you don't use it.
+Video capture (screenshots from videos into episode folders) and Pictures
+(pictures from web pages, the clipboard and your screenshots) are page add-ons
+that come with MSE Studio – switch them off on the Add-ons page if you don't
+use them.
 
 ## What an add-on is
 
@@ -75,7 +77,8 @@ hello-page/
   "description": "An example page.",
   "min_app_version": "0.11.0",
   "page": {"module": "hello_page", "class": "HelloPage", "title": "Hello",
-           "icon": "extension", "section": "Review", "tooltip": "An example page"}
+           "icon": "extension", "section": "Review", "order": 60,
+           "tooltip": "An example page"}
 }
 ```
 
@@ -106,6 +109,9 @@ class HelloPage(QWidget):
 - `section` is `Create`, `Produce`, `Review` or `Manage` (anything else → Manage);
   the page goes after that section's own pages. `icon` is one of the icon names
   in MSE Studio's `resources/icons` (without `.svg`).
+- `order` (optional, 50 if left out) places add-on pages of the same section:
+  lower numbers first, then by name. MSE Studio's own add-on pages use 10
+  (Video capture), 11 (Pictures) and 20 (Card ideas).
 - `load()`, `refresh()` and `shutdown()` are optional. Errors in them are logged
   and don't stop MSE Studio; an add-on whose page can't be made is listed as
   *couldn't start* with the error.
@@ -211,7 +217,9 @@ link and the download count. A new version = change `version` in its
 ```
 
 That's it: everyone's Add-ons page shows it under *Store*, and people who
-have an older version get an **Update** button.
+have an older version get an **Update** button. The store also shows how many
+times each add-on was downloaded (↓ 12), counted from the releases'
+downloads.
 
 For a new version: make the new zip, release it, change `version` and
 `download` in `index.json`.

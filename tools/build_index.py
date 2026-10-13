@@ -67,6 +67,8 @@ def check(addon: dict, folder: Path | None) -> list[str]:
             out.append(f"{page['module']}.py is missing")
         if page.get("section", "Manage") not in SECTIONS:
             out.append(f"page.section must be one of {', '.join(sorted(SECTIONS))}")
+        if "order" in page and (not isinstance(page["order"], int) or isinstance(page["order"], bool)):
+            out.append("page.order must be a whole number (lower = higher up in its section)")
     if kind == "cards" and not addon.get("cards"):
         out.append("a card list add-on needs \"cards\": [\"lists/….json\"]")
     for rel in addon.get("cards") or []:
