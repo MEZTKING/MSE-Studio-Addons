@@ -1,0 +1,21 @@
+{
+  "id": "mpcfill",
+  "name": "MPCFill",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "Browse MPCFill's print-ready card pictures from the community's drives, as on mpcfill.com/explore – sorted by drive, name, quality or date. Print one as a real card in your deck, use it as your card back, or save it.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/mpcfill",
+  "license": "MIT",
+  "min_app_version": "0.13.0",
+  "tags": ["mpcfill", "proxies", "real cards", "card backs"],
+  "page": {
+    "module": "mpcfill_page",
+    "class": "MpcfillPage",
+    "title": "MPCFill",
+    "icon": "cloud_download",
+    "section": "Produce",
+    "order": 30,
+    "tooltip": "Print-ready card pictures from MPCFill"
+  }
+}

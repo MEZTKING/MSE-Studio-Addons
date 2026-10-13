@@ -29,7 +29,7 @@ two the same).
 - Page and program add-ons run code on people's computers, and MSE Studio tells
   them store add-ons were checked. Every change to one must pass the checklist
   in [CONTRIBUTING.md](CONTRIBUTING.md): no hidden network calls, no files
-  outside the deck / add-on / what the user picked, no `eval`/`exec`, no
+  outside the deck / add-on / its data folder / what the user picked, no `eval`/`exec`, no
   downloading code, no touching MSE Studio's settings (API keys live there).
 - Card lists: the authors' own wording – no real cards' text or art.
 - Commits end with the attribution lines the session gives you. No model
@@ -88,12 +88,15 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `main.settings` | Read only: `mse_path`, `upscayl_path`, theme… Never write it, never read keys or tokens from it |
 | `main.known_frames()`, `mse_studio.core.styles` | The frames MSE has |
 | `mse_studio.gui.nav.page_header(title, text)` | The title every page has – use it so the page looks like the others |
-| `mse_studio.gui.common`: `Job`, `start`, `error`, `info`, `confirm`, `PathEdit` | `Job(fn)` runs `fn(progress=…, cancel=…)` on a worker thread; `job.signals.progress(done, total, text)`, `.finished(result)`, `.failed(text)`; `start(job)` |
+| `mse_studio.gui.common`: `Job`, `start`, `forget`, `error`, `info`, `confirm`, `PathEdit` | `Job(fn, label="What it does")` runs `fn(progress=…, cancel=…)` on a worker thread (with a label, Stop cancels it); `job.signals.progress(done, total, text)`, `.finished(result)`, `.failed(text)`; `start(job)`; keep jobs in a list and call `forget(jobs)` in `shutdown()` (0.13.0) |
 | `mse_studio.gui.icons`: `icon(name)`, `set_icon(button, name)` | Icons that follow the theme |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 
 Keep a deck's add-on data in a file in `main.project.folder` (like Deck notes'
-`notes.md`), so it goes with the deck and its backups.
+`notes.md`), so it goes with the deck and its backups. Anything else (a
+downloaded database, a cache) goes in `mse_studio.core.addons.data_dir("<id>")`
+(MSE Studio 0.13.0): kept on updates, offered for deletion on uninstall. Never
+in the add-on's folder – that's replaced on every update.
 
 ### Qt mistakes that crashed earlier versions
 

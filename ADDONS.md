@@ -121,6 +121,14 @@ class HelloPage(QWidget):
   `mse_studio.core.*`, `mse_studio.pipeline.*`) and PySide6, Pillow, NumPy and
   OpenCV, which come with MSE Studio. Other packages: put pure-Python ones in
   the add-on's folder.
+- **Where to keep things:** a deck's data in a file in `main.project.folder`
+  (it goes with the deck and its backups). Anything else – a downloaded
+  database, a cache – in `mse_studio.core.addons.data_dir("<id>")` (MSE Studio
+  0.13.0): it stays when the add-on is updated, and removing the add-on offers
+  to delete it. Not in the add-on's own folder: that's replaced on every update.
+- Keep the jobs you start (`mse_studio.gui.common.Job` / `start`) in a list and
+  call `mse_studio.gui.common.forget(jobs)` in `shutdown()` (MSE Studio
+  0.13.0): they stop, and none calls the page back after it's gone.
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight
