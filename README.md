@@ -20,6 +20,9 @@ get an **Update** button when a newer version is listed here.
 | [MPCFill](addons/mpcfill) | Page | MPCFill's print-ready card pictures, sorted by drive, name, quality or date: print one as a real card, use it as the card back, or save it. |
 | [Card database](addons/card-database) | Page | Every Magic card on your PC from Scryfall's bulk data: search, random cards, build a Commander deck around a commander, add cards as real or your own. |
 | [Card prices](addons/card-prices) | Page | What a deck's real cards cost at TCGplayer and Cardmarket: cheapest printings, totals per store, the cheapest mix, in your currency. |
+| [Proxy decks](addons/mpc-proxies) | Page | Decks shared on r/mpcproxies and Ko-fi, straight from their Google Drive: free and paid (with your download link) kept apart, printed as real cards with the maker's credit. |
+| [Video capture](addons/capture) | Page | Screenshots from a video or game with a hotkey, sorted into episode folders. Came with MSE Studio until 0.15.0. |
+| [Picture grabber](addons/picture-grabber) | Page | Pictures from web pages and folders, with a live mode for the biggest version of each picture. Came with MSE Studio until 0.15.0. |
 | [Dragon cards](addons/dragon-cards) | Card list | Twelve dragon ideas in every colour, with a dragon commander. |
 | [Anime archetypes](addons/anime-archetypes) | Card list | The hero, the rival, the mentor, the mascot, the sealed evil… as cards. |
 | [Gear and auras](addons/gear-and-auras) | Card list | Equipment and Auras for Voltron decks. |

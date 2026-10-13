@@ -1,0 +1,28 @@
+{
+  "about": "Proxy decks people share on r/mpcproxies and Ko-fi. Free ones can be browsed and printed straight away; paid ones link to their Ko-fi page – after buying, add the download link you got and they show here too. Every deck keeps its maker's credit.",
+  "decks": [
+    {
+      "id": "white-rabbit-sotc-basic",
+      "title": "Shadow of the Colossus – Basic Edition (free version)",
+      "creator": "White Rabbit MTG",
+      "creator_link": "https://ko-fi.com/whiterabbitmtg/shop",
+      "page": "https://ko-fi.com/s/2f11dbcfc8",
+      "drive": "11xWfkz9Rk6rB1_sW_U3Ni2p-H2hsPRkr",
+      "price": "free",
+      "notes": "The free version, at a lower resolution. The full-resolution files and White Rabbit's other decks are on their Ko-fi (most need a purchase or a membership). The cards are real Magic cards with new art and frames, and the deck comes with its decklist.",
+      "tags": ["Shadow of the Colossus", "EDH", "commander"]
+    },
+    {
+      "id": "persona-5-royal-edh",
+      "title": "Persona 5 Royal EDH deck – Take Your Heart",
+      "creator": "shared on r/mpcproxies",
+      "creator_link": "https://www.reddit.com/r/mpcproxies/comments/1wh04k5/complete_persona_5_royal_edh_deck_take_your_heart/",
+      "page": "https://ko-fi.com/s/9eb814d744",
+      "reddit": "https://www.reddit.com/r/mpcproxies/comments/1wh04k5/complete_persona_5_royal_edh_deck_take_your_heart/",
+      "drive": "1-8fnoq1h7KCUX22Jrjd4c6Un85IuGe3a",
+      "price": "free",
+      "notes": "A complete Commander deck. The maker's Ko-fi page leads to the Google Drive – support them there if you enjoy it.",
+      "tags": ["Persona 5", "EDH", "commander"]
+    }
+  ]
+}
