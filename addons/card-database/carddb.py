@@ -7,6 +7,7 @@ about 500 MB) – they're read a piece at a time, never all at once."""
 from __future__ import annotations
 
 import gzip
+import io
 import json
 import random
 import re
@@ -74,31 +75,43 @@ def info(conn: sqlite3.Connection) -> dict:
 
 
 # ------------------------------------------------------------------ reading a bulk file
+def _is_gzip(path: Path) -> bool:
+    with open(path, "rb") as f:
+        return f.read(2) == b"\x1f\x8b"
+
+
 def iter_bulk(path: Path, progress: Optional[Callable[[float], None]] = None,
               chunk: int = 1 << 20) -> Iterator[dict]:
-    """The cards of a Scryfall bulk file (a JSON list) one by one, reading a
-    piece at a time. ``progress(fraction)`` now and then."""
+    """The cards of a Scryfall bulk file one by one, reading a piece at a
+    time: a JSON list (.json) or one card per line (.jsonl), compressed (.gz)
+    or not. ``progress(fraction)`` now and then."""
     path = Path(path)
     size = max(1, path.stat().st_size)
     dec = json.JSONDecoder()
-    opener = gzip.open if path.suffix.lower() == ".gz" else open
+    zipped = _is_gzip(path)
     read = 0
-    with opener(path, "rt", encoding="utf-8") as f:
+    with (gzip.open(path, "rb") if zipped else open(path, "rb")) as raw:
+        f = io.TextIOWrapper(raw, encoding="utf-8-sig")
         buf, pos, started = "", 0, False
         while True:
             text = f.read(chunk)
-            read += len(text)
+            read = raw.fileobj.tell() if zipped else raw.tell()
             buf = buf[pos:] + text
             pos = 0
             if progress:
                 progress(min(1.0, read / size))
             if not started:
-                i = buf.find("[")
-                if i < 0:
+                first = buf.lstrip()[:1]
+                if not first:
                     if not text:
-                        raise CardDbError("That isn't a Scryfall bulk file (no list of cards).")
+                        raise CardDbError("That isn't a Scryfall bulk file (no cards in it).")
                     continue
-                pos, started = i + 1, True
+                if first == "[":               # a JSON list
+                    pos, started = buf.find("[") + 1, True
+                elif first == "{":             # one card per line (.jsonl)
+                    pos, started = buf.find("{"), True
+                else:
+                    raise CardDbError("That isn't a Scryfall bulk file (no list of cards).")
             while True:
                 while pos < len(buf) and buf[pos] in " \r\n\t,":
                     pos += 1
@@ -137,6 +150,8 @@ def _can_lead(card: dict) -> bool:
 
 def _row(card: dict) -> Optional[tuple]:
     if card.get("object") not in (None, "card"):
+        return None
+    if card.get("lang") not in (None, "en"):        # All cards: other languages' printings
         return None
     if card.get("layout") in SKIP_LAYOUTS or card.get("set_type") in SKIP_SET_TYPES:
         return None
@@ -217,12 +232,46 @@ def _guess_kind(name: str) -> str:
     return ""
 
 
+FILE_URL = re.compile(r"\.(?:jsonl?|jsonl?\.gz|gz)(?:\?|$)", re.I)
+
+
+def _file_urls(obj) -> list[str]:
+    """Every address of a bulk file in Scryfall's answer, wherever it is
+    (``download_uri``, or newer names for the .json / .jsonl files)."""
+    out = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(v, str) and v.startswith("http") and FILE_URL.search(v) and \
+                    "api.scryfall.com" not in v:
+                out.append(v)
+            elif isinstance(v, (dict, list)):
+                out += _file_urls(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            out += _file_urls(v)
+    return out
+
+
 def bulk_downloads(http: Callable[[str], bytes]) -> dict[str, dict]:
-    """Scryfall's bulk files: kind -> {url, size, updated}."""
+    """Scryfall's bulk files: kind -> {url, size, updated}. The smallest
+    form of each file is picked (compressed, one card per line)."""
     data = json.loads(http(BULK_API).decode("utf-8"))
-    return {b.get("type"): {"url": b.get("download_uri", ""), "size": b.get("size", 0),
-                            "updated": b.get("updated_at", "")}
-            for b in data.get("data", []) if b.get("type") in BULK_TYPES}
+    out = {}
+    for b in data.get("data", []):
+        if b.get("type") not in BULK_TYPES:
+            continue
+        urls = _file_urls(b)
+        if not urls and b.get("uri"):           # ask for the file's own details
+            try:
+                urls = _file_urls(json.loads(http(b["uri"]).decode("utf-8")))
+            except Exception:  # noqa: BLE001 - reported below as not listed
+                urls = []
+        urls.sort(key=lambda u: (not u.lower().split("?")[0].endswith(".gz"),
+                                 ".jsonl" not in u.lower()))
+        if urls:
+            out[b["type"]] = {"url": urls[0], "size": b.get("size") or b.get(
+                "compressed_size") or 0, "updated": b.get("updated_at", "")}
+    return out
 
 
 # ------------------------------------------------------------------ looking cards up

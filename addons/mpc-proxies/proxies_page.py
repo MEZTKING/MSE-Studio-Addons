@@ -23,7 +23,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComb
                                QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout,
                                QInputDialog, QLabel, QLineEdit, QListView, QListWidget,
                                QListWidgetItem, QMenu, QMessageBox, QPlainTextEdit, QPushButton,
-                               QSplitter, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+                               QSlider, QSplitter, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                               QWidget)
 
 from mse_studio.core import decklists as dl
 from mse_studio.gui import icons, thumbs
@@ -33,7 +34,7 @@ from mse_studio.gui.nav import page_header
 from . import gdrive, local
 from . import proxies as px
 
-THUMB = QSize(126, 176)
+BIG = 200                          # wider than this: the large thumbnails (MSE Studio 0.16)
 GROUPS = [("free", "Free"), ("paid", "Paid – on Ko-fi"), ("mine", "Added by you"),
           ("pc", "On this PC")]
 SORTS = [("deck", "Deck order"), ("name", "Name"), ("folder", "Folder (card type)"),
@@ -66,7 +67,9 @@ class ProxiesPage(QWidget):
         self._by_key: dict[str, px.Card] = {}
         self._ticked: set[str] = set()
         self._thumb_for: dict[str, list[str]] = {}
-        self._importing = ""
+        self._importing: set = set()       # decks being imported
+        self.types: dict = {}              # name → type line, from Scryfall
+        self._looking: set = set()         # decks being looked up
         lay = QVBoxLayout(self)
         lay.addWidget(page_header(
             "Proxy decks", "Decks people share on r/mpcproxies, Ko-fi and Discord – real Magic "
@@ -188,13 +191,42 @@ class ProxiesPage(QWidget):
         self.tick_none.clicked.connect(lambda: self._tick_shown(False))
         row.addWidget(self.tick_none)
         rv.addLayout(row)
+        row = QHBoxLayout()
+        row.addWidget(QLabel("Type"))
+        self.type_filter = QComboBox()
+        self.type_filter.addItem("All types", "")
+        for t in px.TYPES:
+            self.type_filter.addItem({"Sorcery": "Sorceries"}.get(t, t + "s"), t)
+        self.type_filter.setToolTip("Types come from Scryfall when the cards are looked up, "
+                                    "else from the deck's folders (Creature, Land…)")
+        self.type_filter.currentIndexChanged.connect(self._fill_grid)
+        row.addWidget(self.type_filter)
+        row.addSpacing(12)
+        row.addWidget(QLabel("Size"))
+        self.size = QSlider(Qt.Horizontal)
+        self.size.setRange(110, 360)
+        self.size.setValue(int(px.pref("size") or 180))
+        self.size.setFixedWidth(170)
+        self.size.setToolTip("How big the cards are shown")
+        self.size.sliderReleased.connect(self._size_changed)
+        self.size.valueChanged.connect(self._size_moved)
+        row.addWidget(self.size)
+        row.addSpacing(12)
+        self.lookup = QCheckBox("Look the cards up on Scryfall")
+        self.lookup.setChecked(bool(px.pref("lookup")))
+        self.lookup.setToolTip("For their types (the filter), both faces of double-faced cards "
+                               "and the card details in your deck. Untick it for custom cards "
+                               "Scryfall doesn't know – nothing is looked up then")
+        self.lookup.toggled.connect(self._lookup_toggled)
+        row.addWidget(self.lookup)
+        row.addStretch(1)
+        rv.addLayout(row)
 
         self.grid = QListWidget()
         self.grid.setViewMode(QListView.IconMode)
         self.grid.setResizeMode(QListView.Adjust)
         self.grid.setMovement(QListView.Static)
-        self.grid.setIconSize(THUMB)
-        self.grid.setGridSize(QSize(THUMB.width() + 22, THUMB.height() + 58))
+        self._apply_size()
         self.grid.setWordWrap(True)
         self.grid.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.grid.setToolTip("Tick the cards to add. Double-click a card to see it full size; "
@@ -233,6 +265,8 @@ class ProxiesPage(QWidget):
         split.setSizes([320, 900])
         lay.addWidget(split, 1)
         thumbs.cache().ready.connect(self._thumb_ready)
+        if hasattr(thumbs, "large"):
+            thumbs.large().ready.connect(self._thumb_ready)
         px.clear_scratch()
         self.fill_list()
 
@@ -329,7 +363,7 @@ class ProxiesPage(QWidget):
         d = self.deck
         locked = d is not None and not d.can_open
         self.import_btn.setVisible(d is not None and not locked)
-        self.import_btn.setEnabled(d is not None and d.can_open and not self._importing)
+        self.import_btn.setEnabled(d is not None and d.can_open and d.id not in self._importing)
         self.import_btn.setText("Import again" if d is not None and px.is_imported(d.id)
                                 else "Import the deck")
         self.buy_btn.setVisible(d is not None and not d.on_pc and d.price == "paid"
@@ -364,7 +398,7 @@ class ProxiesPage(QWidget):
     # ------------------------------------------------------------ importing a deck
     def import_deck(self):
         d = self.deck
-        if d is None or not d.can_open or self._importing:
+        if d is None or not d.can_open or d.id in self._importing:
             return
         deck = copy.copy(d)
 
@@ -373,7 +407,7 @@ class ProxiesPage(QWidget):
                                        cancel=cancel)
             return deck.id, items, text
 
-        self._importing = d.id
+        self._importing.add(d.id)
         self.status.setText("Reading the deck's files…" if d.on_pc else
                             "Reading the deck's Google Drive folder…")
         job = Job(work, label=f"Importing {d.title}")
@@ -391,7 +425,7 @@ class ProxiesPage(QWidget):
 
     def _import_failed(self, msg: str):
         try:
-            self._importing = ""
+            self._importing.clear()
             self.status.setText(msg.splitlines()[0])
             self._buttons()
         except RuntimeError:
@@ -400,7 +434,7 @@ class ProxiesPage(QWidget):
     def _imported(self, res):
         try:
             did, items, text = res
-            self._importing = ""
+            self._importing.discard(did)
             px.save_listing(did, items, text)
             it = self._tree_item(did)
             if it is not None and did in self._decks:
@@ -416,6 +450,9 @@ class ProxiesPage(QWidget):
         self.text = text
         self.cards, self.backs = px.cards_in(items, text, d.id if d else "")
         self._by_key = {c.key: c for c in self.cards}
+        self.types = px.load_types(d.id) if d else {}
+        if d is not None and self.lookup.isChecked() and not self.types and self.cards:
+            self._look_up(d.id)
         self._ticked = {c.key for c in self.cards if not c.extra}
         self._fill_grid()
         deck = [c for c in self.cards if not c.extra]
@@ -428,13 +465,74 @@ class ProxiesPage(QWidget):
              f" · {when}") if self.cards else
             "No card pictures in that folder.")
 
+    # ------------------------------------------------------------ looking cards up
+    def _look_up(self, deck_id: str):
+        """The cards' types from Scryfall (or the Card database add-on), kept with
+        the import; the type filter uses them."""
+        if deck_id in self._looking:
+            return
+        cards = [c for c in self.cards if not c.token]
+
+        def work(progress=None, cancel=None):
+            return deck_id, px.lookup_types(cards, progress, cancel)
+
+        self._looking.add(deck_id)
+        job = Job(work, label="Looking the proxy cards up")
+        job.signals.finished.connect(self._looked_up)
+        job.signals.failed.connect(self._look_failed)
+        self._jobs.append(start(job))
+
+    def _looked_up(self, res):
+        try:
+            did, types = res
+            self._looking.discard(did)
+            px.set_types(did, types)
+            if self.deck is not None and self.deck.id == did:
+                self.types = types
+                self._fill_grid()
+        except RuntimeError:
+            return
+
+    def _look_failed(self, msg: str):
+        try:
+            self._looking.clear()
+            self.status.setText("Couldn't look the cards up: " + msg.splitlines()[0])
+        except RuntimeError:
+            return
+
+    def _lookup_toggled(self, on: bool):
+        px.set_pref("lookup", on)
+        if on and self.deck is not None and self.cards and not self.types:
+            self._look_up(self.deck.id)
+
+    # ------------------------------------------------------------ size
+    def _thumb_size(self) -> QSize:
+        w = self.size.value()
+        return QSize(w, round(w * 1.4))
+
+    def _apply_size(self):
+        t = self._thumb_size()
+        self.grid.setIconSize(t)
+        self.grid.setGridSize(QSize(t.width() + 22, t.height() + 58))
+
+    def _size_moved(self, _v):
+        if not self.size.isSliderDown():          # keys, wheel: right away
+            self._size_changed()
+
+    def _size_changed(self):
+        px.set_pref("size", self.size.value())
+        self._apply_size()
+        self._fill_grid()
+
     # ------------------------------------------------------------ the cards
     def _fill_grid(self, *_):
         q = self.search.text().strip().lower()
         sort = self.sort.currentData()
+        want = self.type_filter.currentData() or ""
         cards = [c for c in self.cards if (self.show_extra.isChecked() or not c.extra) and
                  (not q or q in c.name.lower() or q in c.category.lower()
-                  or q in c.front.name.lower())]
+                  or q in c.front.name.lower()) and
+                 (not want or want in px.card_types(c, self.types))]
         if sort == "name":
             cards.sort(key=lambda c: c.name.lower())
         elif sort == "folder":
@@ -454,6 +552,9 @@ class ProxiesPage(QWidget):
             it.setFlags(it.flags() | Qt.ItemIsUserCheckable)
             it.setCheckState(Qt.Checked if c.key in self._ticked else Qt.Unchecked)
             tip = [c.front.name]
+            line = self.types.get(c.name.lower())
+            if line:
+                tip.append(line)
             if c.category:
                 tip.append(f"Folder: {c.category}")
             if c.variants:
@@ -461,7 +562,8 @@ class ProxiesPage(QWidget):
             if c.extra:
                 tip.append("Not part of the deck itself: tick it to add it")
             it.setToolTip("\n".join(tip))
-            it.setSizeHint(QSize(THUMB.width() + 16, THUMB.height() + 54))
+            size = self._thumb_size()
+            it.setSizeHint(QSize(size.width() + 16, size.height() + 54))
             it.setTextAlignment(Qt.AlignHCenter | Qt.AlignTop)
             pm = self._thumb(c)
             if pm is not None:
@@ -485,6 +587,10 @@ class ProxiesPage(QWidget):
             def loader(it=copy_of):
                 return local.read(it)
         self._thumb_for.setdefault(sid, []).append(c.key)
+        if self.size.value() > BIG and hasattr(thumbs, "large"):
+            big = thumbs.large().get(sid, stamp, loader)
+            if big is not None:
+                return big
         return thumbs.cache().get(sid, stamp, loader)
 
     def _thumb_ready(self, source_id: str):
@@ -562,8 +668,74 @@ class ProxiesPage(QWidget):
             a.setEnabled(False)
             for i, v in enumerate(c.variants):
                 sub.addAction(v.name, lambda i=i: self._use_variant(key, i))
+        art = menu.addMenu(icons.icon("brush"), "Use its art for my own card")
+        a = art.addAction("On the card I'm editing…", lambda: self.use_art(key, False))
+        a.setEnabled(self.main.project is not None and
+                     getattr(self.main.cards_tab.editor, "card", None) is not None)
+        a = art.addAction("On a new card of mine…", lambda: self.use_art(key, True))
+        a.setEnabled(self.main.project is not None)
         menu.addAction(icons.icon("save"), "Save its picture…", lambda: self.save_pictures(keys))
         menu.exec(self.grid.viewport().mapToGlobal(pos))
+
+    def use_art(self, key: str, new_card: bool):
+        """A proxy's art on your own card: its picture goes in the deck's art
+        folder (with the maker's credit), and the art editor opens on it with the
+        art window already picked."""
+        c, d, p = self._by_key.get(key), self.deck, self.main.project
+        if c is None or p is None:
+            return
+        item, credit, maker = c.front, (d.credit() if d else ""), (d.creator if d else "")
+        lookup, name, folder = self.lookup.isChecked(), c.name, str(p.folder)
+
+        def work(progress=None, cancel=None):
+            from PIL import Image
+            from mse_studio.core import art_import
+            target = art_import.default_folder(p)
+            target.mkdir(parents=True, exist_ok=True)
+            path = art_import.save_image_bytes(px.fetch(item), target, f"{name} (proxy)")
+            with Image.open(path) as im:
+                crop = px.art_window(im.size)
+            entry = None
+            if new_card and lookup:
+                entry = dl.Entry(name=name)
+                try:
+                    dl.resolve([entry], progress, cancel)
+                except Exception:  # noqa: BLE001 - the card gets just its name
+                    entry = None
+            return folder, str(path), crop, credit, maker, new_card, name, entry
+
+        job = Job(work, label=f"Getting the art of {name}")
+        job.signals.finished.connect(self._art_ready)
+        job.signals.failed.connect(self._failed_box)
+        self._jobs.append(start(job))
+
+    def _art_ready(self, res):
+        from mse_studio.core import art_import
+        try:
+            folder, path, crop, credit, maker, new_card, name, entry = res
+            p = self.main.project
+            if p is None or str(p.folder) != folder:
+                return
+            art_import.set_credit(p, Path(path), maker, credit, self.deck.page if self.deck
+                                  else "")
+            tab = self.main.cards_tab
+            tab.editor.commit()
+            if new_card:
+                card = p.new_card()
+                if entry is not None and entry.found:
+                    for f, val in dl.as_custom(entry).items():
+                        card.set_text(f, val)
+                else:
+                    card.set_text("name", name)
+                row = len(p.set.cards) - 1
+                self.main.record(f"Proxy decks · new card {name} with its art", row=row)
+                tab.reload(row)
+            self.main.tabs.setCurrentWidget(tab)
+            if new_card:
+                tab.select_row(len(p.set.cards) - 1)
+            tab.editor.open_editor(Path(path), crop=crop, original=path)
+        except RuntimeError:
+            return
 
     def _use_variant(self, key: str, i: int):
         c = self._by_key.get(key)
@@ -635,11 +807,14 @@ class ProxiesPage(QWidget):
         tmp = px.scratch("add-")
         cards = [copy.copy(c) for c in cards]
         pool = [copy.copy(c) for c in self.cards]       # a back face may be unticked
+        lookup = self.lookup.isChecked()
 
         def work(progress=None, cancel=None):
             entries = [dl.Entry(name=c.name, count=c.count, section=c.section) for c in cards]
-            dl.resolve(entries, progress, cancel)        # card data (Scryfall), if it's real
-            both, entries = px.pair_faces(cards, entries, pool)
+            both = cards
+            if lookup:                                   # card data (Scryfall), if it's real
+                dl.resolve(entries, progress, cancel)
+                both, entries = px.pair_faces(cards, entries, pool)
             out = []
             for k, (c, e) in enumerate(zip(both, entries)):
                 if cancel is not None and cancel.cancelled:
@@ -653,7 +828,7 @@ class ProxiesPage(QWidget):
                     f.write_bytes(px.fetch(item))
                     files.append((side, str(f)))
                 out.append((e, files))
-            return folder, credit, d.title, out
+            return folder, credit, d.title, out, lookup
 
         self.status.setText("Getting the pictures…")
         job = Job(work, label=f"Adding {d.title}")
@@ -665,7 +840,7 @@ class ProxiesPage(QWidget):
     def _added(self, res):
         from mse_studio.pipeline import real_cards as rc
         try:
-            folder, credit, title, out = res
+            folder, credit, title, out, lookup = res
             p = self.main.project
             if p is None or str(p.folder) != folder:
                 self.status.setText("The deck was closed – nothing was added.")
@@ -684,7 +859,7 @@ class ProxiesPage(QWidget):
                 f"Added {n} card(s) from {title} – making their print files; they're on the "
                 "Order page", 10000)
             self.main.order_tab.real_pictures(ok)
-            unknown = [e.name for e in ok if not e.found]
+            unknown = [e.name for e in ok if not e.found] if lookup else []
             if unknown:
                 QMessageBox.information(
                     self, "Proxy decks", "Printed with their pictures, but Scryfall doesn't "
@@ -810,15 +985,17 @@ class ProxiesPage(QWidget):
             self._add_from_pc(path)
 
     def add_zip(self):
-        path, _ = QFileDialog.getOpenFileName(self, "A zip of proxies", "", "Zip files (*.zip)")
-        if path:
-            self._add_from_pc(path)
+        paths, _ = QFileDialog.getOpenFileNames(self, "Zips of proxies (pick several if you "
+                                                "like)", "", "Zip files (*.zip)")
+        for path in paths:
+            self._add_from_pc(path, quiet=len(paths) > 1)
 
-    def _add_from_pc(self, path: str):
+    def _add_from_pc(self, path: str, quiet: bool = False):
         found = local.scan(path)
         if not found:
-            error(self, "Proxy decks", "No card pictures in there. Pick the deck's own folder, "
-                                       "a folder with decks in it, or a deck's zip.")
+            if not quiet:
+                error(self, "Proxy decks", "No card pictures in there. Pick the deck's own "
+                                           "folder, a folder with decks in it, or a deck's zip.")
             return
         px.add_root(path)
         self.fill_list(px.local_id(found[0]))

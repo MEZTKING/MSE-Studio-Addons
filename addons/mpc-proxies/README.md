@@ -17,9 +17,12 @@ The decks are grouped:
   **Find on r/mpcproxies…** searches the subreddit; when Reddit won't answer,
   **Search in my browser** and paste a post's link instead.
 - **On this PC** – **Add from this PC**: a deck's folder, a folder of decks
-  (each folder or zip in it is a deck; Google Drive's download zips like
-  `Monster Hunter Proxies-20250809T134712Z-1-001.zip` are named for you), or one
-  zip. Nothing is extracted. **Who made it…** adds the maker for the credit.
+  (however deeply they're nested – each deck folder or zip inside is a deck;
+  Google Drive's download zips like
+  `Monster Hunter Proxies-20250809T134712Z-1-001.zip` are named for you, and
+  the parts of one download go together), or zips (pick several at once). Add
+  as many folders as you like. Nothing is extracted. **Who made it…** adds the
+  maker for the credit.
 
 **Import the deck** reads its cards (names come from the pictures' file names –
 `Anzrag, the Quake-Mole (Diablos, Tyrant of the Desert) (1).png` is Anzrag; when
@@ -29,8 +32,17 @@ deck stays imported – it's there when you come back, even after restarting.
 Then:
 
 - **Tick** the cards you want (all of the deck's are ticked; tokens and extras
-  aren't), or select some and right-click. Find a card by name, sort by name,
-  folder (Creature, Land…) or copies.
+  aren't), or select some and right-click. Find a card by name, show only one
+  **type** (creatures, lands…), sort by name, folder or copies, and make the
+  cards as big as you like (**Size**).
+- **Look the cards up on Scryfall** (on by default) gives their types, both faces
+  of double-faced cards, and the card details in your deck. Untick it for custom
+  cards Scryfall doesn't know – nothing is looked up then. (With the Card
+  database add-on installed, cards are looked up there first.)
+- Right-click → **Use its art for my own card** – on the card you're editing, or
+  on a new card of yours (with the real card's text when it's looked up): the
+  picture goes in your art folder with the maker's credit, and the art editor
+  opens with the art window already picked.
 - **Double-click** a card to see it full size (its back and other pictures with
   ◀ ▶). Right-click → **Print it with…** when there are several pictures.
 - **Add the ticked to my deck** – real cards printed with these pictures: on the
@@ -76,7 +88,8 @@ Only when you ask:
   card full size or use them.
 - **Reddit** and **Ko-fi** – only when you search r/mpcproxies or read a link you
   pasted.
-- **Scryfall** – to look the cards up when you add them to your deck (as the
+- **Scryfall** – while *Look the cards up on Scryfall* is ticked: to look a
+  deck's cards up after importing it, and when you add them to your deck (as the
   Decklists page does).
 
 Decks on this PC are read from the folders and zips you picked. Nothing about

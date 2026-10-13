@@ -1,7 +1,7 @@
 {
   "id": "card-database",
   "name": "Card database",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "kind": "page",
   "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters, pick random cards, build a whole Commander deck around a commander, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
   "author": "MEZTKING",

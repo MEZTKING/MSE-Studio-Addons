@@ -67,10 +67,12 @@ def is_one_deck(folder: Path) -> bool:
     return bool(dirs) and sum(bool(SORTING.match(e.name)) for e in dirs) >= max(1, len(dirs) // 2)
 
 
-def scan(root: str | Path) -> list[LocalDeck]:
-    """The decks in a folder: the folder itself when it's one deck, else each
-    folder and zip in it (the parts of one download together; a zip that was
-    also extracted next to it counts once)."""
+def scan(root: str | Path, depth: int = 4) -> list[LocalDeck]:
+    """The decks in a folder: the folder itself when it's one deck, else every
+    deck folder and zip inside it, however deep (a folder of folders of
+    decks, Google Drive's "<deck>-2025…-1-001/<deck>/" wrappers); the parts
+    of one download go together, and a zip extracted next to itself counts
+    once."""
     root = Path(root)
     if not root.exists():
         return []
@@ -79,28 +81,46 @@ def scan(root: str | Path) -> list[LocalDeck]:
             else []
     if is_one_deck(root):
         return [LocalDeck(deck_title(root.name), [str(root)])]
+    return sorted(_scan_dir(root, depth).values(), key=lambda d: d.title.lower())
+
+
+def _scan_dir(folder: Path, depth: int) -> dict[str, LocalDeck]:
     by_title: dict[str, LocalDeck] = {}
-    folders: set = set()
     try:
-        entries = sorted(os.scandir(root), key=lambda e: e.name.lower())
+        entries = sorted(os.scandir(folder), key=lambda e: e.name.lower())
     except OSError:
-        return []
+        return by_title
     for e in entries:
-        if SKIP.search(e.name):
+        if SKIP.search(e.name) or not e.is_dir():
             continue
-        if e.is_dir():
-            if not _pictures_inside(Path(e.path), MAX_DEPTH):
-                continue
-            title = deck_title(e.name)
-            folders.add(title.lower())
-            by_title.setdefault(title.lower(), LocalDeck(title)).sources.append(e.path)
+        sub = Path(e.path)
+        if not _pictures_inside(sub, MAX_DEPTH) and not any(
+                x.name.lower().endswith(".zip") for x in _safe_scandir(sub)):
+            continue
+        if is_one_deck(sub):
+            title = deck_title(sub.name)
+            by_title.setdefault(title.lower(), LocalDeck(title)).sources.append(str(sub))
+        elif depth > 0:
+            for key, d in _scan_dir(sub, depth - 1).items():
+                if key in by_title:
+                    by_title[key].sources += d.sources
+                else:
+                    by_title[key] = d
+    folders = set(by_title)
     for e in entries:
-        if e.is_file() and e.name.lower().endswith(".zip"):
+        if e.is_file() and e.name.lower().endswith(".zip") and not SKIP.search(e.name):
             title = deck_title(e.name)
             if title.lower() in folders:          # already extracted next to it
                 continue
             by_title.setdefault(title.lower(), LocalDeck(title)).sources.append(e.path)
-    return sorted(by_title.values(), key=lambda d: d.title.lower())
+    return by_title
+
+
+def _safe_scandir(folder: Path) -> list:
+    try:
+        return list(os.scandir(folder))
+    except OSError:
+        return []
 
 
 def _wrapper(parts: list[str]) -> int:

@@ -1,7 +1,7 @@
 {
   "id": "mpc-proxies",
   "name": "Proxy decks",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "kind": "page",
   "description": "Proxy decks people share on r/mpcproxies, Ko-fi and Discord – real Magic cards with new art and frames – from their Google Drive, and proxy folders or zips on your PC. Import a deck, see each card full size, tick the ones you want and add them to your deck: they're printed with those pictures, and every picture keeps its maker's credit. Paste a link or a whole post and the details are found for you.",
   "author": "MEZTKING",

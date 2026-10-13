@@ -24,7 +24,7 @@ from mse_studio.core import addons
 from . import gdrive, local
 
 ADDON_ID = "mpc-proxies"
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 # Reddit wants apps to say who they are (a browser-like name gets "403 Blocked")
 REDDIT_UA = f"windows:mse-studio.proxy-decks:{VERSION} (MSE Studio add-on)"
 REDDIT_HOSTS = ("https://www.reddit.com", "https://old.reddit.com")
@@ -251,6 +251,39 @@ def is_imported(deck_id: str) -> bool:
     return _listing_file(deck_id).exists()
 
 
+def set_types(deck_id: str, types: dict) -> None:
+    """The cards' types from Scryfall (name → type line), kept with the import."""
+    try:
+        f = _listing_file(deck_id)
+        data = json.loads(f.read_text(encoding="utf-8"))
+        data["types"] = types
+        f.write_text(json.dumps(data), encoding="utf-8")
+    except (OSError, ValueError):
+        pass
+
+
+def load_types(deck_id: str) -> dict:
+    try:
+        return dict(json.loads(_listing_file(deck_id).read_text(encoding="utf-8"))
+                    .get("types") or {})
+    except (OSError, ValueError):
+        return {}
+
+
+# ------------------------------------------------------------------ your choices
+PREFS = {"lookup": True, "size": 180}
+
+
+def pref(key: str):
+    return _load("prefs.json", {}).get(key, PREFS.get(key))
+
+
+def set_pref(key: str, value) -> None:
+    prefs = _load("prefs.json", {})
+    prefs[key] = value
+    _save("prefs.json", prefs)
+
+
 def last_deck() -> str:
     return str(_load("last.json", {}).get("deck") or "")
 
@@ -433,6 +466,54 @@ def pair_faces(cards: list[Card], entries: list, pool: Optional[list] = None
     return [cards[k] for k in keep], [entries[k] for k in keep]
 
 
+# ------------------------------------------------------------------ card types
+TYPES = ["Creature", "Artifact", "Enchantment", "Instant", "Sorcery", "Land", "Planeswalker",
+         "Battle", "Token"]
+
+
+def card_types(card: Card, types: Optional[dict] = None) -> list[str]:
+    """A card's types: from Scryfall when it was looked up, else from the
+    folder it's in (Creature, Lands…)."""
+    out = []
+    line = (types or {}).get(card.name.lower(), "")
+    words = line.lower() if line else card.category.lower()
+    for t in TYPES:
+        w = t.lower()
+        if re.search(rf"\b{w}s?\b", words) or (w == "sorcery" and "sorceries" in words):
+            out.append(t)
+    if card.token and "Token" not in out:
+        out.append("Token")
+    return out
+
+
+# the art window of a modern Magic frame (M15), as parts of the card's width / height
+ART_BOX = (29 / 375, 60 / 523, 317 / 375, 233 / 523)
+
+
+def art_window(size: tuple[int, int]) -> list[int]:
+    """Where a proxy's art usually is: [x, y, width, height] in its picture
+    (a card with or without MPC's margin; a sideways card is left whole)."""
+    w, h = size
+    if w > h:
+        return [0, 0, w, h]
+    bx = by = 0.0
+    if abs(w / h - 2.75 / 3.75) < abs(w / h - 2.5 / 3.5):     # MPC's margin around it
+        bx, by = w * 0.125 / 2.75, h * 0.125 / 3.75
+    cw, ch = w - 2 * bx, h - 2 * by
+    x, y, aw, ah = ART_BOX
+    return [round(bx + x * cw), round(by + y * ch), round(aw * cw), round(ah * ch)]
+
+
+def lookup_types(cards: list[Card], progress=None, cancel=None) -> dict:
+    """Look the cards up (the Card database add-on first, else Scryfall):
+    name → type line, for the ones found."""
+    from mse_studio.core import decklists as dl
+    entries = [dl.Entry(name=c.name) for c in cards if not c.token]
+    dl.resolve(entries, progress, cancel)
+    return {e.name.lower(): str((e.card or {}).get("type_line", "")) for e in entries
+            if e.found}
+
+
 # ------------------------------------------------------------------ r/mpcproxies
 @dataclass
 class Post:
@@ -473,16 +554,24 @@ def _reddit(paths: list[str], http=None) -> tuple[str, bytes]:
     last: Exception | None = None
     for path in paths:
         for host in REDDIT_HOSTS:
+            fmt = "rss" if ".rss" in path.split("?")[0] else "json"
             try:
-                return ("rss" if ".rss" in path.split("?")[0] else "json"), \
-                    _get(host + path, http, REDDIT_UA)
+                body = _get(host + path, http, REDDIT_UA)
             except urllib.error.HTTPError as e:
                 last = e
                 if e.code == 404:
                     break
+                continue
             except Exception as e:  # noqa: BLE001 - try the next address
                 last = e
-    blocked = isinstance(last, urllib.error.HTTPError) and last.code in (403, 429)
+                continue
+            head = body.lstrip()[:200].lower()
+            if (fmt == "json" and head[:1] in (b"{", b"[")) or \
+                    (fmt == "rss" and (b"<feed" in head or b"<?xml" in head)):
+                return fmt, body
+            last = RuntimeError("Reddit answered with a web page instead of results")
+    blocked = (isinstance(last, urllib.error.HTTPError) and last.code in (403, 429)) or \
+        "web page" in str(last)
     raise RuntimeError(
         ("Reddit blocked MSE Studio's search for now (it does that to apps sometimes). "
          if blocked else f"Reddit didn't answer ({last}). ") +

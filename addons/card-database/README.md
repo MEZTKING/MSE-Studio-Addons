@@ -3,10 +3,12 @@
 Every Magic card on your PC, from Scryfall's bulk data, on a **Card database**
 page under Review.
 
-- **Import** a Scryfall bulk file you downloaded (`.json` or `.json.gz`), or
+- **Import** a Scryfall bulk file you downloaded (`.json`, `.jsonl`, or either
+  compressed as `.gz` – like `all-cards-20261013091836.jsonl.gz`), or
   **Download** one here. *Oracle cards* (one of each card, about 160 MB) is
   enough; *Default cards* has every printing, which the Card prices add-on
-  uses to find each card's cheapest printing.
+  uses to find each card's cheapest printing. *All cards* works too: only its
+  English printings are kept.
 - **Search**: name, rules text, type, colours (within a commander's colours),
   mana value, rarity, Commander-legal, a top price; sort by name, mana value,
   price, popularity (EDHREC) or newest. **Random** picks cards for you.

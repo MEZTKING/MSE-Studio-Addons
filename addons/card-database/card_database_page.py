@@ -68,8 +68,9 @@ class CardDatabasePage(QWidget):
         row.addWidget(self.db_lbl, 1)
         b = QPushButton("Import a bulk file…")
         icons.set_icon(b, "folder_open")
-        b.setToolTip("A Scryfall bulk data file you downloaded (.json or .json.gz): Oracle cards "
-                     "(one per card) or Default cards (every printing)")
+        b.setToolTip("A Scryfall bulk data file you downloaded (.json, .jsonl or .gz): Oracle cards "
+                     "(one per card), Default cards (every printing) or All cards (its English "
+                     "printings are kept)")
         b.clicked.connect(self.import_file)
         row.addWidget(b)
         dlb = QToolButton()
@@ -128,7 +129,7 @@ class CardDatabasePage(QWidget):
     def import_file(self, path: str = ""):
         if not path:
             path, _ = QFileDialog.getOpenFileName(self, "Scryfall bulk file", "",
-                                                  "Scryfall bulk data (*.json *.json.gz *.gz)")
+                                                  "Scryfall bulk data (*.json *.jsonl *.json.gz *.jsonl.gz *.gz)")
         if not path:
             return
         self._import(Path(path), "")
@@ -151,7 +152,7 @@ class CardDatabasePage(QWidget):
         self._jobs.append(start(job))
 
     def download(self, kind: str):
-        target = carddb.db_path().with_name(f"{kind}.json")
+        target = carddb.db_path().with_name(f"{kind}.download")
 
         def work(progress=None, cancel=None):
             files = carddb.bulk_downloads(_get)

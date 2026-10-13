@@ -1,0 +1,27 @@
+{
+  "id": "deck-sharing",
+  "name": "Deck sharing",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "Share decks with friends: pick a folder you all share on OneDrive, Google Drive or Dropbox and your decks and theirs show up on one list, with a picture, who shared it and a note. Open a friend's deck and it's added to your decks (never over one of yours). Or send a deck as one file on Discord or by e-mail.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/deck-sharing",
+  "license": "MIT",
+  "min_app_version": "0.16.0",
+  "tags": [
+    "share",
+    "friends",
+    "onedrive",
+    "google drive",
+    "dropbox"
+  ],
+  "page": {
+    "module": "sharing_page",
+    "class": "SharingPage",
+    "title": "Deck sharing",
+    "icon": "cloud",
+    "section": "Manage",
+    "order": 60,
+    "tooltip": "Share decks with friends through a shared folder or a file"
+  }
+}
