@@ -16,8 +16,11 @@ two the same).
 - **Pushing to `main` publishes.** The *Publish add-ons* action zips every
   add-on version that has no release yet, makes the release
   `<id>-v<version>` and rewrites `index.json`, so everyone's store has it
-  within minutes. Work on a branch and open a pull request (the *Check
-  add-ons* action checks it) unless the user asks for it to go out now.
+  within minutes. **The owner wants store changes published straight to
+  `main` – don't ask first.** Develop on a branch if you like, check it
+  (`build_index.py --check`, a smoke test), then merge it into `main` and
+  push. Add-ons that need an MSE Studio that isn't out yet still go out:
+  their `min_app_version` keeps older copies from installing them.
 - **Raise `version`** in `addon.json` whenever anything in `addons/<id>/`
   changes. The same version is never zipped again, so a change without a new
   version never reaches anyone.
