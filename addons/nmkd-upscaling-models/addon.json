@@ -1,0 +1,37 @@
+{
+  "id": "nmkd-upscaling-models",
+  "name": "NMKD upscaling models",
+  "version": "1.0.0",
+  "kind": "models",
+  "description": "NMKD Siax (4×: a universal upscaler for clean and lightly compressed pictures) and NMKD Superscale (4×: sharp results on clean, artifact-free pictures).",
+  "author": "NMKD – collected by Upscayl",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/nmkd-upscaling-models",
+  "license": "the model authors' (see the README)",
+  "min_app_version": "0.12.1",
+  "tags": [
+    "general",
+    "upscaling"
+  ],
+  "fetch": [
+    {
+      "path": "models/4x_NMKD-Siax_200k.param",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/4x_NMKD-Siax_200k.param",
+      "sha256": "519bffb4912e295155d3cb5d6a29639d217ccca55f80962d8f677ef777a65b7a"
+    },
+    {
+      "path": "models/4x_NMKD-Siax_200k.bin",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/4x_NMKD-Siax_200k.bin",
+      "sha256": "b2abdffa30fb15be752ac681e0c0edf8b543745c33a989aadc9d7d3394dd3110"
+    },
+    {
+      "path": "models/4x_NMKD-Superscale-SP_178000_G.param",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/4x_NMKD-Superscale-SP_178000_G.param",
+      "sha256": "519bffb4912e295155d3cb5d6a29639d217ccca55f80962d8f677ef777a65b7a"
+    },
+    {
+      "path": "models/4x_NMKD-Superscale-SP_178000_G.bin",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/4x_NMKD-Superscale-SP_178000_G.bin",
+      "sha256": "6ea113a9c9066b296ba147fa0939f704462bac000b42e6a79e8fb3b7526d67a4"
+    }
+  ]
+}

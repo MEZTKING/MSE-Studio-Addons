@@ -20,8 +20,13 @@ get an **Update** button when a newer version is listed here.
 | [Dragon cards](addons/dragon-cards) | Card list | Twelve dragon ideas in every colour, with a dragon commander. |
 | [Anime archetypes](addons/anime-archetypes) | Card list | The hero, the rival, the mentor, the mascot, the sealed evil… as cards. |
 | [Gear and auras](addons/gear-and-auras) | Card list | Equipment and Auras for Voltron decks. |
+| [Anime upscaling models](addons/anime-upscaling-models) | Upscaling models | Real-ESRGAN AnimeVideo v3 (2×/3×/4×) and 4xHFA2k. |
+| [NMKD upscaling models](addons/nmkd-upscaling-models) | Upscaling models | NMKD Siax and NMKD Superscale. |
+| [Fast upscaling models](addons/fast-upscaling-models) | Upscaling models | Real-ESRGAN General v3 and 4xLSDIRCompactC3 – quick, for big batches. |
+| [Photo and restoration models](addons/photo-upscaling-models) | Upscaling models | 4xNomos8kSC, 4xLSDIR, 4xLSDIRplusC, Uniscale Restore, "Unknown". |
 
-Card lists show up in MSE Studio's **Card ideas → Example cards**.
+Card lists show up in MSE Studio's **Card ideas → Example cards**; upscaling
+models in the **Upscale** page's model list (Upscayl's own stays the default).
 
 ## Three sorts of add-on
 
@@ -30,6 +35,7 @@ Card lists show up in MSE Studio's **Card ideas → Example cards**.
 | **Page** – a new page in MSE Studio's side rail (Python + PySide6) | `page` | Yes, inside MSE Studio | [templates/page-addon](templates/page-addon) |
 | **Card list** – example cards for Card ideas (JSON) | `cards` | No | [templates/card-list-addon](templates/card-list-addon) |
 | **Program** – game engines and tools MSE Studio starts | `game-engine`, `tool`, … | Yes, as its own program | [templates/program-addon](templates/program-addon) |
+| **Upscaling models** – extra models for Upscayl | `models` | No | see the anime-upscaling-models add-on |
 
 The full `addon.json` reference is in MSE Studio's
 [ADDONS.md](ADDONS.md) (the same guide as in MSE Studio).

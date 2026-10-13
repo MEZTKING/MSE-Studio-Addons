@@ -42,6 +42,11 @@ two the same).
 | Page | `page` | A page in MSE Studio's side rail (Python + PySide6), runs inside MSE Studio | `templates/page-addon` |
 | Card list | `cards` | Example cards (JSON) for *Card ideas → Example cards* | `templates/card-list-addon` |
 | Program | `game-engine`, `tool`, `exporter`, `art`, `other` | A separate program MSE Studio starts with the chosen decks' `.deck.json` files | `templates/program-addon` |
+| Upscaling models | `models` | `.param` + `.bin` model pairs for Upscayl in a `models` folder, offered on the Upscale page (needs MSE Studio 0.12.1) | `addons/anime-upscaling-models` |
+
+Big files (models) aren't committed: list them in `fetch` (`path`, `url`
+pinned to a commit, `sha256`) and `tools/build_index.py` downloads and checks
+them when it builds the zip. Credit model authors in the add-on's README.
 
 The folder name under `addons/` is the add-on's `id`.
 

@@ -13,18 +13,21 @@ in external.json (add-ons hosted somewhere else) are checked and added too.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
 import subprocess
 import sys
+import urllib.request
 import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,63}$")
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
-KINDS = {"game-engine", "tool", "page", "cards", "exporter", "art", "other"}
+KINDS = {"game-engine", "tool", "page", "cards", "models", "exporter", "art", "other"}
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SECTIONS = {"Create", "Produce", "Review", "Manage"}
 FIELDS = ["id", "name", "version", "kind", "description", "author", "homepage", "license",
           "min_app_version", "tags", "screenshots", "run", "page", "cards"]
@@ -87,15 +90,59 @@ def check(addon: dict, folder: Path | None) -> list[str]:
     run = addon.get("run") or {}
     if kind in ("game-engine", "tool", "exporter") and not run.get("windows") and folder is not None:
         out.append("a program add-on needs run.windows")
+    fetch = addon.get("fetch") or []
+    if not isinstance(fetch, list):
+        out.append("fetch must be a list")
+        fetch = []
+    for f in fetch:
+        path = str((f or {}).get("path", ""))
+        if not str(f.get("url", "")).startswith("https://"):
+            out.append(f"fetch {path or '?'}: needs a https:// url")
+        if not SHA256_RE.match(str(f.get("sha256", ""))):
+            out.append(f"fetch {path or '?'}: needs the file's sha256")
+        if not path or path.startswith(("/", "\\")) or ".." in Path(path).parts:
+            out.append(f"fetch {path or '?'}: path must be inside the add-on")
+    if kind == "models":
+        files = {str(f.get("path", "")) for f in fetch}
+        if folder is not None:
+            files |= {p.relative_to(folder).as_posix() for p in folder.rglob("*") if p.is_file()}
+        params = {f[:-6] for f in files if f.endswith(".param")}
+        if not params:
+            out.append("a models add-on needs .param + .bin files (in the folder or in fetch)")
+        for m in sorted(params):
+            if f"{m}.bin" not in files:
+                out.append(f"{m}.param has no {Path(m).name}.bin")
     return out
 
 
-def zip_addon(folder: Path, out: Path) -> Path:
+def fetched(f: dict) -> bytes:
+    """A file named in "fetch": downloaded once (kept in dist/.fetch) and
+    checked against its sha256, so a changed file is never published."""
+    cache = ROOT / "dist" / ".fetch" / f["sha256"]
+    if cache.exists():
+        data = cache.read_bytes()
+    else:
+        req = urllib.request.Request(f["url"], headers={"User-Agent": "MSE-Studio-Addons"})
+        with urllib.request.urlopen(req, timeout=600) as r:
+            data = r.read()
+    if hashlib.sha256(data).hexdigest() != f["sha256"]:
+        raise Problem(f"{f['url']} isn't the file it should be (sha256 differs)")
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_bytes(data)
+    return data
+
+
+def zip_addon(folder: Path, out: Path, addon: dict | None = None) -> Path:
+    """The add-on's folder as a zip, plus the files its "fetch" list names
+    (big files such as upscaling models aren't kept in this repository)."""
     out.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         for f in sorted(folder.rglob("*")):
             if f.is_file() and not (set(f.relative_to(folder).parts) & SKIP) and f.suffix != ".pyc":
                 z.write(f, f"{folder.name}/{f.relative_to(folder).as_posix()}")
+        for f in (addon or {}).get("fetch") or []:
+            z.writestr(f"{folder.name}/{f['path']}", fetched(f), zipfile.ZIP_STORED
+                       if f["path"].endswith(".bin") else zipfile.ZIP_DEFLATED)
     return out
 
 
@@ -161,11 +208,11 @@ def main() -> int:
         name = f"{addon['id']}-{addon['version']}.zip"
         tag = f"{addon['id']}-v{addon['version']}"
         if args.local:
-            z = zip_addon(folder, ROOT / "dist" / name)
+            z = zip_addon(folder, ROOT / "dist" / name, addon)
             entries.append(entry(addon, z.resolve().as_uri()))
             continue
         if gh("release", "view", tag, "--repo", repo, check_ok=False).returncode != 0:
-            z = zip_addon(folder, ROOT / "dist" / name)
+            z = zip_addon(folder, ROOT / "dist" / name, addon)
             gh("release", "create", tag, str(z), "--repo", repo,
                "--title", f"{addon['name']} {addon['version']}",
                "--notes", addon.get("description", ""))

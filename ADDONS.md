@@ -11,6 +11,7 @@ There are three sorts:
 | **Program** | `game-engine`, `tool`, `exporter`, `art`, `other` | A separate program MSE Studio starts (any language). They talk through files. |
 | **Page** | `page` | A new page in MSE Studio's side rail, written in Python with PySide6. Runs **inside** MSE Studio. |
 | **Card list** | `cards` | Example cards (JSON) for the card idea maker. No code. |
+| **Upscaling models** | `models` | Extra models for Upscayl (`.param` + `.bin`), offered on the Upscale page. No code. |
 
 Video capture (screenshots from videos into episode folders) and Pictures
 (pictures from web pages, the clipboard and your screenshots) are page add-ons
@@ -56,6 +57,7 @@ my-engine-0.1.0.zip
 | `run.args` | Programs: arguments. `{decks}` = the chosen decks' `.deck.json` files separated by `;`, `{deck}` = the first one, `{folder}` = the add-on's folder. |
 | `page` | Pages: see below. |
 | `cards` | Card lists: the list files in the add-on, e.g. `["lists/dragons.json"]`. |
+| `fetch` | Big files the store downloads when it builds the zip (see Upscaling models). |
 | `tags` | Words for the store's search, e.g. `["art", "fun"]`. |
 | `screenshots` | Picture links shown in the store (the first three). |
 
@@ -157,6 +159,37 @@ Only `name` is needed; `tags` help the idea maker match clues ("dragon",
 "lifegain", a character's name …). The lists show up in **Card ideas →
 Example cards**, and *Make this card* / *Add ticked to deck* copy cards into the
 open deck.
+
+## Upscaling model add-ons
+
+```json
+{
+  "id": "anime-upscaling-models",
+  "name": "Anime upscaling models",
+  "version": "1.0.0",
+  "kind": "models",
+  "description": "Real-ESRGAN AnimeVideo v3 and 4xHFA2k.",
+  "min_app_version": "0.12.1"
+}
+```
+
+The models are `.param` + `.bin` pairs (Upscayl's NCNN format) in a `models`
+folder of the add-on. Each one is offered on the **Upscale** page's model
+list as *name (add-on name)*; Upscayl's own model stays the default until it's
+picked. Upscayl reads a model's scale from its name (`x4` / `4x`).
+
+Models are big, so the store repository doesn't keep them: list them in
+`fetch` instead and the store downloads them – and checks each file's sha256 –
+when it builds the add-on's zip:
+
+```json
+"fetch": [
+  {"path": "models/4xHFA2k.param", "url": "https://raw.githubusercontent.com/upscayl/custom-models/<commit>/models/4xHFA2k.param",
+   "sha256": "…"}
+]
+```
+
+Credit the models' authors in the add-on's README.
 
 The deck file (`.deck.json`) is described in
 MSE Studio's `docs/MTG_ENGINE_BRIEF.md` (section 5, the hand-off from MSE Studio).
