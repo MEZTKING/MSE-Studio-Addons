@@ -86,6 +86,38 @@ The user gives a picture of a frame they like (a scan, a screenshot). Frame
 studio takes its colours and textures (palette, a texture sample per part) and
 applies them in Phase 1. Redrawing another frame's shapes is out of scope.
 
+## Phase 4 – Photoshop for advanced users
+
+For the best frames: design them in Photoshop (or Photopea, the free one in
+a browser, which reads the same files and runs the same scripts).
+
+1. **Open in Photoshop** – Frame studio writes the base frame's pictures
+   (every colour's `card`, `pt`, `crown`… picture) and a small Photoshop
+   script (`.jsx`). The script builds one document per colour, each picture
+   as a named layer in its place, with guides for every field box (title,
+   type line, rules box, art window, P/T) so text never ends up under
+   decoration. No PSD library is needed in MSE Studio: Photoshop builds the
+   PSD itself.
+2. The user paints, adds textures, effects, anything Photoshop does – as long
+   as the named layers stay (extra layers are merged into the one they're in).
+3. **Export for MSE Studio** – a second script, run in Photoshop, saves each
+   named layer back as the right PNG (`card/wcard.png`, `pt/wpt.png`…), with
+   transparency, at the frame's size.
+4. Frame studio reads that folder, checks every picture is there and the
+   right size, previews on a card of the deck, and installs the frame (as in
+   Phase 1). Changing it later = edit the PSD, export again.
+
+Size: small to medium (the two scripts and the check), and the most
+powerful option. The scripts are plain text in the add-on; they only read
+and write files in the folder Frame studio made.
+
+## Templates
+
+Phase 1 themes saved as small JSON files (colours, texture pictures, text box
+opacity) can be shared: a **frame themes** add-on sort (like card lists) would
+let the store offer ready themes – "Elven silver", "Necromancer gold", "Ink
+wash" – applied to any base frame in one click.
+
 ## What MSE Studio needs to give add-ons for this
 
 - The frame list and MSE's `data` folder (there already).
@@ -106,3 +138,5 @@ the user's computer (they could share their own theme files).
 - Which base frames first (Universes Beyond / m15, full-art anime frames)?
 - One theme per deck, or per card (e.g. a different look for the commander)?
 - Which image service to support first?
+- Photoshop scripts: one document per colour, or one document with a layer
+  group per colour?
