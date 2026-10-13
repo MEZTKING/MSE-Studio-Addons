@@ -43,13 +43,13 @@
     {
       "id": "card-database",
       "name": "Card database",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "kind": "page",
       "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters, pick random cards, build a whole Commander deck around a commander, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
       "author": "MEZTKING",
       "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-database",
       "license": "MIT",
-      "min_app_version": "0.13.0",
+      "min_app_version": "0.15.1",
       "tags": [
         "scryfall",
         "cards",
@@ -66,18 +66,19 @@
         "order": 40,
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.0/card-database-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.1/card-database-1.0.1.zip",
+      "downloads": 1
     },
     {
       "id": "card-prices",
       "name": "Card prices",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "kind": "page",
       "description": "What the real cards of your deck, or a decklist, cost at TCGplayer and Cardmarket: the cheapest printing of each, totals per store and the cheapest mix, in your currency – with a TCGplayer Mass Entry link and a Cardmarket wants list. Uses the Card database add-on's prices when it's installed.",
       "author": "MEZTKING",
       "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-prices",
       "license": "MIT",
-      "min_app_version": "0.13.0",
+      "min_app_version": "0.15.1",
       "tags": [
         "prices",
         "tcgplayer",
@@ -93,7 +94,8 @@
         "order": 45,
         "tooltip": "What the real cards cost at TCGplayer and Cardmarket"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.0/card-prices-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
+      "downloads": 1
     },
     {
       "id": "deck-notes",
@@ -270,13 +272,13 @@
     {
       "id": "mpc-proxies",
       "name": "Proxy decks",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "kind": "page",
-      "description": "Decks people share on r/mpcproxies and Ko-fi – real Magic cards with new art and frames – straight from their public Google Drive folders. Free and paid decks are kept apart; add the download link you got after buying a paid one and it opens here too. Print them as real cards of your deck (every picture keeps its maker's credit), save them as a decklist, or save the pictures.",
+      "description": "Proxy decks people share on r/mpcproxies, Ko-fi and Discord – real Magic cards with new art and frames – from their Google Drive, and proxy folders or zips on your PC. Import a deck, see each card full size, tick the ones you want and add them to your deck: they're printed with those pictures, and every picture keeps its maker's credit. Paste a link or a whole post and the details are found for you.",
       "author": "MEZTKING",
       "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/mpc-proxies",
       "license": "MIT",
-      "min_app_version": "0.15.0",
+      "min_app_version": "0.15.1",
       "tags": [
         "proxies",
         "mpcproxies",
@@ -294,7 +296,8 @@
         "order": 31,
         "tooltip": "Proxy decks shared on r/mpcproxies and Ko-fi"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.0.0/mpc-proxies-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.1.0/mpc-proxies-1.1.0.zip",
+      "downloads": 1
     },
     {
       "id": "capture",
