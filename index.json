@@ -20,7 +20,8 @@
       "cards": [
         "lists/anime-archetypes.json"
       ],
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip",
+      "downloads": 2
     },
     {
       "id": "deck-notes",
@@ -45,7 +46,8 @@
         "section": "Manage",
         "tooltip": "Notes and to-dos for this deck"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip",
+      "downloads": 2
     },
     {
       "id": "dragon-cards",
@@ -65,7 +67,8 @@
       "cards": [
         "lists/dragon-cards.json"
       ],
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip",
+      "downloads": 2
     },
     {
       "id": "gear-and-auras",
@@ -85,7 +88,8 @@
       "cards": [
         "lists/gear-and-auras.json"
       ],
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
+      "downloads": 2
     }
   ]
 }
