@@ -19,7 +19,7 @@ With the Card database add-on (made from *Default cards*, every printing) the
 prices come straight from it; otherwise from Scryfall, a couple of cards a
 second.
 
-Needs MSE Studio 0.13.0.
+Needs MSE Studio 0.15.1 (earlier Windows builds were missing a part of Python it uses, so the page couldn't start).
 
 ## Network
 

@@ -1,14 +1,19 @@
 {
   "id": "card-prices",
   "name": "Card prices",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "kind": "page",
   "description": "What the real cards of your deck, or a decklist, cost at TCGplayer and Cardmarket: the cheapest printing of each, totals per store and the cheapest mix, in your currency – with a TCGplayer Mass Entry link and a Cardmarket wants list. Uses the Card database add-on's prices when it's installed.",
   "author": "MEZTKING",
   "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-prices",
   "license": "MIT",
-  "min_app_version": "0.13.0",
-  "tags": ["prices", "tcgplayer", "cardmarket", "buying"],
+  "min_app_version": "0.15.1",
+  "tags": [
+    "prices",
+    "tcgplayer",
+    "cardmarket",
+    "buying"
+  ],
   "page": {
     "module": "card_prices_page",
     "class": "CardPricesPage",
