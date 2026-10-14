@@ -94,6 +94,9 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `mse_studio.gui.nav.page_header(title, text)` | The title every page has – use it so the page looks like the others |
 | `mse_studio.gui.common`: `Job`, `start`, `forget`, `error`, `info`, `confirm`, `PathEdit` | `Job(fn, label="What it does")` runs `fn(progress=…, cancel=…)` on a worker thread (with a label, Stop cancels it); `job.signals.progress(done, total, text)`, `.finished(result)`, `.failed(text)`; `start(job)`; keep jobs in a list and call `forget(jobs)` in `shutdown()` (0.13.0) |
 | `mse_studio.gui.icons`: `icon(name)`, `set_icon(button, name)` | Icons that follow the theme |
+| `mse_studio.gui.web_window`: `open_web(parent, url, title, on_picture=, on_download=)`, `WebPanel(parent, url, …)`, `available()` | A browser inside MSE Studio (0.16.0): right-click a picture → your `on_picture(url, page, title)`; files the site downloads → `on_download(path, page)`. Make a `WebPanel` when the page is first opened and `close_browser()` it in `shutdown()` (see the mpcfill add-on) |
+| `mse_studio.pipeline.print_prep.make_print(img, spec, margin="auto")`, `has_mpc_margin(img)` | A print file; MPC's margin added only when the picture hasn't got it (0.16.0) |
+| `mse_studio.gui.thumbs.cache()` / `.large()` | Picture caches at 300 px / 1400 px (`large` is 0.16.0) |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 
 Keep a deck's add-on data in a file in `main.project.folder` (like Deck notes'
@@ -113,6 +116,9 @@ in the add-on's folder – that's replaced on every update.
 - Never keep a `QListWidgetItem` / `QTreeWidgetItem` in a lambda or timer;
   keep its name and find it again.
 - Stop timers, watchers and anything running in `shutdown()`.
+- Never `QApplication.instance().installEventFilter(...)` (a filter on the whole
+  app): PySide crashes when the built-in browser's own objects pass through
+  it (0.16.0). Put the filter on your own widgets.
 
 ## Card lists
 

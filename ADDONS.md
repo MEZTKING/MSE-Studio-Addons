@@ -125,6 +125,9 @@ class HelloPage(QWidget):
   database, a cache – in `mse_studio.core.addons.data_dir("<id>")` (MSE Studio
   0.13.0): it stays when the add-on is updated, and removing the add-on offers
   to delete it. Not in the add-on's own folder: that's replaced on every update.
+- Don't put an event filter on the whole app
+  (`QApplication.instance().installEventFilter`): with the built-in browser
+  it crashes MSE Studio. Put it on your own widgets.
 - Keep the jobs you start (`mse_studio.gui.common.Job` / `start`) in a list and
   call `mse_studio.gui.common.forget(jobs)` in `shutdown()` (MSE Studio
   0.13.0): they stop, and none calls the page back after it's gone.
@@ -134,6 +137,24 @@ class HelloPage(QWidget):
   credit)` prints each with a picture file (MPC's bleed is added when it
   hasn't got it; `credit` – who made it, where from – stays with the card),
   then `main.order_tab.real_pictures(entries)` makes the print files.
+- **Web pages** (MSE Studio 0.16.0): `mse_studio.gui.web_window` is a browser
+  inside MSE Studio (Qt WebEngine) for sites that need a real browser.
+  `open_web(parent, url, title, on_picture=fn, picture_label=…,
+  on_download=fn, hint=…)` opens it in a window; `WebPanel(parent, url, …)` is
+  the same browser to put on a page (make it when the page is first opened,
+  and call `close_browser()` in `shutdown()`). `on_picture(picture_url,
+  page_url, page_title)` adds *Use this picture* to a picture's right-click
+  menu; `on_download(path, page_url)` gets the files the site downloads.
+  `web_window.available()` is False in older builds – `open_web` then opens
+  your usual browser. Logins and cookies are kept, apart from the user's own
+  browser. The MPCFill add-on is an example.
+- **Print files** (MSE Studio 0.16.0): `mse_studio.pipeline.print_prep.make_print(img,
+  spec, margin="auto")` makes a picture print-ready – `"auto"` adds MPC's
+  margin unless the picture already has it (`has_mpc_margin(img)`), `"has"`
+  only sizes it, `"add"` always adds it.
+- **Sharper pictures** (MSE Studio 0.16.0): `mse_studio.gui.thumbs.large()` is a
+  second picture cache at 1400 px next to `thumbs.cache()` (300 px) – the same
+  `get(source_id, stamp, loader)` and `ready` signal.
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight
