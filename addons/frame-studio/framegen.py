@@ -59,6 +59,13 @@ TEXT_BOXES = ["name", "type", "text", "pt", "artist"]       # each gets a text c
 DEFAULT_FONTS = {"title": "Beleren Bold", "text": "MPlantin", "italic": "MPlantin-Italic",
                  "pt": "Beleren Bold", "info": "MPlantin"}
 
+# text sizes when you haven't set one: (its box, part of the box's height, at most)
+SIZE_RULES = {"title": ("name", 0.7, 17), "cost": ("cost", 0.68, 16), "type": ("type", 0.65, 14),
+              "text": ("text", 1.0, 14), "pt": ("pt", 0.57, 17), "info": ("artist", 0.75, 7.5)}
+SIZE_NAMES = [("title", "Name"), ("cost", "Mana symbols"), ("type", "Type line"),
+              ("text", "Rules text"), ("pt", "Power / toughness"),
+              ("info", "Artist and credit lines")]
+
 ART_MODES = {"under": "Under the frame – it shows through the frame's clear parts",
              "over": "On top of the frame, in the art box"}
 
@@ -80,6 +87,8 @@ class Frame:
     proxy_deck: str = ""                        # a Proxy decks deck it's for (its id)
     when: str = ""
     font_files: list = field(default_factory=list)   # fonts that came with it (in fonts/)
+    sizes: dict = field(default_factory=dict)   # title, type, text, cost, pt, info → size
+    sources: list = field(default_factory=list)  # the files and folders it was made from
 
     @property
     def style_name(self) -> str:
@@ -98,6 +107,19 @@ class Frame:
 
     def colour(self, key: str) -> str:
         return self.colours.get(key) or "#000000"
+
+    def size(self, key: str) -> float:
+        """A text's size in MSE's points: the one you set, else one that fits
+        its box (never bigger than a real frame's)."""
+        try:
+            v = float(self.sizes.get(key) or 0)
+        except (TypeError, ValueError):
+            v = 0
+        if v > 0:
+            return v
+        box, share, cap = SIZE_RULES[key]
+        h = self.box(box)[3] * CARD_H
+        return round(max(4.0, min(h * share, cap)), 1)
 
 
 # ------------------------------------------------------------------ where frames are kept
@@ -504,6 +526,16 @@ def card_picture(path: Path) -> Image.Image:
     return im
 
 
+def coverage(path: Path) -> float:
+    """How much of a picture isn't see-through: 0..1."""
+    with Image.open(path) as im:
+        if im.mode not in ("RGBA", "LA", "PA"):
+            return 1.0
+        a = im.getchannel("A").resize((32, 32))
+    data = list(a.getdata())
+    return sum(1 for v in data if v >= 128) / len(data)
+
+
 def is_card_shaped(size: tuple[int, int]) -> bool:
     w, h = size
     return h > 0 and 0.62 < w / h < 0.8
@@ -701,21 +733,22 @@ def style_text(frame: Frame, version: str = "") -> str:
           f"\t\theight: {nr['height']}",
           "\t\talignment: bottom shrink-overflow", "\t\tpadding bottom: 0", "\t\tz index: 3",
           "\t\tfont:", f"\t\t\tname: {frame.font('title')}",
-          f"\t\t\tsize: {_n(max(6.0, float(nr['height']) * 0.7))}",
+          f"\t\t\tsize: {_n(frame.size('title'))}",
           f"\t\t\tcolor: {_rgb(frame.colour('name'))}"]
-    ch = float(cr["height"])
     L += ["\tcasting cost:", f"\t\tright: {_n(cost_right)}", f"\t\ttop: {cr['top']}",
           "\t\twidth: { max(30, card_style.casting_cost.content_width) + 5 }",
           f"\t\theight: {cr['height']}", "\t\talignment: middle right",
-          "\t\tfont:", f"\t\t\tname: {frame.font('text')}", f"\t\t\tsize: {_n(ch * 0.65)}",
-          "\t\tsymbol font:", "\t\t\tname: magic-mana-large", f"\t\t\tsize: {_n(ch * 0.65)}",
+          "\t\tfont:", f"\t\t\tname: {frame.font('text')}",
+          f"\t\t\tsize: {_n(frame.size('cost'))}",
+          "\t\tsymbol font:", "\t\t\tname: magic-mana-large",
+          f"\t\t\tsize: {_n(frame.size('cost'))}",
           "\t\t\talignment: middle right", "\t\talways symbol: true", "\t\tz index: 4",
           "\t\tpadding top: 0"]
     tr = _rect(frame.box("type"))
     L += ["\ttype:"] + [f"\t\t{k}: {v}" for k, v in tr.items()] + [
         "\t\talignment: top shrink-overflow", "\t\tz index: 3", "\t\tpadding top: 2",
         "\t\tfont:", f"\t\t\tname: {frame.font('title')}",
-        f"\t\t\tsize: {_n(max(6.0, float(tr['height']) * 0.65))}",
+        f"\t\t\tsize: {_n(frame.size('type'))}",
         f"\t\t\tcolor: {_rgb(frame.colour('type'))}",
         "\t\t\tseparator color: rgb(128,128,128)"]
     rr = _rect(frame.box("rarity"))
@@ -730,9 +763,10 @@ def style_text(frame: Frame, version: str = "") -> str:
     xr = _rect(frame.box("text"))
     L += ["\ttext:"] + [f"\t\t{k}: {v}" for k, v in xr.items()] + [
         "\t\tfont:", f"\t\t\tname: {frame.font('text')}",
-        f"\t\t\titalic name: {frame.font('italic')}", "\t\t\tsize: 14",
+        f"\t\t\titalic name: {frame.font('italic')}", f"\t\t\tsize: {_n(frame.size('text'))}",
         "\t\t\tscale down to: 6", f"\t\t\tcolor: {_rgb(frame.colour('text'))}",
-        "\t\tsymbol font:", "\t\t\tname: magic-mana-small", "\t\t\tsize: 14",
+        "\t\tsymbol font:", "\t\t\tname: magic-mana-small",
+        f"\t\t\tsize: {_n(frame.size('text'))}",
         "\t\talignment: middle left", "\t\tz index: 3", "\t\tpadding left: 6",
         "\t\tpadding right: 4", "\t\tline height hard: 1.2", "\t\tline height line: 1.5",
         "\t\tline height soft: 0.9", "\t\tline height hard max: 1.3",
@@ -741,14 +775,14 @@ def style_text(frame: Frame, version: str = "") -> str:
     L += ["\tpt:"] + [f"\t\t{k}: {v}" for k, v in pr.items()] + [
         "\t\tz index: 4", "\t\talignment: center middle shrink-overflow", "\t\tfont:",
         f"\t\t\tname: {frame.font('pt')}",
-        f"\t\t\tsize: {_n(max(6.0, float(pr['height']) * 0.57))}",
+        f"\t\t\tsize: {_n(frame.size('pt'))}",
         f"\t\t\tcolor: {_rgb(frame.colour('pt'))}", "\t\t\tseparator color: rgb(200,0,0)"]
     for field_name, key, col in (("illustrator", "artist", "artist"),
                                  ("secondary copyright", "credit", "artist")):
         ar = _rect(frame.box(key))
         L += [f"\t{field_name}:"] + [f"\t\t{k}: {v}" for k, v in ar.items()] + [
             "\t\tz index: 3", "\t\tfont:", f"\t\t\tname: {frame.font('info')}",
-            f"\t\t\tsize: {_n(max(4.0, float(ar['height']) * 0.75))}",
+            f"\t\t\tsize: {_n(frame.size('info'))}",
             f"\t\t\tcolor: {_rgb(frame.colour(col))}"]
     if pts:
         br = _rect(frame.box("ptbox"))

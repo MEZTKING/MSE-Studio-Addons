@@ -341,6 +341,13 @@ downloads.
 For a new version: make the new zip, release it, change `version` and
 `download` in `index.json`.
 
+**Older versions (MSE Studio 0.19.0):** an entry can also list the versions
+people may go back to – `"versions": [{"version": "1.1.0", "download":
+"…/my-engine-1.1.0.zip", "date": "2026-10-01"}, …]`, newest first (the
+Action fills it from the releases). *Other versions…* on the Add-ons page
+installs one of them, and can keep it there (no updates until you update it
+yourself); *Update all* updates everything else at once.
+
 Other lists (a friend's, or a private test list) can be added with
 **Lists…** on the Add-ons page (one `index.json` address per line); add-ons from every list are shown together,
 and the newest version of each id wins.

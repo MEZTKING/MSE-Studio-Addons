@@ -12,8 +12,9 @@ from typing import Optional
 
 from PySide6.QtCore import QRectF, QSize, Qt
 from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QImage, QPainter, QPen, QPixmap
-from PySide6.QtWidgets import (QButtonGroup, QColorDialog, QComboBox, QDialog,
-                               QDialogButtonBox, QFileDialog, QFontComboBox, QFormLayout,
+from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QColorDialog, QComboBox, QDialog,
+                               QDialogButtonBox, QDoubleSpinBox, QFileDialog, QFontComboBox,
+                               QFormLayout,
                                QGraphicsItem, QGraphicsPixmapItem, QGraphicsRectItem,
                                QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, QLabel,
                                QLineEdit, QListWidget, QListWidgetItem, QMenu, QProgressBar,
@@ -57,9 +58,11 @@ class BoxItem(QGraphicsRectItem):
     """A box you can move (drag it) and size (drag its bottom-right corner)."""
     HANDLE = 0.035          # of the card's width
 
-    def __init__(self, key: str, rect: QRectF, bounds: QRectF, on_change):
+    def __init__(self, key: str, rect: QRectF, bounds: QRectF, on_change, sample=None):
         super().__init__(rect)
         self.key, self.bounds, self.on_change = key, bounds, on_change
+        self.sample = sample          # (text, font, size in MSE points, colour, bold) or None
+        self.quiet = False            # sample text is shown on the other boxes
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setAcceptHoverEvents(True)
         self.setZValue(2 if key != "art" else 1)
@@ -84,6 +87,11 @@ class BoxItem(QGraphicsRectItem):
         qp.drawRect(r)
         h = self._handle()
         qp.fillRect(QRectF(r.right() - h, r.bottom() - h, h, h), self.pen_col)
+        if self.sample:
+            self._paint_sample(qp, r)
+            return
+        if self.quiet and self.key not in ("art", "rarity"):
+            return                               # sample text shown: no labels in its way
         f = QFont(qp.font())
         f.setPixelSize(max(8, int(self.bounds.width() / 32)))
         f.setBold(True)
@@ -91,6 +99,39 @@ class BoxItem(QGraphicsRectItem):
         qp.setPen(QColor("#ffffff"))
         qp.drawText(r.adjusted(4, 2, -4, -2), Qt.AlignLeft | Qt.AlignTop,
                     fg.BOX_NAMES[self.key])
+
+    def _paint_sample(self, qp, r: QRectF):
+        """The sample text as MSE would place it (roughly: MSE draws the real one)."""
+        text, family, size, colour, bold = self.sample
+        scale = self.bounds.height() / fg.CARD_H        # MSE's points → this picture
+        px = max(4, int(round(size * scale)))
+        if self.key == "cost":                          # mana symbols: circles, right aligned
+            d = px * 1.05
+            x = r.right() - 2
+            y = r.center().y() - d / 2
+            syms = [t for t in text.replace("}", "").split("{") if t]
+            for sym in reversed(syms):
+                x -= d
+                qp.setBrush(QColor("#cac5c0" if sym.isdigit() else "#f8f6d8"))
+                qp.setPen(QPen(QColor("#000000"), max(1.0, d / 14)))
+                qp.drawEllipse(QRectF(x, y, d, d))
+                f = QFont("Arial")
+                f.setPixelSize(max(4, int(d * 0.7)))
+                f.setBold(True)
+                qp.setFont(f)
+                qp.drawText(QRectF(x, y, d, d), Qt.AlignCenter, sym)
+                x -= d * 0.08
+            return
+        f = QFont(family)
+        f.setPixelSize(px)
+        f.setBold(bold)
+        qp.setFont(f)
+        qp.setPen(QColor(colour))
+        align = {"pt": Qt.AlignCenter, "name": Qt.AlignLeft | Qt.AlignBottom,
+                 "text": Qt.AlignLeft | Qt.AlignVCenter}.get(self.key,
+                                                              Qt.AlignLeft | Qt.AlignTop)
+        pad = 6 * scale if self.key == "text" else 2 * scale
+        qp.drawText(r.adjusted(pad, 0, -pad, 0), align | Qt.TextWordWrap, text)
 
     def hoverMoveEvent(self, e):
         r, h = self.rect(), self._handle() * 1.6
@@ -149,7 +190,8 @@ class LayoutView(QGraphicsView):
         self.items_by_key: dict = {}
         self.bounds = QRectF(0, 0, 375, 523)
 
-    def show_frame(self, picture: Optional[QPixmap], boxes: dict, keys: list):
+    def show_frame(self, picture: Optional[QPixmap], boxes: dict, keys: list,
+                   samples: Optional[dict] = None):
         sc = self.scene()
         sc.clear()
         self.items_by_key = {}
@@ -166,7 +208,8 @@ class LayoutView(QGraphicsView):
         for k in keys:
             x, y, w, h = boxes[k]
             it = BoxItem(k, QRectF(x * b.width(), y * b.height(), w * b.width(), h * b.height()),
-                         b, self.on_change)
+                         b, self.on_change, (samples or {}).get(k))
+            it.quiet = bool(samples)
             sc.addItem(it)
             self.items_by_key[k] = it
         sc.setSceneRect(b)
@@ -302,6 +345,7 @@ class NewFrameDialog(QDialog):
         self.add_paths([Path(p) for p in paths])
 
     def add_paths(self, paths: list):
+        self.sources = getattr(self, "sources", []) + [str(p) for p in paths]
         found_fonts = fg.fonts_in(paths)
         for p in paths:
             p = Path(p)
@@ -713,6 +757,20 @@ class FrameStudioPage(QWidget):
         self.slot_grid.setColumnStretch(1, 1)
         scroll.setWidget(inner)
         v.addWidget(scroll, 1)
+        self.empty_hint = QLabel()
+        self.empty_hint.setWordWrap(True)
+        self.empty_hint.setVisible(False)
+        v.addWidget(self.empty_hint)
+        row = QHBoxLayout()
+        self.remake_btn = QPushButton("Pictures from the files again…")
+        icons.set_icon(self.remake_btn, "refresh")
+        self.remake_btn.setToolTip("Open the maker's files again (a folder, pictures or a "
+                                   "Photoshop file) and pick the colours anew – where things go, "
+                                   "the text colours and fonts stay")
+        self.remake_btn.clicked.connect(self.remake_pictures)
+        row.addWidget(self.remake_btn)
+        row.addStretch(1)
+        v.addLayout(row)
         return w
 
     def _layout_tab(self) -> QWidget:
@@ -736,6 +794,13 @@ class FrameStudioPage(QWidget):
         v.addLayout(row)
         self.view = LayoutView(self._box_moved)
         v.addWidget(self.view, 1)
+        self.sample_cb = QCheckBox("Show sample text (in the frame's fonts, colours and sizes)")
+        self.sample_cb.setChecked(True)
+        self.sample_cb.setToolTip("How the name, mana cost, type line, rules text and P/T will "
+                                  "sit on the frame – a quick look; MSE draws the real card "
+                                  "(Try it on a card)")
+        self.sample_cb.toggled.connect(lambda *_: self._draw_layout())
+        v.addWidget(self.sample_cb)
         row = QHBoxLayout()
         row.addWidget(QLabel("The art goes"))
         self.art_group = QButtonGroup(self)
@@ -771,6 +836,17 @@ class FrameStudioPage(QWidget):
             fb.currentTextChanged.connect(lambda t, k=key: self._font(k, t))
             f.addRow(f"{label} font", fb)
             self.font_boxes[key] = fb
+        self.size_boxes: dict = {}
+        for key, label in fg.SIZE_NAMES:
+            sb = QDoubleSpinBox()
+            sb.setRange(0, 60)
+            sb.setDecimals(1)
+            sb.setSingleStep(0.5)
+            sb.setSpecialValueText("automatic")
+            sb.setToolTip("0 = automatic: fits the box, never bigger than a real frame's")
+            sb.valueChanged.connect(lambda v, k=key: self._size(k, v))
+            f.addRow(f"{label} size", sb)
+            self.size_boxes[key] = sb
         hint = QLabel("MSE's own Magic fonts (Beleren, MPlantin) come with the Full Magic Pack "
                       "– Advanced → Fonts shows which are installed. MSE only draws fonts "
                       "installed in Windows.")
@@ -857,6 +933,11 @@ class FrameStudioPage(QWidget):
                             f"{'#000' if QColor(col).lightness() > 128 else '#fff'}; }}")
         for k, fb in self.font_boxes.items():
             fb.setCurrentText(fr.font(k) if fr else fg.DEFAULT_FONTS[k])
+        for k, sb in self.size_boxes.items():
+            sb.setValue(float(fr.sizes.get(k) or 0) if fr else 0)
+            sb.setSpecialValueText(f"automatic ({fr.size(k):g})" if fr else "automatic")
+        self._load_fonts()
+        self._check_pictures()
         self._show_fonts()
         self._loading = False
         self._draw_layout()
@@ -952,7 +1033,8 @@ class FrameStudioPage(QWidget):
                 pm = None
         keys = [k for k, _ in fg.BOXES
                 if k != "ptbox" or any(p.startswith("pt-") for p in fr.pictures)]
-        self.view.show_frame(pm, {k: fr.box(k) for k in keys}, keys)
+        samples = self._samples(fr) if self.sample_cb.isChecked() else {}
+        self.view.show_frame(pm, {k: fr.box(k) for k in keys}, keys, samples)
 
     def _buttons(self):
         fr = self.frame
@@ -1026,6 +1108,103 @@ class FrameStudioPage(QWidget):
             self._changed()
             self._show_frame()
 
+    def _size(self, key: str, value: float):
+        if self.frame is None or self._loading:
+            return
+        if value:
+            self.frame.sizes[key] = round(value, 1)
+        else:
+            self.frame.sizes.pop(key, None)
+        self._changed()
+        self.size_boxes[key].setSpecialValueText(f"automatic ({self.frame.size(key):g})")
+        self._draw_layout()
+
+    def _samples(self, fr) -> dict:
+        """box → (text, font family, size, colour, bold) for the sample text."""
+        return {"name": ("Card Name", fr.font("title"), fr.size("title"), fr.colour("name"),
+                         False),
+                "cost": ("{2}{W}", fr.font("text"), fr.size("cost"), "#000000", False),
+                "type": ("Creature — Human Wizard", fr.font("title"), fr.size("type"),
+                         fr.colour("type"), False),
+                "text": ("Flying\nWhen this creature enters, draw a card, then discard a "
+                         "card.", fr.font("text"), fr.size("text"), fr.colour("text"), False),
+                "pt": ("2/3", fr.font("pt"), fr.size("pt"), fr.colour("pt"), False),
+                "artist": ("Illus. Artist Name", fr.font("info"), fr.size("info"),
+                           fr.colour("artist"), False),
+                "credit": ("Your credit line", fr.font("info"), fr.size("info"),
+                           fr.colour("artist"), False)}
+
+    def _load_fonts(self):
+        """The frame's own fonts, for the sample text (only inside MSE Studio –
+        MSE needs them installed: Install them for MSE)."""
+        from PySide6.QtGui import QFontDatabase
+        done = getattr(self, "_loaded_fonts", set())
+        for f in fg.frame_fonts(self.frame) if self.frame else []:
+            if str(f) not in done:
+                QFontDatabase.addApplicationFont(str(f))
+                done.add(str(f))
+        self._loaded_fonts = done
+
+    def _check_pictures(self):
+        """Pictures that are almost empty: single layers of a Photoshop file
+        (Frame studio 1.0) – say how to put each colour together."""
+        fr = self.frame
+        if fr is None:
+            self.empty_hint.setVisible(False)
+            return
+        covers = []
+        for k in fg.BASE + ["l"]:
+            pic = fr.pictures.get(k)
+            if pic:
+                try:
+                    covers.append(fg.coverage(fg.frame_dir(fr.slug) / pic))
+                except Exception:  # noqa: BLE001
+                    pass
+        empty = bool(covers) and max(covers) < 0.12
+        self.empty_hint.setVisible(empty)
+        if empty:
+            self.empty_hint.setText(
+                "<b>These pictures are almost empty</b> – most likely single layers of a "
+                "Photoshop file. Press <b>Pictures from the files again…</b> and add the "
+                "Photoshop file: each colour is put together from its layers now.")
+
+    def remake_pictures(self):
+        """New pictures for this frame from the maker's files – the boxes,
+        colours and fonts stay."""
+        fr = self.frame
+        if fr is None:
+            return
+        files = [Path(f) for f in (fr.sources or ([fr.made_from] if fr.made_from else []))
+                 if f and Path(f).exists()]
+        dlg = NewFrameDialog(self, files, fr.name)
+        dlg.setWindowTitle(f"{fr.name} – pictures from the files again")
+        if not dlg.exec():
+            return
+        chosen, fonts, names = dlg.chosen(), dlg.chosen_fonts(), dlg.font_names()
+        frame = fr
+
+        def work(progress=None, cancel=None):
+            progress(0, 0, f"Putting {frame.name} together…")
+            fg.set_pictures(frame, chosen)
+            if fonts:
+                fg.keep_fonts(frame, fonts)
+                frame.fonts.update(names)
+            frame.sources = list(dict.fromkeys(frame.sources + getattr(dlg, "sources", [])))
+            fg.save_frame(frame)
+            return frame.slug
+
+        def done(slug):
+            try:
+                self.fill(slug)
+                self.status.setText("New pictures – Save and add to MSE to update the frame "
+                                    "in MSE.")
+            except RuntimeError:
+                return
+        job = Job(work, label=f"New pictures for {fr.name}")
+        job.signals.finished.connect(done)
+        job.signals.failed.connect(self._failed)
+        self._jobs.append(start(job))
+
     def _font(self, key: str, family: str):
         if self.frame is not None and not self._loading and family.strip():
             self.frame.fonts[key] = family.strip()
@@ -1072,13 +1251,16 @@ class FrameStudioPage(QWidget):
             return None
         chosen, fonts, names = dlg.chosen(), dlg.chosen_fonts(), dlg.font_names()
         title = dlg.name.text()
-        made_from = str(Path(files[0]).parent) if files else ""
+        sources = list(dict.fromkeys(getattr(dlg, "sources", [])))
+        first = Path(sources[0]) if sources else None
+        made_from = str(first if first.is_dir() else first.parent) if first else ""
 
         def work(progress=None, cancel=None):
             progress(0, 0, f"Making {title}…")
             frame = fg.new_frame(title, chosen, made_from=made_from, fonts=fonts,
                                  font_names=names)
             frame.proxy_deck = proxy_deck
+            frame.sources = sources
             fg.save_frame(frame)
             return frame
 

@@ -30,15 +30,25 @@ deck's cards can be edited in their maker's own frame.
    line, set symbol, rules text, P/T and the artist and credit lines onto the
    frame (drag a corner to size one). Most frames have a see-through art
    window: the art goes *under* the frame. For full-art frames, **The art
-   fills the whole card**.
+   fills the whole card**. **Show sample text** draws a name, mana cost, type
+   line, rules text and P/T in the boxes with the frame's fonts and sizes, so
+   you can check them without trying a card in MSE.
 3. **Text** – the colour of each text (guessed: white on dark parts, black on
-   light ones) and the fonts. *Fonts that came with this frame* shows which
+   light ones), the fonts and the **text sizes**: each box gets a sensible
+   size (the cost box's symbols don't grow when the box is taller), or set
+   your own. *Fonts that came with this frame* shows which
    are installed; **Install them for MSE** installs them for your Windows
    user (no administrator needed) – MSE only draws installed fonts.
 4. **Save and add to MSE** – the frame goes in MSE's frames, as
    `fs-<its name>` (its fonts are offered for installing first). **Try it on a card** shows the card you're editing in it
    (MSE draws it; your card isn't changed). **Use it on my selected cards**
    puts it on the cards selected on the Cards page.
+
+**Frames made with Frame studio 1.0** from a Photoshop file often got
+nearly empty pictures (one thin layer each). The Pictures tab says so:
+**Pictures from the files again…** makes them again from the same files with
+the groups and layers of 1.1 – your boxes, colours and fonts stay. Add the
+Photoshop file (and its fonts) again if it has moved.
 
 Colours without a picture use the Colourless picture (or the first one there
 is). Cards of several colours use Gold, lands the Land picture (else their

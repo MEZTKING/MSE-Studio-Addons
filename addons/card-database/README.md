@@ -32,6 +32,15 @@ page under Review.
     edit; **Another card for this job** swaps one; **Take out of the deck**.
   - **Make a new deck with it…** starts a new deck with all of it as real
     cards (the commander as its commander), or **Save as a decklist**.
+- **Seeing the cards** (search results and the built deck, like the
+  Decklists page): **Find** a card, **Sort** (deck order, name, mana value,
+  colour, card type, most played, newest, cheapest with Card prices),
+  **Size** for the pictures, and **Bigger view** – everything but the cards
+  hidden (press it again to go back). Double-click a card to see it full
+  size. Right-click: see it full size, add it to your order (the real card)
+  or to your deck to edit (in your frame, like the real card or text only),
+  the picture tools other add-ons bring (*Keep only the art…*), and in a
+  built deck **Another card for this job** and **Take out of the deck**.
 - While it's installed, **Decklists** look cards up here first (no waiting for
   Scryfall).
 

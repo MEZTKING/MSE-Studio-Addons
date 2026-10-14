@@ -11,12 +11,13 @@ import random
 import urllib.request
 from pathlib import Path
 
-from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import QSize, Qt, QUrl
+from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDoubleSpinBox, QFileDialog,
                                QFormLayout, QGridLayout, QHBoxLayout, QInputDialog, QLabel,
                                QLineEdit, QListView, QListWidget, QListWidgetItem, QMenu,
-                               QMessageBox, QPushButton, QSpinBox, QSplitter, QTabWidget,
+                               QMessageBox, QPushButton, QSlider, QSpinBox, QSplitter,
+                               QTabWidget,
                                QTextBrowser, QToolButton, QVBoxLayout, QWidget)
 
 from mse_studio.core import decklists as dl
@@ -26,7 +27,6 @@ from mse_studio.gui.nav import page_header
 
 from . import carddb
 
-THUMB = QSize(110, 154)
 TYPES = ["", "Creature", "Instant", "Sorcery", "Artifact", "Enchantment", "Planeswalker",
          "Land", "Battle", "Legendary"]
 RARITIES = [("Any rarity", ""), ("Common", "common"), ("Uncommon", "uncommon"),
@@ -40,6 +40,55 @@ def _get(url: str, timeout: float = 60) -> bytes:
                                                "Accept": "*/*"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read()
+
+
+VIEW_SORTS = [("name", "Name"), ("mv", "Mana value"), ("colour", "Colour"),
+              ("type", "Card type"), ("popular", "Most played"), ("cheap", "Cheapest"),
+              ("new", "Newest")]
+_TYPE_ORDER = ["creature", "planeswalker", "battle", "instant", "sorcery", "artifact",
+               "enchantment", "land"]
+
+
+def _sort_key(r: dict, key: str):
+    name = r.get("lname") or ""
+    if key == "mv":
+        return (r.get("cmc") or 0, name)
+    if key == "colour":
+        ident = r.get("identity") or ""
+        return (len(ident) if ident else 9, "WUBRG".find(ident[:1]) if ident else 9, ident,
+                name)
+    if key == "type":
+        t = (r.get("ltype") or "").split("—")[0]
+        return (next((i for i, x in enumerate(_TYPE_ORDER) if x in t), 99), name)
+    if key == "popular":
+        return (r.get("edhrec") if r.get("edhrec") is not None else 10 ** 9, name)
+    if key == "cheap":
+        vals = [v for v in (r.get("usd"), r.get("eur")) if v is not None]
+        return (min(vals) if vals else 10 ** 9, name)
+    if key == "new":
+        return ("".join(chr(255 - ord(c)) for c in (r.get("released") or "")), name)
+    return name
+
+
+def _load_prefs() -> dict:
+    import json
+    try:
+        from mse_studio.core import addons
+        return json.loads((addons.data_dir("card-database") / "prefs.json")
+                          .read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_prefs(prefs: dict) -> None:
+    import json
+    try:
+        from mse_studio.core import addons
+        f = addons.data_dir("card-database") / "prefs.json"
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps(prefs), encoding="utf-8")
+    except OSError:
+        pass
 
 
 def _lookup(entries):
@@ -56,12 +105,16 @@ class CardDatabasePage(QWidget):
         self.built = None
         self._seed = 1
         dl.add_local_source(_lookup)
+        self._prefs = _load_prefs()
         lay = QVBoxLayout(self)
-        lay.addWidget(page_header(
+        self.header = page_header(
             "Card database", "Every Magic card on your PC, from Scryfall's bulk data: search, "
                              "random cards, a whole deck around a commander – as real cards or "
-                             "as your own cards to edit."))
-        row = QHBoxLayout()
+                             "as your own cards to edit.")
+        lay.addWidget(self.header)
+        self.db_box = QWidget()
+        row = QHBoxLayout(self.db_box)
+        row.setContentsMargins(0, 0, 0, 0)
         self.db_lbl = QLabel()
         self.db_lbl.setWordWrap(True)
         row.addWidget(self.db_lbl, 1)
@@ -84,12 +137,17 @@ class CardDatabasePage(QWidget):
         b.setProperty("kind", "text")
         b.clicked.connect(self.delete_db)
         row.addWidget(b)
-        lay.addLayout(row)
+        lay.addWidget(self.db_box)
         self.tabs = QTabWidget()
         self.tabs.addTab(self._search_tab(), "Search")
         self.tabs.addTab(self._build_tab(), "Build a deck")
         lay.addWidget(self.tabs, 1)
         thumbs.cache().ready.connect(self._thumb_ready)
+        if hasattr(thumbs, "large"):
+            thumbs.large().ready.connect(self._thumb_ready)
+        self._apply_size()
+        if self._prefs.get("big_view"):
+            self._set_big(True)
         self._show_info()
 
     # ------------------------------------------------------------ MSE Studio calls these
@@ -213,7 +271,9 @@ class CardDatabasePage(QWidget):
     def _search_tab(self) -> QWidget:
         w = QWidget()
         v = QVBoxLayout(w)
-        g = QGridLayout()
+        self.filters_box = QWidget()
+        g = QGridLayout(self.filters_box)
+        g.setContentsMargins(0, 0, 0, 0)
         self.text = QLineEdit()
         self.text.setPlaceholderText("Name, rules text or type (all the words)")
         self.text.returnPressed.connect(self.search)
@@ -288,20 +348,14 @@ class CardDatabasePage(QWidget):
         self.n_random.setValue(10)
         rr.addWidget(self.n_random)
         g.addLayout(rr, 1, 7)
-        v.addLayout(g)
-        self.found_lbl = QLabel()
-        self.found_lbl.setObjectName("Hint")
-        v.addWidget(self.found_lbl)
+        v.addWidget(self.filters_box)
+        bar, self.found_find, self.found_sort, self.found_lbl = self._view_bar(
+            [("found", "As found")] + VIEW_SORTS, self._show_found)
+        v.addLayout(bar)
         split = QSplitter(Qt.Horizontal)
-        self.grid = QListWidget()
-        self.grid.setViewMode(QListView.IconMode)
-        self.grid.setResizeMode(QListView.Adjust)
-        self.grid.setMovement(QListView.Static)
-        self.grid.setIconSize(THUMB)
-        self.grid.setSpacing(6)
-        self.grid.setWordWrap(True)
-        self.grid.setSelectionMode(QListWidget.ExtendedSelection)
-        self.grid.currentRowChanged.connect(lambda *_: self._details())
+        self.grid = self._make_grid(self._search_menu, self._details,
+                                    lambda: self.view_full(self.rows[self.grid.currentItem()
+                                                                     .data(Qt.UserRole)]))
         split.addWidget(self.grid)
         right = QWidget()
         rv = QVBoxLayout(right)
@@ -309,16 +363,22 @@ class CardDatabasePage(QWidget):
         self.details = QTextBrowser()
         self.details.setOpenExternalLinks(True)
         rv.addWidget(self.details, 1)
-        b = QPushButton("Add to my deck as real cards")
-        icons.set_icon(b, "add")
-        b.setToolTip("The selected cards, printed with their real picture")
+        b = QPushButton("Add to my order (real cards)")
+        icons.set_icon(b, "shopping_cart")
+        b.setToolTip("The selected cards, printed with their real picture – straight to the "
+                     "Order page")
         b.clicked.connect(lambda: self.add_real(self.selected()))
         rv.addWidget(b)
-        b = QPushButton("Add to my deck to edit (my own cards)")
-        icons.set_icon(b, "edit")
+        b = QToolButton()
+        b.setText("Add to my deck to edit ▾")
+        b.setPopupMode(QToolButton.InstantPopup)
+        b.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        b.setIcon(icons.icon("edit"))
         b.setToolTip("New cards of your own with the selected cards' text and artwork, to "
                      "change as you like")
-        b.clicked.connect(lambda: self.add_custom(self.selected()))
+        em = QMenu(b)
+        self._fill_edit_menu(em, self.selected)
+        b.setMenu(em)
         rv.addWidget(b)
         b = QPushButton("Save as a decklist…")
         b.clicked.connect(lambda: self.save_list(self.selected() or self.rows))
@@ -370,27 +430,42 @@ class CardDatabasePage(QWidget):
     def _show_rows(self, rows: list):
         try:
             self.rows = rows
-            self.grid.clear()
-            for k, r in enumerate(rows):
-                it = QListWidgetItem(r["name"])
-                it.setData(Qt.UserRole, k)
-                it.setSizeHint(QSize(THUMB.width() + 12, THUMB.height() + 36))
-                pm = self._thumb(r)
-                if pm is not None:
-                    it.setIcon(QIcon(pm))
-                self.grid.addItem(it)
-            self.found_lbl.setText(f"{len(rows)} card(s)" + (" (the first 300 – narrow the "
-                                                             "search)" if len(rows) >= 300 else ""))
-            if rows:
-                self.grid.setCurrentRow(0)
+            self._show_found()
         except RuntimeError:
             pass
+
+    def _show_found(self, *_):
+        rows = self.rows
+        q = self.found_find.text().strip().lower()
+        order = [k for k, r in enumerate(rows) if not q or q in r["lname"] or
+                 q in (r["ltype"] or "")]
+        key = self.found_sort.currentData()
+        if key and key != "found":
+            order.sort(key=lambda k: _sort_key(rows[k], key))
+            self._set_pref("found_sort", key)
+        self.grid.clear()
+        for k in order:
+            r = rows[k]
+            it = QListWidgetItem(r["name"])
+            it.setData(Qt.UserRole, k)
+            it.setTextAlignment(Qt.AlignHCenter | Qt.AlignTop)
+            pm = self._thumb(r)
+            if pm is not None:
+                it.setIcon(QIcon(pm))
+            self.grid.addItem(it)
+        self.found_lbl.setText(f"{len(rows)} card(s)" + (f", {len(order)} shown" if q else "")
+                               + (" (the first 300 – narrow the search)" if len(rows) >= 300
+                                  else ""))
+        if order:
+            self.grid.setCurrentRow(0)
 
     def _thumb(self, r: dict):
         url = r.get("image")
         if not url:
             return None
-        return thumbs.cache().get(f"carddb:{r['id']}", "1", lambda url=url: _get(url, 30))
+        cache = thumbs.large() if self._size() > 260 and hasattr(thumbs, "large") else \
+            thumbs.cache()
+        return cache.get(f"carddb:{r['id']}", "1", lambda url=url: _get(url, 30))
 
     def _thumb_ready(self, source_id: str):
         try:
@@ -440,6 +515,209 @@ class CardDatabasePage(QWidget):
                 f"· {r['rarity']}" + (f" · EDHREC #{r['edhrec']}" if r["edhrec"] else "") + "</p>"
                 + (f"<p>{prices}</p>" if prices else "") + (f"<p>{links}</p>" if links else ""))
 
+    # ------------------------------------------------------------ how the cards are shown
+    def _make_grid(self, menu_fn, details_fn, full_fn) -> QListWidget:
+        g = QListWidget()
+        g.setViewMode(QListView.IconMode)
+        g.setResizeMode(QListView.Adjust)
+        g.setMovement(QListView.Static)
+        g.setSpacing(6)
+        g.setWordWrap(True)
+        g.setSelectionMode(QListWidget.ExtendedSelection)
+        g.currentRowChanged.connect(lambda *_: details_fn())
+        g.setContextMenuPolicy(Qt.CustomContextMenu)
+        g.customContextMenuRequested.connect(menu_fn)
+        g.itemDoubleClicked.connect(lambda *_: full_fn())
+        return g
+
+    def _view_bar(self, sorts: list, refill):
+        """Find / Sort / Size / Bigger view above a grid."""
+        bar = QHBoxLayout()
+        find = QLineEdit()
+        find.setPlaceholderText("Find in these…")
+        find.setClearButtonEnabled(True)
+        find.setMaximumWidth(220)
+        find.textChanged.connect(lambda *_: refill())
+        bar.addWidget(find)
+        bar.addWidget(QLabel("Sort by"))
+        sort = QComboBox()
+        for key, label in sorts:
+            if key == "cheap" and not self._prices_on():
+                continue
+            sort.addItem(label, key)
+        pref = self._prefs.get("found_sort" if sorts[0][0] == "found" else "built_sort")
+        if pref and sort.findData(pref) >= 0:
+            sort.setCurrentIndex(sort.findData(pref))
+        sort.currentIndexChanged.connect(lambda *_: refill())
+        bar.addWidget(sort)
+        bar.addWidget(QLabel("Size"))
+        size = QSlider(Qt.Horizontal)
+        size.setRange(80, 420)
+        size.setValue(self._size())
+        size.setFixedWidth(140)
+        size.setToolTip("How big the cards are")
+        size.valueChanged.connect(self._size_moved)
+        size.sliderReleased.connect(self._apply_size)
+        self._size_sliders = getattr(self, "_size_sliders", []) + [size]
+        bar.addWidget(size)
+        big = QPushButton("Bigger view")
+        big.setCheckable(True)
+        icons.set_icon(big, "fullscreen")
+        big.setToolTip("More room for the cards: hides the search and build options (click "
+                       "again to bring them back)")
+        big.toggled.connect(self._set_big)
+        self._big_btns = getattr(self, "_big_btns", []) + [big]
+        bar.addWidget(big)
+        bar.addStretch(1)
+        count = QLabel()
+        count.setObjectName("Hint")
+        bar.addWidget(count)
+        return bar, find, sort, count
+
+    def _size(self) -> int:
+        return int(self._prefs.get("size") or 110)
+
+    def _size_moved(self, v: int):
+        for sl in getattr(self, "_size_sliders", []):
+            if sl.value() != v:
+                sl.blockSignals(True)
+                sl.setValue(v)
+                sl.blockSignals(False)
+        self._prefs["size"] = v
+        if not any(sl.isSliderDown() for sl in self._size_sliders):
+            self._apply_size()
+
+    def _apply_size(self):
+        w = self._size()
+        self._set_pref("size", w)
+        t = QSize(w, round(w * 1.4))
+        for g in (getattr(self, "grid", None), getattr(self, "built_grid", None)):
+            if g is not None:
+                g.setIconSize(t)
+                g.setGridSize(QSize(w + 18, t.height() + 44))
+        if getattr(self, "rows", None):
+            self._show_found()
+        if getattr(self, "built", None) is not None:
+            self._fill_built()
+
+    def _set_big(self, on: bool):
+        for b in getattr(self, "_big_btns", []):
+            if b.isChecked() != on:
+                b.blockSignals(True)
+                b.setChecked(on)
+                b.blockSignals(False)
+            b.setText("Normal view" if on else "Bigger view")
+            icons.set_icon(b, "fullscreen_exit" if on else "fullscreen")
+        for w in (self.header, self.db_box, getattr(self, "filters_box", None),
+                  getattr(self, "build_opts", None)):
+            if w is not None:
+                w.setVisible(not on)
+        self._set_pref("big_view", on)
+
+    def _set_pref(self, key: str, value):
+        if self._prefs.get(key) != value:
+            self._prefs[key] = value
+            _save_prefs(self._prefs)
+
+    def _search_menu(self, pos):
+        if self.grid.itemAt(pos) is None:
+            return
+        m = self._card_menu(self.selected())
+        m.addSeparator()
+        m.addAction("Save the selected as a decklist…",
+                    lambda: self.save_list(self.selected() or self.rows))
+        m.exec(self.grid.viewport().mapToGlobal(pos))
+
+    def _card_menu(self, rows: list) -> QMenu:
+        """What every card offers: like the Decklists and Proxy decks pages."""
+        n = len(rows)
+        m = QMenu(self)
+        if not rows:
+            return m
+        first = rows[0]
+        m.addAction(icons.icon("zoom_in"), "See it full size", lambda: self.view_full(first))
+        m.addSeparator()
+        a = m.addAction(icons.icon("shopping_cart"),
+                        "Add to my order (a real card, printed as it is)" if n == 1 else
+                        f"Add the {n} to my order (real cards, printed as they are)",
+                        lambda: self.add_real(rows))
+        a.setEnabled(self.main.project is not None)
+        edit = m.addMenu(icons.icon("edit"), "Add to my deck to edit" if n == 1 else
+                         f"Add the {n} to my deck to edit")
+        edit.setEnabled(self.main.project is not None)
+        self._fill_edit_menu(edit, lambda: rows)
+        self._tools_menu(m, first)
+        m.addSeparator()
+        sid = first.get("id", "")
+        if sid:
+            m.addAction(icons.icon("open_in_new"), "Open on Scryfall",
+                        lambda: QDesktopServices.openUrl(QUrl(f"https://scryfall.com/card/"
+                                                              f"{first['set_code']}/"
+                                                              f"{first['number']}")))
+        return m
+
+    def _fill_edit_menu(self, menu: QMenu, rows_fn):
+        for label, frame, art in (("With its artwork, in my frame", "mine", True),
+                                  ("With its artwork, in a frame like the real card", "real",
+                                   True),
+                                  ("Text only (no artwork)", "mine", False)):
+            menu.addAction(label, lambda f=frame, a=art: self.add_custom(rows_fn(), f, a))
+
+    def _tools_menu(self, menu: QMenu, row: dict):
+        """Picture tools from other add-ons (Keep only the art…)."""
+        try:
+            from mse_studio.core import picture_tools
+        except ImportError:
+            return
+        tools = picture_tools.tools()
+        if not tools:
+            a = menu.addAction(icons.icon("brush"), "Keep only the art (Art only add-on)")
+            a.setEnabled(False)
+            a.setToolTip("Get the Art only add-on: Manage → Add-ons → Store")
+            return
+        for t in tools:
+            a = menu.addAction(icons.icon("brush"), t.label,
+                               lambda t=t: self._full_then(row, lambda path: picture_tools.run(
+                                   t, self, path, {"name": row["name"],
+                                                   "card": carddb.card_of(row), "kind": "real",
+                                                   "credit": f"Art by {row.get('artist') or '?'}"
+                                                             " · Scryfall"})))
+            a.setToolTip(t.tooltip)
+
+    def view_full(self, row: dict):
+        """The card's biggest picture (Scryfall's), in MSE Studio's viewer."""
+        def show(path):
+            from mse_studio.gui.image_viewer import ImageViewer
+            ImageViewer(self, [path]).exec()
+        self._full_then(row, show)
+
+    def _full_then(self, row: dict, fn):
+        card = carddb.card_of(row)
+
+        def work(progress=None, cancel=None):
+            progress(0, 0, f"Getting {row['name']}…")
+            fetch = getattr(dl, "fetch_full", None)        # MSE Studio 0.17
+            if fetch is not None:
+                return fetch(card)
+            from mse_studio.core import addons
+            out = addons.data_dir("card-database") / "pictures" / f"{row['id']}.jpg"
+            if not out.exists():
+                out.parent.mkdir(parents=True, exist_ok=True)
+                out.write_bytes(_get(row["image"], 60))
+            return out
+
+        def done(path):
+            try:
+                fn(Path(path))
+            except RuntimeError:
+                return
+        job = Job(work, label=f"Getting {row['name']}")
+        job.signals.finished.connect(done)
+        job.signals.failed.connect(lambda m: error(self, "Card database",
+                                                   "Couldn't get the picture: " +
+                                                   m.splitlines()[0]))
+        self._jobs.append(start(job))
+
     # ------------------------------------------------------------ into the deck
     def _entries(self, rows: list[dict]) -> list:
         return [dl.Entry(name=r["name"], card=carddb.card_of(r), scryfall_id=r["id"])
@@ -458,11 +736,11 @@ class CardDatabasePage(QWidget):
                                           8000)
         self.main.order_tab.real_pictures(entries)
 
-    def add_custom(self, rows: list[dict]):
+    def add_custom(self, rows: list[dict], frame: str = "mine", with_art: bool = True):
         if self.main.project is None or not rows:
             return
         self.main.decklists_tab.add_custom(self._entries(rows), "the card database",
-                                           with_art=True, frame="mine")
+                                           with_art=with_art, frame=frame)
 
     def save_list(self, rows: list[dict], name: str = "", entries=None):
         if not rows and not entries:
@@ -481,6 +759,9 @@ class CardDatabasePage(QWidget):
     def _build_tab(self) -> QWidget:
         w = QWidget()
         v = QVBoxLayout(w)
+        self.build_opts = QWidget()
+        ov = QVBoxLayout(self.build_opts)
+        ov.setContentsMargins(0, 0, 0, 0)
         f = QFormLayout()
         lead = QHBoxLayout()
         self.lead = QLineEdit()
@@ -561,7 +842,8 @@ class CardDatabasePage(QWidget):
         self.build_price_lbl = QLabel("Max price per card")
         f.addRow(self.build_price_lbl, self.build_price)
         self.build_usd = self.build_price            # the name before 1.1
-        v.addLayout(f)
+        ov.addLayout(f)
+        v.addWidget(self.build_opts)
         row = QHBoxLayout()
         b = QPushButton("Build the deck")
         b.setProperty("kind", "primary")
@@ -581,29 +863,18 @@ class CardDatabasePage(QWidget):
         left = QWidget()
         lv = QVBoxLayout(left)
         lv.setContentsMargins(0, 0, 0, 0)
-        fr = QHBoxLayout()
-        fr.addWidget(QLabel("Show"))
+        bar, self.built_find, self.built_sort, self.built_count = self._view_bar(
+            [("deck", "Deck order")] + VIEW_SORTS, self._fill_built)
         self.built_show = QComboBox()
+        self.built_show.setToolTip("One group of the deck: ramp, card draw, lands…")
         self.built_show.currentIndexChanged.connect(lambda *_: self._fill_built())
-        fr.addWidget(self.built_show)
-        fr.addStretch(1)
-        self.built_count = QLabel()
-        self.built_count.setObjectName("Hint")
-        fr.addWidget(self.built_count)
-        lv.addLayout(fr)
-        self.built_grid = QListWidget()
-        self.built_grid.setViewMode(QListView.IconMode)
-        self.built_grid.setResizeMode(QListView.Adjust)
-        self.built_grid.setMovement(QListView.Static)
-        self.built_grid.setIconSize(THUMB)
-        self.built_grid.setSpacing(6)
-        self.built_grid.setWordWrap(True)
-        self.built_grid.setSelectionMode(QListWidget.ExtendedSelection)
+        bar.insertWidget(0, self.built_show)
+        bar.insertWidget(0, QLabel("Show"))
+        lv.addLayout(bar)
+        self.built_grid = self._make_grid(self._built_menu, self._built_details,
+                                          self._built_full)
         self.built_grid.setToolTip("Click a card to see it; Ctrl+click or Shift+click to pick "
-                                   "several; right-click for more")
-        self.built_grid.currentRowChanged.connect(lambda *_: self._built_details())
-        self.built_grid.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.built_grid.customContextMenuRequested.connect(self._built_menu)
+                                   "several; right-click for more; double-click: full size")
         try:
             from mse_studio.gui.common import delete_key
             delete_key(self.built_grid, self.drop_picked)
@@ -618,11 +889,11 @@ class CardDatabasePage(QWidget):
         self.built_info.setOpenExternalLinks(True)
         rv.addWidget(self.built_info, 1)
         for label, icon, tip, fn in (
-                ("Add the picked to my deck (real cards)", "add",
-                 "The cards you picked, printed with their real picture – on the Order page",
-                 lambda: self.add_real(self.built_rows())),
+                ("Add the picked to my order (real cards)", "shopping_cart",
+                 "The cards you picked, printed with their real picture – straight to the "
+                 "Order page", lambda: self.add_real(self.built_rows())),
                 ("Add the picked to my deck to edit", "edit",
-                 "New cards of your own with the picked cards' text and artwork",
+                 "New cards of your own with the picked cards' text and artwork, in your frame",
                  lambda: self.add_custom(self.built_rows())),
                 ("Another card for this job", "refresh",
                  "Swap the picked cards for the next best ones doing the same job",
@@ -736,8 +1007,21 @@ class CardDatabasePage(QWidget):
         if d is None:
             return
         want = self.built_show.currentData() or ""
+        q = self.built_find.text().strip().lower()
         shown = [(-1, None)] if not want else []
         shown += [(k, p) for k, p in enumerate(d.picks) if not want or p.why == want]
+        if q:
+            shown = [(k, p) for k, p in shown
+                     if q in ((d.commander if p is None else p.name).lower() + " " +
+                              ((d.lead if p is None else p.row) or {}).get("ltype", ""))]
+        key = self.built_sort.currentData()
+        if key and key != "deck":
+            head = [x for x in shown if x[1] is None]
+            rest = sorted((x for x in shown if x[1] is not None),
+                          key=lambda x: _sort_key(x[1].row or {"lname": x[1].name.lower()},
+                                                  key))
+            shown = head + rest
+            self._set_pref("built_sort", key)
         for k, p in shown:
             row = d.lead if p is None else p.row
             label = (f"★ {d.commander}" if p is None else
@@ -745,7 +1029,7 @@ class CardDatabasePage(QWidget):
             it = QListWidgetItem(label)
             it.setData(Qt.UserRole, k)
             it.setToolTip("The commander" if p is None else p.why)
-            it.setSizeHint(QSize(THUMB.width() + 12, THUMB.height() + 36))
+            it.setTextAlignment(Qt.AlignHCenter | Qt.AlignTop)
             pm = self._thumb(row) if row else None
             if pm is not None:
                 it.setIcon(QIcon(pm))
@@ -788,18 +1072,17 @@ class CardDatabasePage(QWidget):
     def _built_menu(self, pos):
         if self.built_grid.itemAt(pos) is None:
             return
-        n = len(self.built_grid.selectedItems())
-        m = QMenu(self)
-        m.addAction(icons.icon("add"), "Add to my deck (real card)" if n == 1 else
-                    f"Add the {n} to my deck (real cards)",
-                    lambda: self.add_real(self.built_rows()))
-        m.addAction(icons.icon("edit"), "Add to my deck to edit" if n == 1 else
-                    f"Add the {n} to my deck to edit", lambda: self.add_custom(self.built_rows()))
+        m = self._card_menu(self.built_rows())
         m.addSeparator()
         m.addAction(icons.icon("refresh"), "Another card for this job", self.swap_picked)
         a = m.addAction(icons.icon("delete"), "Take out of the deck", self.drop_picked)
         a.setShortcut(Qt.Key_Delete)
         m.exec(self.built_grid.viewport().mapToGlobal(pos))
+
+    def _built_full(self):
+        rows = self.built_rows()
+        if rows:
+            self.view_full(rows[0])
 
     def swap_picked(self):
         d = self.built

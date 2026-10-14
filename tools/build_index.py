@@ -150,22 +150,52 @@ def gh(*args: str, check_ok: bool = True) -> subprocess.CompletedProcess:
     return subprocess.run(["gh", *args], capture_output=True, text=True, check=check_ok)
 
 
-def download_counts(repo: str) -> dict[str, int]:
-    """Downloads per release asset name, over all releases."""
+def release_assets(repo: str) -> list[tuple[str, str, int, str, str]]:
+    """Every release's zips: (tag, asset name, downloads, link, date)."""
     r = gh("api", f"repos/{repo}/releases", "--paginate", "--jq",
-           ".[].assets[] | [.name, .download_count] | @tsv")
-    counts: dict[str, int] = {}
+           ".[] | .tag_name as $t | .published_at as $p | .assets[] | "
+           "[$t, .name, .download_count, .browser_download_url, ($p // \"\")] | @tsv")
+    out = []
     for line in r.stdout.splitlines():
-        name, _, n = line.partition("\t")
-        counts[name] = counts.get(name, 0) + int(n or 0)
+        parts = line.split("\t")
+        if len(parts) >= 4:
+            tag, name, n, url = parts[:4]
+            out.append((tag, name, int(n or 0), url, parts[4] if len(parts) > 4 else ""))
+    return out
+
+
+def download_counts(repo: str, assets: list | None = None) -> dict[str, int]:
+    """Downloads per release asset name, over all releases."""
+    counts: dict[str, int] = {}
+    for _tag, name, n, _url, _date in (release_assets(repo) if assets is None else assets):
+        counts[name] = counts.get(name, 0) + n
     return counts
 
 
-def entry(addon: dict, download: str, downloads: int = 0) -> dict:
+def _vkey(v: str) -> tuple:
+    return tuple(int(x) for x in v.split("."))
+
+
+def versions_of(addon_id: str, assets: list) -> list[dict]:
+    """Every released version of an add-on, newest first – MSE Studio's
+    Add-ons page offers them (Other versions…)."""
+    found = {}
+    tag_re = re.compile(rf"^{re.escape(addon_id)}-v(\d+\.\d+\.\d+)$")
+    for tag, name, _n, url, date in assets:
+        m = tag_re.match(tag)
+        if m and name.endswith(".zip") and m.group(1) not in found:
+            found[m.group(1)] = {"version": m.group(1), "download": url, "date": date[:10]}
+    return sorted(found.values(), key=lambda v: _vkey(v["version"]), reverse=True)
+
+
+def entry(addon: dict, download: str, downloads: int = 0,
+          versions: list | None = None) -> dict:
     e = {k: addon[k] for k in FIELDS if k in addon and addon[k] not in ("", [], {}, None)}
     e["download"] = download
     if downloads:
         e["downloads"] = downloads
+    if versions:
+        e["versions"] = versions
     return e
 
 
@@ -203,7 +233,8 @@ def main() -> int:
     if args.check:
         return 0
     entries = []
-    counts = {} if args.local else download_counts(repo)
+    assets = [] if args.local else release_assets(repo)
+    counts = download_counts(repo, assets)
     for addon, folder in found:
         name = f"{addon['id']}-{addon['version']}.zip"
         tag = f"{addon['id']}-v{addon['version']}"
@@ -217,10 +248,14 @@ def main() -> int:
                "--title", f"{addon['name']} {addon['version']}",
                "--notes", addon.get("description", ""))
             print(f"released {tag}")
+        link = f"https://github.com/{repo}/releases/download/{tag}/{name}"
         total = sum(n for asset, n in counts.items() if asset.startswith(f"{addon['id']}-")
                     and asset.endswith(".zip"))
-        entries.append(entry(addon, f"https://github.com/{repo}/releases/download/{tag}/{name}",
-                             total))
+        versions = versions_of(addon["id"], assets)
+        if addon["version"] not in {v["version"] for v in versions}:     # released just now
+            versions.insert(0, {"version": addon["version"], "download": link,
+                                "date": __import__("datetime").date.today().isoformat()})
+        entries.append(entry(addon, link, total, versions))
     entries += [entry(a, a["download"], int(a.get("downloads") or 0)) for a in external]
     entries.sort(key=lambda e: e["name"].lower())
     index = {"format": 1, "store": f"https://github.com/{repo}", "addons": entries}
