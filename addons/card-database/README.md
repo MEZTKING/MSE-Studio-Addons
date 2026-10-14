@@ -10,14 +10,22 @@ page under Review.
   uses to find each card's cheapest printing. *All cards* works too: only its
   English printings are kept.
 - **Search**: name, rules text, type, colours (within a commander's colours),
-  mana value, rarity, Commander-legal (and a top price with the Card prices
-  add-on); sort by name, mana value, price, popularity (EDHREC) or newest.
+  mana value, rarity, **legal in** a format – Commander, Brawl, Oathbreaker,
+  Standard, Pioneer, Modern, Legacy, Vintage, Pauper… (the open deck's format
+  to start with) – and a top price with the Card prices add-on; sort by name,
+  mana value, price, popularity (EDHREC) or newest.
   **Random** picks cards for you.
 - **Add** cards to your deck as real cards, or as your own cards to edit and
   draw in your frames – a quick way to make more custom cards from an idea.
-- **Build** a whole 100-card Commander deck around a commander: ramp, card
-  draw, removal, board wipes, cards that fit the commander, lands and basics
-  split by the colours' mana symbols.
+- **Build** a whole deck for a **format**: a Commander, Brawl, Standard Brawl,
+  Oathbreaker or Pauper Commander deck around a commander (one of each card),
+  or a 60-card Standard, Pioneer, Modern, Legacy, Vintage, Pauper or casual
+  deck around a **key card**, in fours (two of a legendary card, one of a
+  restricted one) – ramp, card draw, removal, board wipes, cards that fit,
+  lands and basics split by the colours' mana symbols. Only cards legal in
+  the format. A new deck made from it gets the format too (MSE Studio
+  0.21.0). Building for a format other than Commander needs a database
+  imported by 1.3.0 or later – download it again once.
   - **Play style**: balanced, aggressive, defensive (control), ramp, go wide
     (tokens), voltron, spells, combo, graveyard or casual – each sets the
     numbers and the kind of cards it likes. **Power**: casual, focused or

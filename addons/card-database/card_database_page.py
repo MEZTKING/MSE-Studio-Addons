@@ -35,6 +35,16 @@ RULES = [("Within these colours", "within"), ("Exactly these colours", "exactly"
          ("Including these colours", "including")]
 
 
+def deck_format(main) -> str:
+    """The open deck's format (MSE Studio 0.21.0), else Commander."""
+    try:
+        from mse_studio.core import formats
+        key = formats.of(main.project).key if main.project is not None else ""
+    except ImportError:
+        key = ""
+    return key if key in carddb.FORMATS else "commander"
+
+
 def _get(url: str, timeout: float = 60) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": "MSE-Studio card database",
                                                "Accept": "*/*"})
@@ -154,6 +164,9 @@ class CardDatabasePage(QWidget):
     def load(self):
         dl.add_local_source(_lookup)
         self._show_info()
+        fmt = deck_format(self.main)                 # a deck opened: its format
+        self.legal.setCurrentIndex(max(0, self.legal.findData(fmt)))
+        self.build_fmt.setCurrentIndex(max(0, self.build_fmt.findData(fmt)))
 
     def refresh(self):
         self._show_info()
@@ -314,8 +327,14 @@ class CardDatabasePage(QWidget):
         for label, key in RARITIES:
             self.rarity.addItem(label, key)
         g.addWidget(self.rarity, 1, 2)
-        self.legal = QCheckBox("Commander-legal")
-        self.legal.setChecked(True)
+        self.legal = QComboBox()
+        self.legal.addItem("Any format", "any")
+        for key, (name, *_r) in carddb.FORMATS.items():
+            if key != "casual":
+                self.legal.addItem(f"Legal in {name}", key)
+        self.legal.setCurrentIndex(max(0, self.legal.findData(deck_format(self.main))))
+        self.legal.setToolTip("Only cards you may play in this format (Commander-style formats "
+                              "and the ban lists from Scryfall)")
         g.addWidget(self.legal, 1, 3)
         self.price_box = QWidget()
         pr = QHBoxLayout(self.price_box)
@@ -394,8 +413,26 @@ class CardDatabasePage(QWidget):
             text=self.text.text(), colors=cols, color_rule=self.rule.currentData(),
             types=self.type.currentData(), mv_min=self.mv_min.value() or None,
             mv_max=self.mv_max.value() if self.mv_max.value() < 16 else None,
-            rarity=self.rarity.currentData(), commander_legal=self.legal.isChecked(),
+            rarity=self.rarity.currentData(), commander_legal=False,
+            fmt=self._legal_in(),
             max_usd=(self.max_usd.value() or None) if self._prices_on() else None)
+
+    def _legal_in(self) -> str:
+        key = self.legal.currentData() or "any"
+        if key not in ("any", "commander") and carddb.exists():
+            conn = carddb.connect()
+            try:
+                if not carddb.has_formats(conn):
+                    self.status_note("This card database is from before formats – download it "
+                                     "again to filter by Standard, Modern…; showing every "
+                                     "format for now.")
+                    return "any"
+            finally:
+                conn.close()
+        return key
+
+    def status_note(self, text: str):
+        self.main.statusBar().showMessage(text, 10000)
 
     def _deck_colors(self):
         from mse_studio.ai.planner import commander_of, deck_colors
@@ -763,6 +800,19 @@ class CardDatabasePage(QWidget):
         ov = QVBoxLayout(self.build_opts)
         ov.setContentsMargins(0, 0, 0, 0)
         f = QFormLayout()
+        self.build_fmt = QComboBox()
+        for key, (name, size, copies, kind) in carddb.FORMATS.items():
+            self.build_fmt.addItem(name, key)
+            self.build_fmt.setItemData(
+                self.build_fmt.count() - 1,
+                f"{size} cards, " + ("one of each, led by a commander" if kind else
+                                     f"up to {copies} of a card, around a key card"),
+                Qt.ToolTipRole)
+        self.build_fmt.setCurrentIndex(max(0, self.build_fmt.findData(deck_format(self.main))))
+        self.build_fmt.setToolTip("The kind of deck: Commander-style formats are built around "
+                                  "a commander, 60-card formats around a key card in fours")
+        self.build_fmt.currentIndexChanged.connect(self._build_fmt_changed)
+        f.addRow("Format", self.build_fmt)
         lead = QHBoxLayout()
         self.lead = QLineEdit()
         self.lead.setPlaceholderText("A legendary creature (type to search)")
@@ -771,7 +821,9 @@ class CardDatabasePage(QWidget):
         b.setProperty("kind", "text")
         b.clicked.connect(self._deck_commander)
         lead.addWidget(b)
+        self.lead_btn = b
         f.addRow("Commander", lead)
+        self.lead_label = f.labelForField(lead)
         how = QHBoxLayout()
         self.style = QComboBox()
         for key, st in carddb.STYLES.items():
@@ -922,14 +974,30 @@ class CardDatabasePage(QWidget):
         row.addWidget(b)
         row.addStretch(1)
         v.addLayout(row)
+        self._build_fmt_changed()
         return w
 
     def _style_changed(self, *_):
         st = carddb.STYLES.get(self.style.currentData())
         if st is None:
             return
+        fmt = self.build_fmt.currentData() if hasattr(self, "build_fmt") else "commander"
+        nums = carddb.scaled_counts({**carddb.DEFAULT_COUNTS, **st.counts}, fmt)
         for k, sb in self.counts.items():
-            sb.setValue({**carddb.DEFAULT_COUNTS, **st.counts}.get(k, sb.value()))
+            sb.setValue(nums.get(k, sb.value()))
+
+    def _build_fmt_changed(self, *_):
+        fmt = self.build_fmt.currentData() or "commander"
+        kind = carddb.FORMATS[fmt][3]
+        if self.lead_label is not None:
+            self.lead_label.setText("Commander" if kind == "commander" else
+                                    "Oathbreaker" if kind == "oathbreaker" else "Key card")
+        self.lead.setPlaceholderText(
+            "A legendary creature (type to search)" if kind == "commander" else
+            "A planeswalker (type to search)" if kind == "oathbreaker" else
+            "The card the deck is built around (type to search)")
+        self.lead_btn.setVisible(bool(kind))
+        self._style_changed()
 
     def _themes_changed(self, *_):
         on = [n for n, a in self.theme_acts.items() if a.isChecked()]
@@ -949,7 +1017,8 @@ class CardDatabasePage(QWidget):
             return
         name = self.lead.text().strip()
         if not name:
-            self.build_lbl.setText("Pick a commander first.")
+            self.build_lbl.setText("Pick a commander first." if carddb.FORMATS[
+                self.build_fmt.currentData() or "commander"][3] else "Pick a key card first.")
             return
         if new:
             self._seed = random.randrange(1, 10 ** 6)
@@ -959,12 +1028,13 @@ class CardDatabasePage(QWidget):
         style, power = self.style.currentData(), self.power.currentData()
         themes = [n for n, a in self.theme_acts.items() if a.isChecked()]
         avoid = {k for k, cb in self.avoid.items() if cb.isChecked()}
+        fmt = self.build_fmt.currentData() or "commander"
 
         def work(progress=None, cancel=None):
             conn = carddb.connect()
             try:
                 deck = carddb.build_deck(conn, name, counts, theme, seed, usd, style=style,
-                                         power=power, themes=themes, avoid=avoid)
+                                         power=power, themes=themes, avoid=avoid, fmt=fmt)
                 for p in deck.picks:          # plain data: the connection closes here
                     p.row = dict(p.row) if p.row is not None else None
                 deck.lead = dict(deck.lead)
@@ -996,7 +1066,9 @@ class CardDatabasePage(QWidget):
             self.built_show.setCurrentIndex(max(0, self.built_show.findData(keep)))
             self.built_show.blockSignals(False)
             self._fill_built()
-            self.build_lbl.setText(f"{deck.size} cards with {deck.commander} · "
+            fname = carddb.FORMATS.get(getattr(deck, "fmt", "commander"),
+                                       carddb.FORMATS["commander"])[0]
+            self.build_lbl.setText(f"{fname}: {deck.size} cards with {deck.commander} · "
                                    + ("; ".join(deck.notes) if deck.notes else "ready"))
         except RuntimeError:
             pass
@@ -1115,11 +1187,15 @@ class CardDatabasePage(QWidget):
         if d is None:
             return
         before = self.main.project
+        fmt = getattr(d, "fmt", "commander")
         try:
-            p = self.main.new_deck(name=d.commander)        # MSE Studio 0.18
+            p = self.main.new_deck(name=d.commander, format=fmt)    # MSE Studio 0.21
         except TypeError:
-            self.main.new_deck()
-            p = self.main.project if self.main.project is not before else None
+            try:
+                p = self.main.new_deck(name=d.commander)            # MSE Studio 0.18
+            except TypeError:
+                self.main.new_deck()
+                p = self.main.project if self.main.project is not before else None
         if p is None:
             return
         entries = [e for e in d.entries() if e.found]

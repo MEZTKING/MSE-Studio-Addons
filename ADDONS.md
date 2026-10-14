@@ -199,7 +199,18 @@ class HelloPage(QWidget):
 - **A new deck** (MSE Studio 0.18.0): `main.new_deck(name=…)` shows the New
   deck window with the name filled in and returns the new deck once it's open
   (None if cancelled) – then add its cards (the Card database add-on's *Make a
-  new deck with it*).
+  new deck with it*). `main.new_deck(name=…, format="modern")` picks the
+  format too (0.21.0).
+- **Deck formats** (MSE Studio 0.21.0): `mse_studio.core.formats.of(project)`
+  is the deck's format – `.key` (Scryfall's legality name: "commander",
+  "standard"…), `.name`, `.size`, `.exact`, `.copies` (1 = singleton),
+  `.has_commander`, `.family` ("commander", "singleton60", "constructed",
+  "limited"), `.short()` for a hint. `formats.legal_state(fmt, card)` reads a
+  real card's legality (`card["legalities"]`, kept with real cards from
+  0.21.0). Build for the deck's format (the Card database add-on).
+- **Automate everything** (MSE Studio 0.21.0): `main.run_everything(ask=False,
+  then=fn)` draws, upscales and makes print files without the run summary and
+  calls `fn()` when it's done (not when it fails or is stopped).
 - **Planeswalkers** (MSE Studio 0.18.0): write a planeswalker's rules text like
   the real card ("+1: Draw a card.", one ability a line). MSE Studio fills the
   frame's own ability and loyalty boxes from it (`mse_studio.core.walkers`)

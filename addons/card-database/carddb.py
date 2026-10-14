@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS cards (
     rarity TEXT, set_code TEXT, set_name TEXT, set_type TEXT, number TEXT,
     released TEXT, layout TEXT, commander_legal INTEGER, can_lead INTEGER,
     edhrec INTEGER, usd REAL, usd_foil REAL, eur REAL, eur_foil REAL, tix REAL,
-    tcgplayer TEXT, cardmarket TEXT, artist TEXT, image TEXT, card_json TEXT);
+    tcgplayer TEXT, cardmarket TEXT, artist TEXT, image TEXT, card_json TEXT,
+    legal TEXT);
 CREATE INDEX IF NOT EXISTS cards_lname ON cards(lname);
 CREATE INDEX IF NOT EXISTS cards_oracle ON cards(oracle_id);
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
@@ -45,6 +46,49 @@ CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
 
 class CardDbError(RuntimeError):
     pass
+
+
+# formats a deck can be built for: key → (name, deck size, copies of a card,
+# lead: "commander" | "oathbreaker" | "" for a key card played as a playset).
+# Keys are Scryfall's legality names (MSE Studio 0.21.0's deck formats).
+FORMATS = {
+    "commander": ("Commander", 100, 1, "commander"),
+    "brawl": ("Brawl", 100, 1, "commander"),
+    "standardbrawl": ("Standard Brawl", 60, 1, "commander"),
+    "oathbreaker": ("Oathbreaker", 60, 1, "oathbreaker"),
+    "paupercommander": ("Pauper Commander", 100, 1, "commander"),
+    "standard": ("Standard", 60, 4, ""),
+    "pioneer": ("Pioneer", 60, 4, ""),
+    "modern": ("Modern", 60, 4, ""),
+    "legacy": ("Legacy", 60, 4, ""),
+    "vintage": ("Vintage", 60, 4, ""),
+    "pauper": ("Pauper", 60, 4, ""),
+    "casual": ("Casual 60 cards", 60, 4, ""),
+}
+
+
+def scaled_counts(counts: dict, fmt: str) -> dict:
+    """The builder's numbers (made for 100 cards) for another deck size."""
+    size = FORMATS.get(fmt, FORMATS["commander"])[1]
+    if size == 100:
+        return dict(counts)
+    out = {k: max(0, round(v * size / 100)) for k, v in counts.items()}
+    out["lands"] = max(20, min(26, round(counts.get("lands", 36) * 0.66)))
+    return out
+
+
+def legal_text(legalities: dict) -> str:
+    """",commander,modern,r-vintage," – the formats a card may be played in
+    (``r-`` marks restricted: one copy)."""
+    keys = [k for k, v in (legalities or {}).items() if v in ("legal", "restricted")]
+    keys += [f"r-{k}" for k, v in (legalities or {}).items() if v == "restricted"]
+    return "," + ",".join(sorted(keys)) + "," if keys else ","
+
+
+def has_formats(conn: sqlite3.Connection) -> bool:
+    """Whether the database knows every format's legality (made by 1.3.0 or later)."""
+    row = conn.execute("SELECT legal FROM cards WHERE legal IS NOT NULL LIMIT 1").fetchone()
+    return row is not None
 
 
 def db_path() -> Path:
@@ -59,6 +103,10 @@ def connect(path: Optional[Path] = None) -> sqlite3.Connection:
     conn = sqlite3.connect(str(p))
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(cards)").fetchall()}
+    if "legal" not in cols:                       # a database from before 1.3.0
+        conn.execute("ALTER TABLE cards ADD COLUMN legal TEXT")
+        conn.commit()
     return conn
 
 
@@ -166,6 +214,8 @@ def _row(card: dict) -> Optional[tuple]:
     prices = card.get("prices") or {}
     buy = card.get("purchase_uris") or {}
     trimmed = dl.card_from_scryfall(card)
+    if card.get("legalities"):
+        trimmed["legalities"] = card["legalities"]   # MSE Studio checks the deck's format
     name = card.get("name", "")
     return (card.get("id"), card.get("oracle_id") or front.get("oracle_id"), name, name.lower(),
             cost, float(card.get("cmc") or 0), card.get("type_line", ""),
@@ -183,7 +233,8 @@ def _row(card: dict) -> Optional[tuple]:
             _price(prices, "usd"), _price(prices, "usd_foil"), _price(prices, "eur"),
             _price(prices, "eur_foil"), _price(prices, "tix"),
             buy.get("tcgplayer", ""), buy.get("cardmarket", ""), card.get("artist", ""),
-            trimmed.get("image", ""), json.dumps(trimmed, ensure_ascii=False))
+            trimmed.get("image", ""), json.dumps(trimmed, ensure_ascii=False),
+            legal_text(card.get("legalities") or {}))
 
 
 def import_bulk(path: Path, progress: Optional[Callable[[int, int, str], None]] = None,
@@ -196,7 +247,7 @@ def import_bulk(path: Path, progress: Optional[Callable[[int, int, str], None]] 
     tmp.unlink(missing_ok=True)
     conn = connect(tmp)
     n, batch = 0, []
-    sql = f"INSERT OR REPLACE INTO cards VALUES ({','.join('?' * 35)})"
+    sql = f"INSERT OR REPLACE INTO cards VALUES ({','.join('?' * 36)})"
     try:
         for card in iter_bulk(Path(path), lambda f: say(int(f * 1000), 1000,
                                                          f"Reading cards… {n:,}")):
@@ -342,6 +393,7 @@ class Filters:
     commander_legal: bool = True
     can_lead: bool = False          # only cards that can be a commander
     max_usd: Optional[float] = None
+    fmt: str = ""                   # legal in this format (FORMATS key); "" = commander_legal
 
 
 def _where(f: Filters) -> tuple[str, list]:
@@ -376,8 +428,11 @@ def _where(f: Filters) -> tuple[str, list]:
     if f.rarity:
         where.append("rarity = ?")
         args.append(f.rarity)
-    if f.commander_legal:
-        where.append("commander_legal = 1")
+    if f.fmt == "commander" or (f.commander_legal and not f.fmt):
+        where.append("commander_legal = 1")          # known by every database
+    elif f.fmt and f.fmt not in ("any", "casual"):
+        where.append("legal LIKE ?")
+        args.append(f"%,{f.fmt},%")
     if f.can_lead:
         where.append("can_lead = 1")
     if f.max_usd is not None:
@@ -575,16 +630,24 @@ class BuiltDeck:
     notes: list = field(default_factory=list)
     lead: object = None                              # the commander's row
     spares: dict = field(default_factory=dict)       # why → [rows] the next best picks
+    fmt: str = "commander"                           # FORMATS key
+    lead_count: int = 1                              # copies of the key card (60-card decks)
 
     @property
     def size(self) -> int:
-        return 1 + sum(p.count for p in self.picks)
+        return self.lead_count + sum(p.count for p in self.picks)
+
+    @property
+    def has_commander(self) -> bool:
+        return bool(FORMATS.get(self.fmt, FORMATS["commander"])[3])
 
     def entries(self, picks: Optional[list] = None, commander: bool = True) -> list:
         out = []
+        section = "commander" if self.has_commander else "main"
         if commander:
-            out.append(entry_of(self.lead, 1, "commander") if self.lead is not None else
-                       dl.Entry(name=self.commander, section="commander"))
+            out.append(entry_of(self.lead, self.lead_count, section) if self.lead is not None
+                       else dl.Entry(name=self.commander, count=self.lead_count,
+                                     section=section))
         for p in (self.picks if picks is None else picks):
             out.append(entry_of(p.row, p.count) if p.row is not None else
                        dl.Entry(name=p.name, count=p.count))
@@ -596,7 +659,7 @@ class BuiltDeck:
         taken = {p.name.lower() for p in self.picks}
         for r in self.spares.get(pick.why, []):
             if r["lname"] not in taken:
-                new = Pick(r["name"], pick.why, r)
+                new = Pick(r["name"], pick.why, r, pick.count)
                 self.picks[self.picks.index(pick)] = new
                 self.spares[pick.why] = [x for x in self.spares[pick.why] if x is not r] + \
                     ([pick.row] if pick.row is not None else [])
@@ -617,18 +680,25 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
                theme: str = "", seed: Optional[int] = None,
                max_usd: Optional[float] = None, style: str = "balanced",
                power: str = "focused", themes: Optional[list] = None,
-               avoid: Optional[set] = None) -> BuiltDeck:
-    """A Commander deck around ``commander``: lands (staples and basics),
-    ramp, card draw, removal, wipes and protection in the numbers asked for,
-    then the cards that fit the commander, the play ``style`` and the
-    ``themes`` best. Only cards in its colours and legal in Commander; one
-    of each (but basics). ``avoid``: "extra turns", "land destruction",
-    "tutors", "stax"."""
+               avoid: Optional[set] = None, fmt: str = "commander") -> BuiltDeck:
+    """A deck around ``commander``: lands (staples and basics), ramp, card
+    draw, removal, wipes and protection in the numbers asked for, then the
+    cards that fit the commander, the play ``style`` and the ``themes`` best.
+    Only cards in its colours and legal in the format (``fmt``, a FORMATS
+    key): one of each in Commander-style formats; in 60-card formats the
+    "commander" is a key card and every card is a playset (four copies).
+    ``avoid``: "extra turns", "land destruction", "tutors", "stax"."""
     from mse_studio.core import mana_base as mb
     from mse_studio.core import roles
+    fname, size, copies, lead_kind = FORMATS.get(fmt, FORMATS["commander"])
+    if fmt != "commander" and not has_formats(conn):
+        raise CardDbError(f"This card database is from before {fname} decks could be built – "
+                          f"download it again (Database tab).")
     lead = best_printing(conn, commander)
     if lead is None:
         raise CardDbError(f"{commander} isn't in the card database.")
+    if fmt not in ("commander", "casual") and f",{fmt}," not in (lead["legal"] or ""):
+        raise CardDbError(f"{lead['name']} isn't legal in {fname}.")
     st = STYLES.get(style) or STYLES["balanced"]
     counts = {**DEFAULT_COUNTS, **st.counts, **(counts or {})}
     pop_weight = POWER.get(power, POWER["focused"])[1]
@@ -637,7 +707,14 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
         avoid |= {"extra turns", "land destruction", "stax"}
     identity = lead["identity"]
     rng = random.Random(seed)
-    deck = BuiltDeck(lead["name"], identity, lead=lead)
+    deck = BuiltDeck(lead["name"], identity, lead=lead, fmt=fmt,
+                     lead_count=1 if lead_kind else _copies_of(lead, copies, fmt))
+    if size != 100 and counts.get("lands", 36) > 30:   # numbers made for 100 cards
+        counts = scaled_counts(counts, fmt)
+    if lead_kind == "oathbreaker":
+        deck.notes.append("Pick a signature spell (an instant or sorcery in its colours) "
+                          "from the deck.")
+    spells_total = size - deck.lead_count
     themes_words = theme_words(lead["oracle_text"]) | \
         theme_words(lead["type_line"].split("—")[-1]) | theme_words(theme)
     theme_roles: set = set()
@@ -647,7 +724,8 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
         theme_roles |= set(rls)
     style_words = set(st.words)
     pool = search(conn, Filters(colors=identity or "C", color_rule="within",
-                                commander_legal=True, max_usd=max_usd), limit=10 ** 6)
+                                commander_legal=True, max_usd=max_usd,
+                                fmt="" if fmt == "commander" else fmt), limit=10 ** 6)
     pool = [r for r in pool if r["lname"] != lead["lname"] and r["layout"] not in ("token",)
             and "basic land" not in r["ltype"]]
     roles_of = {r["lname"]: roles.detect(r["ltext"]) for r in pool}
@@ -674,6 +752,7 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
         return s + rng.random() * 0.15
 
     def take(rows, n: int, why: str):
+        """``n`` cards (counting copies) for ``why``."""
         ranked = sorted(rows, key=score, reverse=True)
         for r in ranked:
             if n <= 0:
@@ -681,8 +760,11 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
             if r["lname"] in taken:
                 continue
             taken.add(r["lname"])
-            deck.picks.append(Pick(r["name"], why, r))
-            n -= 1
+            k = min(n, _copies_of(r, copies, fmt)) if copies > 1 else 1
+            if copies > 1 and "land" in r["ltype"] and why.startswith("Land"):
+                k = min(n, 4)
+            deck.picks.append(Pick(r["name"], why, r, k))
+            n -= k
         spare = deck.spares.setdefault(why, [])
         spare += [r for r in ranked if r["lname"] not in taken][:15]
 
@@ -690,8 +772,9 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
     # ramp: the usual mana rocks first
     staples = {s.name.lower(): s for s in mb.staples(identity)}
     rocks = [by_name[n] for n, s in staples.items() if n in by_name and s.group == "Mana rocks"]
-    take(rocks[:4], min(4, counts["ramp"]), "Ramp (a staple)")
-    have = sum(1 for p in deck.picks if p.why.startswith("Ramp"))
+    if lead_kind:                    # Sol Ring and friends are for Commander-style decks
+        take(rocks[:4], min(4, counts["ramp"]), "Ramp (a staple)")
+    have = sum(p.count for p in deck.picks if p.why.startswith("Ramp"))
     take([r for r in nonland if "ramp" in roles_of[r["lname"]] or
           "manarock" in roles_of[r["lname"]]], counts["ramp"] - have, "Ramp")
     for role, label in (("draw", "Card draw"), ("removal", "Removal"), ("wipe", "Board wipe"),
@@ -702,20 +785,21 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
     land_staples = [by_name[n] for n, s in staples.items() if n in by_name and
                     s.group != "Mana rocks" and "land" in by_name[n]["ltype"]]
     n_colors = len(identity)
-    nonbasic = min(len(land_staples), {0: 2, 1: 4, 2: 10, 3: 14}.get(n_colors, 16),
+    nonbasic = min(len(land_staples) * (4 if copies > 1 else 1),
+                   {0: 2, 1: 4, 2: 10, 3: 14}.get(n_colors, 16) * (1 if lead_kind else 0.6),
                    lands_wanted)
-    take(land_staples, nonbasic, "Land (fixing)")
+    take(land_staples, int(nonbasic), "Land (fixing)")
     # the rest: what fits the commander, the style and the themes best
-    spells_left = 99 - lands_wanted - sum(p.count for p in deck.picks
-                                         if not p.why.startswith("Land"))
+    spells_left = spells_total - lands_wanted - sum(p.count for p in deck.picks
+                                                    if not p.why.startswith("Land"))
     creatures = [r for r in nonland if "creature" in r["ltype"]]
     take(creatures, max(0, int(spells_left * st.creatures)), "Fits the deck – creatures")
-    spells_left = 99 - lands_wanted - sum(p.count for p in deck.picks
-                                         if not p.why.startswith("Land"))
+    spells_left = spells_total - lands_wanted - sum(p.count for p in deck.picks
+                                                    if not p.why.startswith("Land"))
     take(nonland, max(0, spells_left), "Fits the deck – other spells")
     # basics, split by the colours' mana symbols in the picks
     lands_have = sum(p.count for p in deck.picks if p.why.startswith("Land"))
-    basics = max(0, 99 - sum(p.count for p in deck.picks))
+    basics = max(0, spells_total - sum(p.count for p in deck.picks))
     if identity:
         pips = {c: sum((p.row["mana_cost"] or "").count("{" + c) for p in deck.picks)
                 for c in identity}
@@ -731,3 +815,18 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
     if lands_have + basics < lands_wanted - 2:
         deck.notes.append("Not enough cards matched to fill every slot – try fewer filters.")
     return deck
+
+
+def _copies_of(row, copies: int, fmt: str) -> int:
+    """Copies of a card in a 60-card deck: a playset, one when it's restricted,
+    two of a legendary card, any number of a card that says so."""
+    if copies <= 1:
+        return 1
+    if f",r-{fmt}," in (row["legal"] or ""):
+        return 1
+    text = (row["ltext"] or "")
+    if "a deck can have any number of cards named" in text:
+        return copies
+    if "legendary" in (row["ltype"] or ""):
+        return 2
+    return copies
