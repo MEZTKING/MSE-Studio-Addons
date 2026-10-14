@@ -15,6 +15,9 @@ page under Review.
   to start with) – and a top price with the Card prices add-on; sort by name,
   mana value, price, popularity (EDHREC) or newest.
   **Random** picks cards for you.
+- **Commander ideas and real cards for MSE Studio** (0.22.0): while it's
+  installed, *Find a commander*, the Start here commander ideas and *Real cards*
+  search this database offline instead of Scryfall.
 - **Add** cards to your deck as real cards, or as your own cards to edit and
   draw in your frames – a quick way to make more custom cards from an idea.
 - **Build** a whole deck for a **format**: a Commander, Brawl, Standard Brawl,

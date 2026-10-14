@@ -208,6 +208,14 @@ class HelloPage(QWidget):
   "limited"), `.short()` for a hint. `formats.legal_state(fmt, card)` reads a
   real card's legality (`card["legalities"]`, kept with real cards from
   0.21.0). Build for the deck's format (the Card database add-on).
+- **Finding real cards** (MSE Studio 0.22.0): `mse_studio.core.card_finder`
+  finds real cards by what they do – commander ideas, real cards for a deck's
+  gaps. `find(Query(colors=, commander=, roles=, types=, keywords=, words=,
+  fmt=, limit=))` returns (cards, where from); `deck_query(project,
+  commander=True)` builds a query from the deck's plan. An add-on that knows
+  every card offline answers first: `add_finder(fn, "the card database")` in
+  the page's `__init__`/`load()`, `remove_finder(fn)` in `shutdown()`; `fn(query)`
+  returns Scryfall-like card dicts or None (the Card database add-on).
 - **Automate everything** (MSE Studio 0.21.0): `main.run_everything(ask=False,
   then=fn)` draws, upscales and makes print files without the run summary and
   calls `fn()` when it's done (not when it fails or is stopped).

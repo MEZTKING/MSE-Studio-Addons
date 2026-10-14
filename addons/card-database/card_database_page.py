@@ -106,6 +106,27 @@ def _lookup(entries):
     carddb.look_up(entries)
 
 
+def _find_cards(query):
+    """MSE Studio's card finder (0.22.0): commander ideas and real cards for a
+    deck from the database – None when there's no database yet (Scryfall then
+    answers). A plain function: no widgets involved."""
+    if not carddb.exists():
+        return None
+    conn = carddb.connect()
+    try:
+        return carddb.find_for(conn, query) or None
+    finally:
+        conn.close()
+
+
+def _register_finder():
+    try:
+        from mse_studio.core import card_finder
+        card_finder.add_finder(_find_cards, "the card database")
+    except ImportError:                          # MSE Studio before 0.22.0
+        pass
+
+
 class CardDatabasePage(QWidget):
     def __init__(self, main):
         super().__init__()
@@ -115,6 +136,7 @@ class CardDatabasePage(QWidget):
         self.built = None
         self._seed = 1
         dl.add_local_source(_lookup)
+        _register_finder()
         self._prefs = _load_prefs()
         lay = QVBoxLayout(self)
         self.header = page_header(
@@ -163,6 +185,7 @@ class CardDatabasePage(QWidget):
     # ------------------------------------------------------------ MSE Studio calls these
     def load(self):
         dl.add_local_source(_lookup)
+        _register_finder()
         self._show_info()
         fmt = deck_format(self.main)                 # a deck opened: its format
         self.legal.setCurrentIndex(max(0, self.legal.findData(fmt)))
@@ -173,6 +196,11 @@ class CardDatabasePage(QWidget):
 
     def shutdown(self):
         dl.remove_local_source(_lookup)
+        try:
+            from mse_studio.core import card_finder
+            card_finder.remove_finder(_find_cards)
+        except ImportError:
+            pass
         forget(self._jobs)                # the page is going: nothing may call it back
 
     def _prices_on(self) -> bool:

@@ -107,6 +107,7 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `main.new_deck(name=…)` | The New deck window with a name; returns the new deck or None (0.18.0; see card-database) |
 | `main.new_deck(name=…, format=…)`, `mse_studio.core.formats.of(main.project)` | The deck's format: `.key` ("commander", "standard"…), `.size`, `.copies`, `.has_commander`; `formats.legal_state(fmt, card)` (0.21.0; see card-database) |
 | `main.run_everything(ask=False, then=fn)` | Draw, upscale and make print files without the summary; `fn()` once done (0.21.0) |
+| `mse_studio.core.card_finder`: `add_finder(fn, name)`, `remove_finder(fn)`, `find(Query(...))`, `deck_query(project)` | Answer MSE Studio's real-card searches (commander ideas, real cards for a deck) offline: `fn(query)` returns card dicts or None (0.22.0; see card-database) |
 | Planeswalkers | Write the rules text like the real card ("+1: …", one ability a line): MSE Studio fills the walker frame's boxes (`mse_studio.core.walkers`) (0.18.0) |
 | `mse_studio.ai.for_addons`: `not_ready(s)`, `service(s)`, `ask_json(s, system, prompt, images=, schema=)`, `picture_not_ready(s)`, `make_picture(s, prompt, size=)` | AI with the service set in Settings → AI (`s` = `main.settings`; the add-on never reads keys). Only from a button, in a `Job`, saying which service (0.20.0; see frame-studio's designer). Guard with `try: import` for older MSE Studio |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |

@@ -830,3 +830,39 @@ def _copies_of(row, copies: int, fmt: str) -> int:
     if "legendary" in (row["ltype"] or ""):
         return 2
     return copies
+
+
+# ------------------------------------------------------------------ for MSE Studio's card finder
+def find_for(conn: sqlite3.Connection, q) -> list[dict]:
+    """Cards for MSE Studio's card finder (0.22.0: commander ideas, real cards
+    for a deck): the colours, format and "can lead" of ``q`` as filters, its
+    roles, types, keywords and words as hints – the cards with the most hints
+    first, the most played among them."""
+    from mse_studio.core import roles
+    fmt = getattr(q, "fmt", "") or "any"
+    if fmt not in ("any", "commander", "casual") and not has_formats(conn):
+        fmt = "commander" if fmt.endswith("commander") or fmt == "brawl" else "any"
+    colors = getattr(q, "colors", None)
+    f = Filters(colors=(colors or "C") if colors is not None else "", color_rule="within",
+                commander_legal=False, can_lead=bool(getattr(q, "commander", False)),
+                fmt=fmt)
+    rows = search(conn, f, sort="popular", limit=20000)
+    want_roles = set(getattr(q, "roles", []) or [])
+    types = [t.lower() for t in getattr(q, "types", []) or [] if t]
+    words = [w.lower() for w in list(getattr(q, "keywords", []) or []) +
+             list(getattr(q, "words", []) or []) if w]
+    limit = int(getattr(q, "limit", 24) or 24)
+
+    def hits(r) -> int:
+        n = 0
+        if want_roles:
+            n += len(want_roles & set(roles.detect(r["ltext"] or "")))
+        n += sum(1 for t in types if t in (r["ltype"] or ""))
+        n += sum(1 for w in words if w in (r["ltext"] or ""))
+        return n
+    if want_roles or types or words:
+        scored = [(hits(r), i, r) for i, r in enumerate(rows)]
+        best = [r for h, _i, r in sorted(scored, key=lambda x: (-x[0], x[1])) if h > 0]
+        rest = [r for h, _i, r in scored if h == 0]
+        rows = best[:limit] + rest[:max(0, limit - len(best))]
+    return [card_of(r) for r in rows[:limit]]
