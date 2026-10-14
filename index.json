@@ -21,7 +21,14 @@
         "lists/anime-archetypes.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip",
-      "downloads": 2
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
     },
     {
       "id": "anime-upscaling-models",
@@ -38,7 +45,14 @@
         "art",
         "upscaling"
       ],
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "art-only",
@@ -65,12 +79,19 @@
         "order": 45,
         "tooltip": "The art of a card without its frame and text"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.0.0/art-only-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.0.0/art-only-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.0.0/art-only-1.0.0.zip",
+          "date": "2026-10-14"
+        }
+      ]
     },
     {
       "id": "card-database",
       "name": "Card database",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "kind": "page",
       "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters, pick random cards, build a whole Commander deck around a commander in a play style and themes you pick – see the cards, pick the ones you want or start a new deck with all of them – and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
       "author": "MEZTKING",
@@ -93,8 +114,35 @@
         "order": 40,
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.1.0/card-database-1.1.0.zip",
-      "downloads": 3
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.2.0/card-database-1.2.0.zip",
+      "downloads": 4,
+      "versions": [
+        {
+          "version": "1.2.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.2.0/card-database-1.2.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.1.0/card-database-1.1.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.0.2",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.2/card-database-1.0.2.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.1/card-database-1.0.1.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.0/card-database-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "card-prices",
@@ -122,7 +170,19 @@
         "tooltip": "What the real cards cost at TCGplayer and Cardmarket"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
-      "downloads": 2
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.0/card-prices-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "deck-notes",
@@ -148,7 +208,14 @@
         "tooltip": "Notes and to-dos for this deck"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip",
-      "downloads": 2
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
     },
     {
       "id": "deck-sharing",
@@ -177,7 +244,19 @@
         "tooltip": "Share decks with friends through a shared folder or a file"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
-      "downloads": 2
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.0/deck-sharing-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "dragon-cards",
@@ -198,7 +277,14 @@
         "lists/dragon-cards.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip",
-      "downloads": 2
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
     },
     {
       "id": "fast-upscaling-models",
@@ -215,12 +301,19 @@
         "general",
         "upscaling"
       ],
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/fast-upscaling-models-v1.0.0/fast-upscaling-models-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/fast-upscaling-models-v1.0.0/fast-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/fast-upscaling-models-v1.0.0/fast-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "frame-studio",
       "name": "Frame studio",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "kind": "page",
       "description": "Make a Magic Set Editor frame from pictures: the blank frames a proxy maker shares or sells (one per colour, also Photoshop files – each colour put together from its layers), or your own. Fonts that come with it are installed for MSE. Drag where the name, mana cost, art, type line, rules text and P/T go, pick the text colours and fonts, and add it to MSE – your cards can use it like any other frame.",
       "author": "MEZTKING",
@@ -242,8 +335,25 @@
         "order": 40,
         "tooltip": "Make an MSE frame from a proxy maker's blank frames or your own pictures"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.1.0/frame-studio-1.1.0.zip",
-      "downloads": 1
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.2.0/frame-studio-1.2.0.zip",
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.2.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.2.0/frame-studio-1.2.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.1.0/frame-studio-1.1.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.0.0/frame-studio-1.0.0.zip",
+          "date": "2026-10-14"
+        }
+      ]
     },
     {
       "id": "gear-and-auras",
@@ -264,7 +374,14 @@
         "lists/gear-and-auras.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
-      "downloads": 2
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
     },
     {
       "id": "mpcfill",
@@ -292,7 +409,29 @@
         "tooltip": "mpcfill.com in MSE Studio – your MPCFill order as real cards"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.2.0/mpcfill-2.2.0.zip",
-      "downloads": 5
+      "downloads": 6,
+      "versions": [
+        {
+          "version": "2.2.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.2.0/mpcfill-2.2.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "2.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.1.0/mpcfill-2.1.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "2.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.0.0/mpcfill-2.0.0.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v1.0.0/mpcfill-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "nmkd-upscaling-models",
@@ -308,7 +447,14 @@
         "general",
         "upscaling"
       ],
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "photo-upscaling-models",
@@ -325,7 +471,14 @@
         "restore",
         "upscaling"
       ],
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "picture-grabber",
@@ -352,7 +505,14 @@
         "tooltip": "Picture grabber: pictures from web pages, the clipboard and screenshots",
         "order": 11
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "mpc-proxies",
@@ -382,7 +542,34 @@
         "tooltip": "Proxy decks shared on r/mpcproxies and Ko-fi"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.0/mpc-proxies-1.4.0.zip",
-      "downloads": 4
+      "downloads": 6,
+      "versions": [
+        {
+          "version": "1.4.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.0/mpc-proxies-1.4.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.3.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.3.0/mpc-proxies-1.3.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.2.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.2.0/mpc-proxies-1.2.0.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.1.0/mpc-proxies-1.1.0.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.0.0/mpc-proxies-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     },
     {
       "id": "capture",
@@ -408,7 +595,14 @@
         "tooltip": "Capture screenshots of episodes into episode folders",
         "order": 10
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/capture-v1.0.0/capture-1.0.0.zip"
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/capture-v1.0.0/capture-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/capture-v1.0.0/capture-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
     }
   ]
 }
