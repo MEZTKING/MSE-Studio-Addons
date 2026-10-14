@@ -1,7 +1,7 @@
 {
   "id": "mpcfill",
   "name": "MPCFill",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "kind": "page",
   "description": "mpcfill.com right inside MSE Studio: import your decklist there and pick the pictures, then Download → XML – the order comes straight to this page, its cards are added to your deck as real cards printed with those pictures, and its card back can be your deck's back.",
   "author": "MEZTKING",

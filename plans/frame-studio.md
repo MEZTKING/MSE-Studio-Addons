@@ -1,6 +1,11 @@
-# Frame studio – plan for a future add-on
+# Frame studio – plan
 
-Not built yet. This is what it would be, so the work can start from here.
+**Frame studio 1.0 is built** (`addons/frame-studio`): an MSE frame made from
+pictures – a proxy maker's blank frames (one per colour, PNG or Photoshop
+layers), the boxes placed by dragging, text colours and fonts, installed with
+MSE Studio's frame-pack installer. Proxy decks links a deck to its frame.
+The phases below (restyling an existing frame, AI textures, copying a look,
+Photoshop round trips) are still to do.
 
 ## The idea
 

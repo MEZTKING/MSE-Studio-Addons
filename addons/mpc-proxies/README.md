@@ -31,27 +31,60 @@ deck stays imported – it's there when you come back, even after restarting.
 
 Then:
 
-- **Tick** the cards you want (all of the deck's are ticked; tokens and extras
-  aren't), or select some and right-click. Find a card by name, show only one
-  **type** (creatures, lands…), sort by name, folder or copies, and make the
-  cards as big as you like (**Size**).
-- **Look the cards up on Scryfall** (on by default) gives their types, both faces
-  of double-faced cards, and the card details in your deck. Untick it for custom
-  cards Scryfall doesn't know – nothing is looked up then. (With the Card
-  database add-on installed, cards are looked up there first.)
-- Right-click → **Use its art for my own card** – on the card you're editing, or
-  on a new card of yours (with the real card's text when it's looked up): the
-  picture goes in your art folder with the maker's credit, and the art editor
-  opens with the art window already picked.
-- **Double-click** a card to see it full size (its back and other pictures with
-  ◀ ▶). Right-click → **Print it with…** when there are several pictures.
-- **Add the ticked to my deck** – real cards printed with these pictures: on the
-  Order page and in Print at home. Pictures without MPC's bleed get it added;
-  double-faced cards get their back face, even when it's a separate picture.
+- **Tick** the cards you want with a click – the big tick box is at each card's
+  top-left (Ctrl+click works the same). Drag across cards to tick several,
+  Shift+click to tick everything up to a card, Ctrl+A for all of them, or
+  **Tick all** / **Untick all**. All of the deck's cards start ticked; tokens
+  and extras don't.
+- Find a card by name, show one **type** (creatures, lands…) or **No rules text
+  (often full art)** – basic lands, vanilla creatures and pictures named full
+  art or textless – sort by name, folder or copies, and make the cards as big
+  as you like (**Size**). **Bigger view** hides the list of decks for more room.
+- **Look the cards up on Scryfall** (on by default) gives their types, which
+  have rules text, both faces of double-faced cards and the card details in
+  your deck. Untick it for custom cards Scryfall doesn't know – nothing is
+  looked up then. (With the Card database add-on installed, cards are looked
+  up there first.)
+- **Add the ticked to my order** – real cards, straight to the Order page:
+  printed with these pictures as they are (and in Print at home). Pictures
+  without MPC's bleed get it added; double-faced cards get their back face,
+  even when it's a separate picture.
+- **Add the ticked to my deck to edit** – your own cards on the Cards page,
+  with the card's text (from Scryfall) and the picture's art (all of it in the
+  art box, like MSE's Force to fit): **in this deck's frame**, in a frame like
+  the real card, or in your deck's frame.
+- Right-click a card for the same, plus **See it full size** (its back and
+  other pictures with ◀ ▶), **Use its art on the card I'm editing**, **Keep
+  only the art…** (with the Art only add-on: the art without the frame and
+  text), **Print it with…** when there are several pictures, and **Save its
+  picture**.
 - **Save as a decklist**, **Save the pictures…**, **Use its card back**,
   **Copy the credit**.
 
-Needs MSE Studio 0.15.1.
+### A deck's own frame
+
+Makers often sell a deck's frame templates too (a deluxe edition – the
+blank frames, often in a *Templates* folder, or Photoshop files). Right-click
+the deck → **This deck's frame…**: pick an MSE frame, or **Make one from the
+deck's templates with Frame studio** (an add-on that turns them into an MSE
+frame). Then *Add to my deck to edit* puts the deck's cards in it. Templates
+aren't shown as cards.
+
+### The list of decks
+
+Right-click a deck: import it, open its folder or Google Drive, who made it,
+its frame, save it as a decklist – or **Remove from my list** (the Delete key
+does the same; the files on your PC stay). **Bring back removed decks** shows
+them again. Decks on this PC can also be taken off a whole folder at a time.
+
+### In my deck
+
+The **In my deck** tab lists the cards of your open deck that came from proxy
+decks, by deck – real cards (Order page) and cards to edit (Cards page).
+Double-click one to go to it; Delete takes it out of your deck (Undo brings it
+back).
+
+Needs MSE Studio 0.17.0.
 
 ## Discord
 

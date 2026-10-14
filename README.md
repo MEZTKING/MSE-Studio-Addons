@@ -17,11 +17,13 @@ get an **Update** button when a newer version is listed here.
 | Add-on | Kind | What it does |
 |---|---|---|
 | [Deck notes](addons/deck-notes) | Page | A notes page for each deck, saved as `notes.md` in the deck's folder, with a checklist of the deck's cards. |
-| [MPCFill](addons/mpcfill) | Page | mpcfill.com right inside MSE Studio: make your order there, Download → XML, and its cards become real cards of your deck printed with the pictures you picked. |
+| [MPCFill](addons/mpcfill) | Page | mpcfill.com right inside MSE Studio: make your order there, Download → XML (or Download Image for one card), and its cards become real cards of your deck printed with the pictures you picked. |
 | [Card database](addons/card-database) | Page | Every Magic card on your PC from Scryfall's bulk data: search, random cards, build a Commander deck around a commander, add cards as real or your own. |
 | [Card prices](addons/card-prices) | Page | What a deck's real cards cost at TCGplayer and Cardmarket: cheapest printings, totals per store, the cheapest mix, in your currency. |
-| [Proxy decks](addons/mpc-proxies) | Page | Proxy decks from r/mpcproxies, Ko-fi and Discord (their Google Drive) or your own PC: free and paid kept apart, import, filter by card type, tick and add cards as real cards with the maker's credit, or use a card's art for a card of your own. |
+| [Proxy decks](addons/mpc-proxies) | Page | Proxy decks from r/mpcproxies, Ko-fi and Discord (their Google Drive) or your own PC: tick cards with a click, filter by type or full art, add them to your order (printed as they are, with the maker's credit) or to your deck to edit in the deck's own frame; see which cards came from which deck. |
 | [Deck sharing](addons/deck-sharing) | Page | Share decks with friends through a shared OneDrive, Google Drive or Dropbox folder, or send one as a file; a friend's deck opens as a new deck of yours. |
+| [Frame studio](addons/frame-studio) | Page | Make an MSE frame from pictures – a proxy maker's blank frames (also Photoshop files) or your own: drag where the text and art go, pick colours and fonts, and your cards can use it. |
+| [Art only](addons/art-only) | Page | Just the art of a card for your own cards: cut out of its window, or with the frame and text painted over on full-art cards. Adds *Keep only the art* to Decklists and Proxy decks. |
 | [Video capture](addons/capture) | Page | Screenshots from a video or game with a hotkey, sorted into episode folders. Came with MSE Studio until 0.15.0. |
 | [Picture grabber](addons/picture-grabber) | Page | Pictures from web pages and folders, with a live mode for the biggest version of each picture. Came with MSE Studio until 0.15.0. |
 | [Dragon cards](addons/dragon-cards) | Card list | Twelve dragon ideas in every colour, with a dragon commander. |

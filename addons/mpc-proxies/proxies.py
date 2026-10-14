@@ -24,7 +24,7 @@ from mse_studio.core import addons
 from . import gdrive, local
 
 ADDON_ID = "mpc-proxies"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 # Reddit wants apps to say who they are (a browser-like name gets "403 Blocked")
 REDDIT_UA = f"windows:mse-studio.proxy-decks:{VERSION} (MSE Studio add-on)"
 REDDIT_HOSTS = ("https://www.reddit.com", "https://old.reddit.com")
@@ -41,6 +41,12 @@ EXTRA_NAME = re.compile(r"^(?:extras?|bonus|alt(?:ernate)?|unused)\s*[-–:]\s*"
 EXTRA_DIR = re.compile(r"^(?:tokens?|extras?|bonus|emblems?|counters?|alt(?:ernate)?s?(?: arts?)?|"
                        r"unused|maybe(?:board)?|sideboard)$", re.I)
 BACK_DIR = re.compile(r"^(?:card ?backs?|backs?|sleeves?)$", re.I)
+# the maker's frame templates (blank frames, Photoshop files) – not cards
+TEMPLATE_DIR = re.compile(r"^(?:.*\btemplates?\b.*|frames?|blank ?frames?|blanks?|psds?|photoshop|"
+                          r"frame ?(?:files|pack)s?)$", re.I)
+# pictures with little or no rules text (full art, textless…)
+NO_TEXT = re.compile(r"\b(?:textless|text ?less|no ?text|full ?-?art|fullart|borderless|"
+                     r"art ?cards?|showcase)\b", re.I)
 VARIANT = re.compile(r"\s+\d{1,2}$")
 
 
@@ -159,7 +165,22 @@ def local_decks() -> list[Deck]:
     return out
 
 
-def decks(with_local: bool = True) -> list[Deck]:
+def hidden() -> list[str]:
+    """Decks you took off your list (store decks and decks on this PC)."""
+    return [d for d in _load("hidden.json", []) if isinstance(d, str)]
+
+
+def hide(deck_id: str) -> None:
+    _save("hidden.json", sorted(set(hidden()) | {deck_id}))
+
+
+def unhide(deck_ids: Optional[list] = None) -> None:
+    """Bring decks back on the list (all of them when none are given)."""
+    _save("hidden.json", [] if deck_ids is None else
+          [d for d in hidden() if d not in set(deck_ids)])
+
+
+def decks(with_local: bool = True, with_hidden: bool = False) -> list[Deck]:
     """The store's decks, yours and the ones on this PC – with the links you
     added for paid ones and the credits you wrote."""
     bought = _load("bought.json", {})
@@ -178,7 +199,74 @@ def decks(with_local: bool = True) -> list[Deck]:
             d.creator = m["creator"]
         if m.get("link"):
             d.creator_link = m["link"]
+    if not with_hidden:
+        gone = set(hidden())
+        out = [d for d in out if d.id not in gone]
     return out
+
+
+# ------------------------------------------------------------------ a deck's own frame
+def deck_frame(deck_id: str) -> str:
+    """The MSE frame a deck's cards are edited in (a frame its maker made, put
+    in MSE with Frame studio) – "" when it has none."""
+    return str(_load("frames.json", {}).get(deck_id) or "")
+
+
+def set_deck_frame(deck_id: str, frame: str) -> None:
+    frames = _load("frames.json", {})
+    if frame:
+        frames[deck_id] = frame
+    else:
+        frames.pop(deck_id, None)
+    _save("frames.json", frames)
+
+
+def is_template(item) -> bool:
+    """A frame template of the maker's (in a "Templates" folder, or a
+    Photoshop file) – not a card."""
+    if Path(item.name).suffix.lower() in (".psd", ".psb"):
+        return True
+    return any(TEMPLATE_DIR.match(p) for p in (item.path or "").split("/") if p)
+
+
+def templates_in(items: list) -> list:
+    """The deck's frame templates (pictures and Photoshop files)."""
+    return [it for it in items if is_template(it) and
+            (it.picture or Path(it.name).suffix.lower() in (".psd", ".psb"))]
+
+
+# ------------------------------------------------------------------ what you added
+LOG = "proxy decks.json"        # in the deck's folder: which cards came from which deck
+
+
+def added_log(project_folder: Path) -> list[dict]:
+    try:
+        data = json.loads((Path(project_folder) / LOG).read_text(encoding="utf-8"))
+        return [d for d in data.get("added", []) if isinstance(d, dict)]
+    except (OSError, ValueError):
+        return []
+
+
+def log_added(project_folder: Path, deck: Deck, names: list, how: str) -> None:
+    """Remember which cards of your deck came from which proxy deck ("real":
+    printed as they are, "edit": your own cards with their art)."""
+    log = [d for d in added_log(project_folder)
+           if not (d.get("deck") == deck.id and d.get("card") in names and d.get("as") == how)]
+    now = time.time()
+    log += [{"deck": deck.id, "title": deck.title, "card": n, "as": how, "when": now}
+            for n in names]
+    (Path(project_folder) / LOG).write_text(json.dumps({"added": log}, indent=1),
+                                            encoding="utf-8")
+
+
+def forget_added(project_folder: Path, names: list, how: str = "") -> None:
+    log = [d for d in added_log(project_folder)
+           if not (d.get("card") in names and (not how or d.get("as") == how))]
+    try:
+        (Path(project_folder) / LOG).write_text(json.dumps({"added": log}, indent=1),
+                                                encoding="utf-8")
+    except OSError:
+        pass
 
 
 def add_mine(deck: Deck) -> None:
@@ -262,6 +350,25 @@ def set_types(deck_id: str, types: dict) -> None:
         pass
 
 
+def set_texts(deck_id: str, texts: dict) -> None:
+    """Which cards have rules text (from Scryfall), kept with the import."""
+    try:
+        f = _listing_file(deck_id)
+        data = json.loads(f.read_text(encoding="utf-8"))
+        data["texts"] = texts
+        f.write_text(json.dumps(data), encoding="utf-8")
+    except (OSError, ValueError):
+        pass
+
+
+def load_texts(deck_id: str) -> dict:
+    try:
+        return dict(json.loads(_listing_file(deck_id).read_text(encoding="utf-8"))
+                    .get("texts") or {})
+    except (OSError, ValueError):
+        return {}
+
+
 def load_types(deck_id: str) -> dict:
     try:
         return dict(json.loads(_listing_file(deck_id).read_text(encoding="utf-8"))
@@ -271,7 +378,7 @@ def load_types(deck_id: str) -> dict:
 
 
 # ------------------------------------------------------------------ your choices
-PREFS = {"lookup": True, "size": 180}
+PREFS = {"lookup": True, "size": 180, "big_view": False}
 
 
 def pref(key: str):
@@ -398,6 +505,8 @@ def cards_in(items: list, decklist_text: str = "", deck_id: str = "") -> tuple[l
     ordered = sorted((it for it in items if it.picture),
                      key=lambda it: (name_info(it.name).variant, it.name.lower()))
     for it in ordered:
+        if is_template(it):
+            continue
         if is_card_back(it.name, it.path):
             backs.append(it)
             continue
@@ -507,11 +616,37 @@ def art_window(size: tuple[int, int]) -> list[int]:
 def lookup_types(cards: list[Card], progress=None, cancel=None) -> dict:
     """Look the cards up (the Card database add-on first, else Scryfall):
     name → type line, for the ones found."""
+    return lookup_cards(cards, progress, cancel)[0]
+
+
+def _has_rules(text: str) -> bool:
+    """Rules text that isn't only reminder text ("({T}: Add {G}.)")."""
+    return bool(re.sub(r"\([^)]*\)", "", text or "").strip())
+
+
+def lookup_cards(cards: list[Card], progress=None, cancel=None) -> tuple[dict, dict]:
+    """(name → type line, name → has rules text) for the cards that were found."""
     from mse_studio.core import decklists as dl
     entries = [dl.Entry(name=c.name) for c in cards if not c.token]
     dl.resolve(entries, progress, cancel)
-    return {e.name.lower(): str((e.card or {}).get("type_line", "")) for e in entries
-            if e.found}
+    found = [e for e in entries if e.found]
+    types = {e.name.lower(): str((e.card or {}).get("type_line", "")) for e in found}
+    texts = {}
+    for e in found:
+        c = e.card or {}
+        faces = c.get("faces") or []
+        text = c.get("oracle_text", "") or " ".join(str(f.get("oracle_text", "")) for f in faces)
+        texts[e.name.lower()] = _has_rules(text)
+    return types, texts
+
+
+def no_rules_text(card: Card, texts: Optional[dict] = None) -> bool:
+    """Probably a full-art picture: Scryfall says the card has no rules text
+    (basic lands, vanilla creatures), or the picture's name says so."""
+    if texts and texts.get(card.name.lower()) is False:
+        return True
+    names = " ".join(i.name for i in (card.front, card.back) if i is not None)
+    return bool(NO_TEXT.search(names + " " + card.category))
 
 
 # ------------------------------------------------------------------ r/mpcproxies

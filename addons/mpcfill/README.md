@@ -12,6 +12,8 @@ under Produce.
    the pictures you picked (the Order page and Print at home). **Use its card
    back** makes the order's card back your deck's back.
 
+**Download Image** on a card's details there puts that card in the order list too, printed with that picture.
+
 An order file you saved earlier: **Open an order file…**. The last order is still
 there next time.
 

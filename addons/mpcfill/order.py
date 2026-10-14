@@ -17,6 +17,7 @@ class OrderCard:
     count: int = 1
     back: str = ""                 # its own back, for double-faced cards
     back_picture: str = ""
+    file: str = ""                 # a picture already on this PC (Download Image)
 
 
 @dataclass
@@ -39,6 +40,18 @@ def card_name(picture: str, query: str = "") -> str:
     if stem:
         return stem
     return " ".join(w[:1].upper() + w[1:] for w in (query or "").split())
+
+
+DRIVE_ID = re.compile(r"[(\[]([\w-]{20,})[)\]]\s*$")
+
+
+def from_picture(path: Path) -> OrderCard:
+    """A picture MSE Studio got from MPCFill's *Download Image* ("Sol Ring
+    (1AbC…).png"): a card of the order, printed with that file."""
+    stem = Path(path).stem
+    m = DRIVE_ID.search(stem)
+    return OrderCard(card_name(Path(path).name), m.group(1) if m else "", Path(path).name,
+                     1, file=str(path))
 
 
 def _slots(text: str) -> list[int]:

@@ -1,0 +1,26 @@
+{
+  "id": "art-only",
+  "name": "Art only",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "Just the art of a card, for your own cards: cut out of its window (Scryfall's own cut-out for real cards), or – for full-art and borderless cards – with the name bar, type line, text box, P/T and border painted over from the art around them. Adds Keep only the art to the Decklists page and to Proxy decks.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/art-only",
+  "license": "MIT",
+  "min_app_version": "0.17.0",
+  "tags": [
+    "art",
+    "proxies",
+    "full art",
+    "cleanup"
+  ],
+  "page": {
+    "module": "art_only_page",
+    "class": "ArtOnlyPage",
+    "title": "Art only",
+    "icon": "ink_eraser",
+    "section": "Create",
+    "order": 45,
+    "tooltip": "The art of a card without its frame and text"
+  }
+}

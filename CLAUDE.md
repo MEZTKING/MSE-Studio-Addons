@@ -97,6 +97,10 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `mse_studio.gui.web_window`: `open_web(parent, url, title, on_picture=, on_download=)`, `WebPanel(parent, url, …)`, `available()` | A browser inside MSE Studio (0.16.0): right-click a picture → your `on_picture(url, page, title)`; files the site downloads → `on_download(path, page)`. Make a `WebPanel` when the page is first opened and `close_browser()` it in `shutdown()` (see the mpcfill add-on) |
 | `mse_studio.pipeline.print_prep.make_print(img, spec, margin="auto")`, `has_mpc_margin(img)` | A print file; MPC's margin added only when the picture hasn't got it (0.16.0) |
 | `mse_studio.gui.thumbs.cache()` / `.large()` | Picture caches at 300 px / 1400 px (`large` is 0.16.0) |
+| `mse_studio.core.picture_tools.register(id, label, run, owner=self)` | A tool for card pictures, offered on the Decklists page (and by Proxy decks) – `run(parent, picture, info)` (0.17.0; see the art-only add-on) |
+| `main.decklists_tab.add_custom(entries, source, frame=, pictures=, keep_unknown=True)` | Your own cards to edit with the text, a frame and their own art, fitted like Force to fit (0.17.0; see mpc-proxies) |
+| `mse_packages.install_zip(zip, styles.data_dir(main.settings.mse_path))`, `remove_package(…)`, `main.frames_changed()` | Add or take out an MSE frame – the only way to change MSE's data folder (0.17.0; see frame-studio) |
+| `mse_studio.gui.common.delete_key(widget, fn)`, `ask_delete(parent, text)` | The Delete key on a list, and Settings' *Ask before deleting* (0.17.0) |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 
 Keep a deck's add-on data in a file in `main.project.folder` (like Deck notes'
@@ -161,4 +165,5 @@ w.open_project(Path("path/to/a/deck"))
 ## Plans
 
 `plans/` holds ideas for future add-ons (not published): see
-[plans/frame-studio.md](plans/frame-studio.md).
+[plans/frame-studio.md](plans/frame-studio.md) (Frame studio 1.0 – frames from
+pictures – is built; restyling frames is still a plan).

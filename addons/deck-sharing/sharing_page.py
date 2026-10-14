@@ -78,6 +78,11 @@ class SharingPage(QWidget):
         self.tree.header().setSectionResizeMode(0, QHeaderView.Stretch)
         self.tree.setRootIsDecorated(False)
         self.tree.itemDoubleClicked.connect(lambda *_: self.open_shared())
+        try:                                   # MSE Studio 0.17: the Delete key
+            from mse_studio.gui.common import delete_key
+            delete_key(self.tree, self.remove)
+        except ImportError:
+            pass
         self.tree.currentItemChanged.connect(self._picked)
         lv.addWidget(self.tree, 1)
         row = QHBoxLayout()
@@ -318,11 +323,16 @@ class SharingPage(QWidget):
 
     def remove(self):
         s = self._current()
-        if s is None:
-            return
-        if QMessageBox.question(self, "Deck sharing",
-                                f"Take {s.deck} out of the shared folder? Friends who opened "
-                                "it keep their copy.") != QMessageBox.Yes:
+        me = self.name.text().strip().lower()
+        if s is None or not me or s.by.lower() != me:
+            return                             # only decks you shared
+        text = f"Take {s.deck} out of the shared folder? Friends who opened it keep their copy."
+        try:
+            from mse_studio.gui.common import ask_delete
+            ok = ask_delete(self, text, "Deck sharing")
+        except ImportError:
+            ok = QMessageBox.question(self, "Deck sharing", text) == QMessageBox.Yes
+        if not ok:
             return
         try:
             s.path.unlink()

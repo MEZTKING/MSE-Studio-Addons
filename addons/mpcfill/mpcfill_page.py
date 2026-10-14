@@ -77,7 +77,14 @@ class MpcfillPage(QWidget):
         self.hint.setObjectName("Hint")
         sv.addWidget(self.hint)
         self.list = QListWidget()
-        self.list.setToolTip("The cards of the order and how many of each")
+        self.list.setToolTip("The cards of the order and how many of each – Delete takes the "
+                             "selected out of it")
+        self.list.setSelectionMode(QListWidget.ExtendedSelection)
+        try:                                   # MSE Studio 0.17: the Delete key
+            from mse_studio.gui.common import delete_key
+            delete_key(self.list, self.drop_selected)
+        except ImportError:
+            pass
         sv.addWidget(self.list, 1)
         self.status = QLabel()
         self.status.setWordWrap(True)
@@ -132,6 +139,9 @@ class MpcfillPage(QWidget):
     # ------------------------------------------------------------ the order
     def _downloaded(self, path: Path, _page: str):
         try:
+            if path.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp"):
+                self._picture_downloaded(path)
+                return
             if path.suffix.lower() != ".xml":
                 self.status.setText(f"Saved {path.name}")
                 return
@@ -142,6 +152,43 @@ class MpcfillPage(QWidget):
             self.show_order(dst)
         except RuntimeError:
             return
+
+    def _picture_downloaded(self, path: Path):
+        """Download Image on MPCFill: the card joins the order list, printed
+        with that picture."""
+        keep = addons.data_dir(ADDON_ID) / "pictures"
+        keep.mkdir(parents=True, exist_ok=True)
+        dst = keep / path.name
+        dst.write_bytes(path.read_bytes())
+        card = mo.from_picture(dst)
+        if self.order is None:
+            self.order = mo.Order()
+            self.order_file = ""
+        same = next((c for c in self.order.cards if c.file and Path(c.file).name == dst.name),
+                    None)
+        if same is None:
+            self.order.cards.append(card)
+        self._keep_pictures()
+        self._show_list()
+        self.status.setText(f"{card.name} is in the order list – Add them to my deck prints it "
+                            "with that picture.")
+
+    def drop_selected(self):
+        """The selected cards out of the order (not out of your deck)."""
+        if self.order is None:
+            return
+        rows = sorted({self.list.row(it) for it in self.list.selectedItems()}, reverse=True)
+        for r in rows:
+            if 0 <= r < len(self.order.cards):
+                del self.order.cards[r]
+        self._keep_pictures()
+        self._show_list()
+
+    def _keep_pictures(self):
+        import json
+        files = [c.file for c in (self.order.cards if self.order else []) if c.file]
+        (addons.data_dir(ADDON_ID) / "pictures.json").write_text(json.dumps(files),
+                                                                  encoding="utf-8")
 
     def open_file(self):
         path, _ = QFileDialog.getOpenFileName(self, "An MPCFill order", "",
@@ -157,24 +204,42 @@ class MpcfillPage(QWidget):
             return
         self.order_file = str(path)
         (addons.data_dir(ADDON_ID) / "last.txt").write_text(str(path), encoding="utf-8")
+        self._keep_pictures()                    # a new order: downloaded pictures start over
+        self._show_list()
+        self.status.setText(f"From {path.name}")
+
+    def _show_list(self):
         self.list.clear()
         for c in self.order.cards:
-            it = QListWidgetItem(f"{c.count}×  {c.name}" + ("   (two faces)" if c.back else ""))
+            it = QListWidgetItem(f"{c.count}×  {c.name}" + ("   (two faces)" if c.back else "")
+                                 + ("   (downloaded picture)" if c.file else ""))
             it.setToolTip(c.picture)
             self.list.addItem(it)
         self.head.setText(f"<b>Your order</b> – {len(self.order.cards)} different cards, "
                           f"{self.order.total} in all")
-        self.status.setText(f"From {path.name}")
         self._buttons()
 
     def _load_last(self):
+        import json
+        try:                                     # read first: opening the order resets it
+            files = json.loads((addons.data_dir(ADDON_ID) / "pictures.json")
+                               .read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            files = []
         try:
             last = Path((addons.data_dir(ADDON_ID) / "last.txt").read_text(encoding="utf-8")
                         .strip())
+            if last.is_file():
+                self.show_order(last)
         except OSError:
-            return
-        if last.is_file():
-            self.show_order(last)
+            pass
+        pics = [mo.from_picture(Path(f)) for f in files if Path(f).is_file()]
+        if pics:
+            if self.order is None:
+                self.order = mo.Order()
+            self.order.cards += pics
+            self._keep_pictures()
+            self._show_list()
 
     def _buttons(self):
         has = self.order is not None and bool(self.order.cards)
@@ -211,8 +276,10 @@ class MpcfillPage(QWidget):
                     break
                 progress(k, len(cards), f"Pictures: {c.name}")
                 files = []
+                if c.file and Path(c.file).is_file():          # Download Image: have it
+                    files.append((0, c.file))
                 for side, pid in enumerate((c.front, c.back)):
-                    if not pid:
+                    if not pid or (side == 0 and files):
                         continue
                     data = mpcfill.download(pid, images)
                     f = tmp / f"{_safe(pid)}{_ext(data)}"

@@ -17,14 +17,15 @@ import re
 import time
 from pathlib import Path
 
-from PySide6.QtCore import QSize, Qt, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon
+from PySide6.QtCore import QItemSelectionModel, QRectF, QSize, Qt, QUrl
+from PySide6.QtGui import QColor, QDesktopServices, QIcon, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog,
                                QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout,
                                QInputDialog, QLabel, QLineEdit, QListView, QListWidget,
                                QListWidgetItem, QMenu, QMessageBox, QPlainTextEdit, QPushButton,
-                               QSlider, QSplitter, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-                               QWidget)
+                               QSlider, QSplitter, QStyle, QStyledItemDelegate,
+                               QStyleOptionViewItem, QTabWidget, QTreeWidget, QTreeWidgetItem,
+                               QVBoxLayout, QWidget)
 
 from mse_studio.core import decklists as dl
 from mse_studio.gui import icons, thumbs
@@ -39,6 +40,93 @@ GROUPS = [("free", "Free"), ("paid", "Paid – on Ko-fi"), ("mine", "Added by yo
           ("pc", "On this PC")]
 SORTS = [("deck", "Deck order"), ("name", "Name"), ("folder", "Folder (card type)"),
          ("count", "Copies")]
+
+
+NO_TEXT = "__no_text__"            # the type filter's "no rules text (often full art)"
+REAL_HINT = ("<b>Add to my order</b>: real cards, straight to the Order page – printed as they "
+             "are, with the maker's credit. <b>Add to my deck to edit</b>: your own cards on the "
+             "Cards page, with the card's text and its art – in this deck's own frame when it has "
+             "one (right-click the deck → This deck's frame).")
+
+
+def _ask_delete(parent, text: str) -> bool:
+    """MSE Studio 0.17's "Ask before deleting" (Settings) – else ask."""
+    try:
+        from mse_studio.gui.common import ask_delete
+        return ask_delete(parent, text)
+    except ImportError:
+        return QMessageBox.question(parent, "Proxy decks", text) == QMessageBox.Yes
+
+
+class TickDelegate(QStyledItemDelegate):
+    """A card with a big tick box at its top-left; ticked cards get a frame."""
+    BOX = 28
+
+    def paint(self, qp, option, index):
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+        ticked = bool(opt.state & QStyle.State_Selected)
+        opt.state &= ~QStyle.State_Selected            # no blue over the picture
+        opt.state &= ~QStyle.State_HasFocus
+        w = opt.widget
+        style = w.style() if w is not None else QApplication.style()
+        style.drawControl(QStyle.CE_ItemViewItem, opt, qp, w)
+        try:
+            from mse_studio.gui import theme
+            accent = QColor(theme.current().primary)
+        except Exception:  # noqa: BLE001
+            accent = QColor("#5b8def")
+        icon = style.subElementRect(QStyle.SE_ItemViewItemDecoration, opt, w)
+        qp.save()
+        qp.setRenderHint(QPainter.Antialiasing)
+        if ticked:
+            qp.setPen(QPen(accent, 3))
+            qp.setBrush(Qt.NoBrush)
+            qp.drawRoundedRect(QRectF(opt.rect).adjusted(2, 2, -2, -2), 8, 8)
+        b = QRectF(icon.left() + 6, icon.top() + 6, self.BOX, self.BOX)
+        qp.setPen(QPen(QColor(0, 0, 0, 160), 1.5))
+        qp.setBrush(accent if ticked else QColor(255, 255, 255, 225))
+        qp.drawRoundedRect(b, 6, 6)
+        if ticked:
+            path = QPainterPath()
+            path.moveTo(b.left() + b.width() * 0.22, b.top() + b.height() * 0.52)
+            path.lineTo(b.left() + b.width() * 0.43, b.top() + b.height() * 0.72)
+            path.lineTo(b.left() + b.width() * 0.78, b.top() + b.height() * 0.30)
+            qp.setPen(QPen(QColor("#ffffff"), 3.2, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            qp.setBrush(Qt.NoBrush)
+            qp.drawPath(path)
+        qp.restore()
+
+
+class TickGrid(QListWidget):
+    """Cards to tick: click (or Ctrl+click) a card to tick or untick it, drag
+    across cards to tick several, Shift+click to tick everything up to it,
+    Ctrl+A for all. Right-click doesn't change the ticks."""
+
+    def __init__(self):
+        super().__init__()
+        self.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.setItemDelegate(TickDelegate(self))
+        self._anchor = -1
+
+    def mousePressEvent(self, e):
+        it = self.itemAt(e.position().toPoint())
+        if e.button() == Qt.RightButton:
+            if it is not None:
+                self.setCurrentItem(it, QItemSelectionModel.NoUpdate)
+            e.accept()
+            return
+        if it is not None and e.button() == Qt.LeftButton and \
+                e.modifiers() & Qt.ShiftModifier and self._anchor >= 0:
+            a, b = sorted((self._anchor, self.row(it)))
+            sm = self.selectionModel()
+            for r in range(a, b + 1):
+                sm.select(self.model().index(r, 0), QItemSelectionModel.Select)
+            e.accept()
+            return
+        super().mousePressEvent(e)
+        if it is not None:
+            self._anchor = self.row(it)
 
 
 def _group(d: px.Deck) -> str:
@@ -69,15 +157,19 @@ class ProxiesPage(QWidget):
         self._thumb_for: dict[str, list[str]] = {}
         self._importing: set = set()       # decks being imported
         self.types: dict = {}              # name → type line, from Scryfall
+        self.texts: dict = {}              # name → has rules text, from Scryfall
+        self.templates: list = []          # the maker's frame templates in the deck
         self._looking: set = set()         # decks being looked up
         lay = QVBoxLayout(self)
-        lay.addWidget(page_header(
+        self.header = page_header(
             "Proxy decks", "Decks people share on r/mpcproxies, Ko-fi and Discord – real Magic "
                            "cards with new art and frames – from their Google Drive, or proxy "
                            "folders on this PC. Import a deck, tick the cards you want and add "
                            "them to your deck: they're printed with those pictures, and every "
-                           "picture keeps its maker's credit."))
+                           "picture keeps its maker's credit.")
+        lay.addWidget(self.header)
         split = QSplitter(Qt.Horizontal)
+        self.split = split
 
         # ---------------------------------------------------------------- the decks
         left = QWidget()
@@ -86,6 +178,14 @@ class ProxiesPage(QWidget):
         self.list = QTreeWidget()
         self.list.setHeaderHidden(True)
         self.list.currentItemChanged.connect(self._picked)
+        self.list.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.list.customContextMenuRequested.connect(self._list_menu)
+        self.list.setToolTip("Right-click a deck for more – Delete takes it off your list")
+        try:
+            from mse_studio.gui.common import delete_key
+            delete_key(self.list, self.remove)
+        except ImportError:
+            pass
         lv.addWidget(self.list, 1)
         row = QHBoxLayout()
         b = QPushButton("Add a link or post…")
@@ -112,16 +212,19 @@ class ProxiesPage(QWidget):
         row.addWidget(b)
         self.remove_btn = QPushButton("Remove from my list")
         icons.set_icon(self.remove_btn, "delete")
-        self.remove_btn.setToolTip("Decks on this PC: the files stay where they are")
+        self.remove_btn.setToolTip("Take the deck off your list (files on your PC stay where they "
+                                   "are). Right-click the list → Bring back removed decks")
         self.remove_btn.clicked.connect(self.remove)
         row.addWidget(self.remove_btn)
         lv.addLayout(row)
         split.addWidget(left)
+        self.left = left
 
         # ---------------------------------------------------------------- one deck
+        self.tabs = QTabWidget()
         right = QWidget()
         rv = QVBoxLayout(right)
-        rv.setContentsMargins(0, 0, 0, 0)
+        rv.setContentsMargins(0, 4, 0, 0)
         self.title = QLabel()
         self.title.setWordWrap(True)
         self.title.setTextFormat(Qt.RichText)
@@ -197,8 +300,11 @@ class ProxiesPage(QWidget):
         self.type_filter.addItem("All types", "")
         for t in px.TYPES:
             self.type_filter.addItem({"Sorcery": "Sorceries"}.get(t, t + "s"), t)
+        self.type_filter.addItem("No rules text (often full art)", NO_TEXT)
         self.type_filter.setToolTip("Types come from Scryfall when the cards are looked up, "
-                                    "else from the deck's folders (Creature, Land…)")
+                                    "else from the deck's folders (Creature, Land…). No rules "
+                                    "text: basic lands, vanilla creatures and pictures named "
+                                    "full art / textless – most likely full-art pictures")
         self.type_filter.currentIndexChanged.connect(self._fill_grid)
         row.addWidget(self.type_filter)
         row.addSpacing(12)
@@ -220,29 +326,44 @@ class ProxiesPage(QWidget):
         self.lookup.toggled.connect(self._lookup_toggled)
         row.addWidget(self.lookup)
         row.addStretch(1)
+        self.big_btn = QPushButton("Bigger view")
+        self.big_btn.setCheckable(True)
+        icons.set_icon(self.big_btn, "fullscreen")
+        self.big_btn.setToolTip("Hide the list of decks and the page's title: more room for "
+                                "the cards")
+        self.big_btn.toggled.connect(self._big_view)
+        row.addWidget(self.big_btn)
         rv.addLayout(row)
 
-        self.grid = QListWidget()
+        self.grid = TickGrid()
         self.grid.setViewMode(QListView.IconMode)
         self.grid.setResizeMode(QListView.Adjust)
         self.grid.setMovement(QListView.Static)
         self._apply_size()
         self.grid.setWordWrap(True)
-        self.grid.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.grid.setToolTip("Tick the cards to add. Double-click a card to see it full size; "
-                             "right-click for more")
-        self.grid.itemChanged.connect(self._tick_changed)
+        self.grid.setToolTip("Click a card to tick or untick it (drag across cards to tick "
+                             "several, Shift+click for all up to it, Ctrl+A for all). "
+                             "Double-click to see it full size; right-click for more")
+        self.grid.itemSelectionChanged.connect(self._ticks_changed)
         self.grid.itemDoubleClicked.connect(self._double_clicked)
         self.grid.setContextMenuPolicy(Qt.CustomContextMenu)
         self.grid.customContextMenuRequested.connect(self._grid_menu)
         rv.addWidget(self.grid, 1)
 
         row = QHBoxLayout()
-        self.add_btn = QPushButton("Add the ticked to my deck")
+        self.add_btn = QPushButton("Add the ticked to my order")
         self.add_btn.setProperty("kind", "primary")
-        icons.set_icon(self.add_btn, "add")
+        icons.set_icon(self.add_btn, "shopping_cart")
         self.add_btn.clicked.connect(lambda: self.add_to_deck())
         row.addWidget(self.add_btn)
+        self.edit_btn = QPushButton("Add the ticked to my deck to edit")
+        icons.set_icon(self.edit_btn, "edit")
+        self.edit_btn.setToolTip("Your own cards with the card's text and this art – in the "
+                                 "deck's own frame, or a frame like the real card")
+        self.edit_menu = QMenu(self.edit_btn)
+        self.edit_menu.aboutToShow.connect(lambda: self._fill_edit_menu(self.edit_menu, None))
+        self.edit_btn.setMenu(self.edit_menu)
+        row.addWidget(self.edit_btn)
         self.list_btn = QPushButton("Save as a decklist")
         self.list_btn.setToolTip("The deck's card list on the Decklists page (to view or "
                                  "playtest); tokens and extras go in its sideboard")
@@ -261,7 +382,14 @@ class ProxiesPage(QWidget):
         row.addWidget(b)
         row.addStretch(1)
         rv.addLayout(row)
-        split.addWidget(right)
+        self.hint = QLabel(REAL_HINT)
+        self.hint.setWordWrap(True)
+        self.hint.setObjectName("Hint")
+        rv.addWidget(self.hint)
+        self.tabs.addTab(right, "Cards")
+        self.tabs.addTab(self._mine_tab(), "In my deck")
+        self.tabs.currentChanged.connect(lambda i: self.fill_mine() if i == 1 else None)
+        split.addWidget(self.tabs)
         split.setSizes([320, 900])
         lay.addWidget(split, 1)
         thumbs.cache().ready.connect(self._thumb_ready)
@@ -269,10 +397,14 @@ class ProxiesPage(QWidget):
             thumbs.large().ready.connect(self._thumb_ready)
         px.clear_scratch()
         self.fill_list()
+        if px.pref("big_view"):
+            self.big_btn.setChecked(True)
 
     # ------------------------------------------------------------ MSE Studio calls these
     def load(self):
         self._buttons()
+        if self.tabs.currentIndex() == 1:
+            self.fill_mine()
 
     def refresh(self):
         self._buttons()
@@ -375,7 +507,7 @@ class ProxiesPage(QWidget):
         self.source_btn.setText("Open the folder" if d is not None and d.on_pc
                                 else "Google Drive")
         self.maker_btn.setVisible(d is not None and (d.on_pc or d.mine))
-        self.remove_btn.setEnabled(d is not None and (d.mine or d.on_pc))
+        self.remove_btn.setEnabled(d is not None)
         has = bool(self.cards)
         p = self.main.project
         for b in (self.list_btn, self.save_btn, self.tick_all, self.tick_none, self.search,
@@ -383,17 +515,23 @@ class ProxiesPage(QWidget):
             b.setEnabled(has)
         n = self._ticked_count()
         self.add_btn.setEnabled(n > 0 and p is not None)
-        self.add_btn.setText(f"Add the {n} ticked to my deck" if n else
-                             "Add the ticked to my deck")
+        self.add_btn.setText(f"Add the {n} ticked to my order" if n else
+                             "Add the ticked to my order")
         self.add_btn.setToolTip(
             "Open a deck first" if p is None else
-            "As real cards printed with these pictures (on the Order page and in Print at "
-            "home); the maker's credit stays with each")
+            "Real cards, straight to the Order page: printed with these pictures as they are "
+            "(and in Print at home); the maker's credit stays with each")
+        self.edit_btn.setEnabled(n > 0 and p is not None)
+        self.edit_btn.setText(f"Add the {n} ticked to my deck to edit" if n else
+                              "Add the ticked to my deck to edit")
         self.back_btn.setVisible(bool(self.backs))
         self.back_btn.setEnabled(p is not None)
 
     def _ticked_count(self) -> int:
         return sum(c.count for c in self.cards if c.key in self._ticked)
+
+    def _ticked_keys(self) -> list:
+        return [c.key for c in self.cards if c.key in self._ticked]
 
     # ------------------------------------------------------------ importing a deck
     def import_deck(self):
@@ -449,8 +587,10 @@ class ProxiesPage(QWidget):
         d = self.deck
         self.text = text
         self.cards, self.backs = px.cards_in(items, text, d.id if d else "")
+        self.templates = px.templates_in(items)
         self._by_key = {c.key: c for c in self.cards}
         self.types = px.load_types(d.id) if d else {}
+        self.texts = px.load_texts(d.id) if d else {}
         if d is not None and self.lookup.isChecked() and not self.types and self.cards:
             self._look_up(d.id)
         self._ticked = {c.key for c in self.cards if not c.extra}
@@ -462,6 +602,8 @@ class ProxiesPage(QWidget):
              (" (counts from the deck's own list)" if text else "") +
              (f" · {extra} tokens and extras, unticked" if extra else "") +
              (f" · {len(self.backs)} card back(s)" if self.backs else "") +
+             (f" · {len(self.templates)} frame template(s) – right-click the deck → This "
+              "deck's frame" if self.templates else "") +
              f" · {when}") if self.cards else
             "No card pictures in that folder.")
 
@@ -474,7 +616,8 @@ class ProxiesPage(QWidget):
         cards = [c for c in self.cards if not c.token]
 
         def work(progress=None, cancel=None):
-            return deck_id, px.lookup_types(cards, progress, cancel)
+            types, texts = px.lookup_cards(cards, progress, cancel)
+            return deck_id, types, texts
 
         self._looking.add(deck_id)
         job = Job(work, label="Looking the proxy cards up")
@@ -484,11 +627,12 @@ class ProxiesPage(QWidget):
 
     def _looked_up(self, res):
         try:
-            did, types = res
+            did, types, texts = res
             self._looking.discard(did)
             px.set_types(did, types)
+            px.set_texts(did, texts)
             if self.deck is not None and self.deck.id == did:
-                self.types = types
+                self.types, self.texts = types, texts
                 self._fill_grid()
         except RuntimeError:
             return
@@ -502,7 +646,7 @@ class ProxiesPage(QWidget):
 
     def _lookup_toggled(self, on: bool):
         px.set_pref("lookup", on)
-        if on and self.deck is not None and self.cards and not self.types:
+        if on and self.deck is not None and self.cards and (not self.types or not self.texts):
             self._look_up(self.deck.id)
 
     # ------------------------------------------------------------ size
@@ -529,10 +673,14 @@ class ProxiesPage(QWidget):
         q = self.search.text().strip().lower()
         sort = self.sort.currentData()
         want = self.type_filter.currentData() or ""
+        if want == NO_TEXT and self.lookup.isChecked() and self.deck is not None and \
+                self.cards and not self.texts:
+            self._look_up(self.deck.id)          # which cards have rules text
         cards = [c for c in self.cards if (self.show_extra.isChecked() or not c.extra) and
                  (not q or q in c.name.lower() or q in c.category.lower()
                   or q in c.front.name.lower()) and
-                 (not want or want in px.card_types(c, self.types))]
+                 (not want or (px.no_rules_text(c, self.texts) if want == NO_TEXT
+                               else want in px.card_types(c, self.types)))]
         if sort == "name":
             cards.sort(key=lambda c: c.name.lower())
         elif sort == "folder":
@@ -549,8 +697,6 @@ class ProxiesPage(QWidget):
                 (("\ntoken" if c.token else "\nextra") if c.extra else "")
             it = QListWidgetItem(label)
             it.setData(Qt.UserRole, c.key)
-            it.setFlags(it.flags() | Qt.ItemIsUserCheckable)
-            it.setCheckState(Qt.Checked if c.key in self._ticked else Qt.Unchecked)
             tip = [c.front.name]
             line = self.types.get(c.name.lower())
             if line:
@@ -569,6 +715,8 @@ class ProxiesPage(QWidget):
             if pm is not None:
                 it.setIcon(QIcon(pm))
             self.grid.addItem(it)
+            if c.key in self._ticked:
+                it.setSelected(True)
         self.grid.blockSignals(False)
         self._buttons()
 
@@ -610,13 +758,13 @@ class ProxiesPage(QWidget):
         except RuntimeError:
             return
 
-    def _tick_changed(self, item):
+    def _ticks_changed(self):
+        """Ticking is selecting: the cards shown follow what's selected (cards
+        hidden by the search or filter keep their ticks)."""
         try:
-            key = item.data(Qt.UserRole)
-            if item.checkState() == Qt.Checked:
-                self._ticked.add(key)
-            else:
-                self._ticked.discard(key)
+            shown = {self.grid.item(i).data(Qt.UserRole) for i in range(self.grid.count())}
+            sel = {it.data(Qt.UserRole) for it in self.grid.selectedItems()}
+            self._ticked = (self._ticked - shown) | sel
             self._buttons()
         except RuntimeError:
             return
@@ -625,9 +773,10 @@ class ProxiesPage(QWidget):
         self.grid.blockSignals(True)
         for i in range(self.grid.count()):
             it = self.grid.item(i)
-            it.setCheckState(Qt.Checked if on else Qt.Unchecked)
+            it.setSelected(on)
             (self._ticked.add if on else self._ticked.discard)(it.data(Qt.UserRole))
         self.grid.blockSignals(False)
+        self.grid.viewport().update()
         self._buttons()
 
     def _tick_keys(self, keys: list, on: bool):
@@ -646,36 +795,230 @@ class ProxiesPage(QWidget):
         if it is None:
             return
         key = it.data(Qt.UserRole)
-        keys = self._selected_keys()
-        if key not in keys:
-            keys = [key]
         c = self._by_key.get(key)
         if c is None:
             return
+        ticked = self._ticked_keys()
+        keys = ticked if key in self._ticked and len(ticked) > 1 else [key]
+        n = len(keys)
+        p = self.main.project
         menu = QMenu(self)
         menu.addAction(icons.icon("zoom_in"), "See it full size", lambda: self.view_card(key))
-        n = len(keys)
-        add = menu.addAction(icons.icon("add"), "Add this card to my deck" if n == 1 else
-                             f"Add the {n} selected to my deck",
+        add = menu.addAction(icons.icon("shopping_cart"),
+                             "Add it to my order (printed as it is)" if n == 1 else
+                             f"Add the {n} ticked to my order (printed as they are)",
                              lambda: self.add_to_deck(keys))
-        add.setEnabled(self.main.project is not None)
-        menu.addAction("Tick" + (" them" if n > 1 else " it"), lambda: self._tick_keys(keys, True))
-        menu.addAction("Untick" + (" them" if n > 1 else " it"),
-                       lambda: self._tick_keys(keys, False))
+        add.setToolTip("Real cards, straight to the Order page, printed with this picture")
+        add.setEnabled(p is not None)
+        edit = menu.addMenu(icons.icon("edit"), "Add it to my deck to edit" if n == 1 else
+                            f"Add the {n} ticked to my deck to edit")
+        edit.setEnabled(p is not None)
+        self._fill_edit_menu(edit, keys)
+        a = menu.addAction(icons.icon("brush"), "Use its art on the card I'm editing…",
+                           lambda: self.use_art(key, False))
+        a.setEnabled(p is not None and
+                     getattr(self.main.cards_tab.editor, "card", None) is not None)
+        self._tools_menu(menu, key)
+        menu.addSeparator()
+        if key in self._ticked:
+            menu.addAction("Untick" + (" them" if n > 1 else " it"),
+                           lambda: self._tick_keys(keys, False))
+        else:
+            menu.addAction("Tick it", lambda: self._tick_keys([key], True))
         if c.variants:
             sub = menu.addMenu(f"Print it with ({len(c.variants) + 1} pictures)")
             a = sub.addAction(f"{c.front.name} (now)")
             a.setEnabled(False)
             for i, v in enumerate(c.variants):
                 sub.addAction(v.name, lambda i=i: self._use_variant(key, i))
-        art = menu.addMenu(icons.icon("brush"), "Use its art for my own card")
-        a = art.addAction("On the card I'm editing…", lambda: self.use_art(key, False))
-        a.setEnabled(self.main.project is not None and
-                     getattr(self.main.cards_tab.editor, "card", None) is not None)
-        a = art.addAction("On a new card of mine…", lambda: self.use_art(key, True))
-        a.setEnabled(self.main.project is not None)
-        menu.addAction(icons.icon("save"), "Save its picture…", lambda: self.save_pictures(keys))
+        menu.addAction(icons.icon("save"), "Save its picture…" if n == 1 else
+                       f"Save the {n} pictures…", lambda: self.save_pictures(keys))
         menu.exec(self.grid.viewport().mapToGlobal(pos))
+
+    def _fill_edit_menu(self, menu: QMenu, keys):
+        """Add to my deck to edit ▸ which frame."""
+        menu.clear()
+        d = self.deck
+        own = px.deck_frame(d.id) if d else ""
+        if own:
+            menu.addAction(icons.icon("palette"), f"In this deck's frame ({own})",
+                           lambda: self.edit_cards(keys, own))
+        menu.addAction("In a frame like the real card", lambda: self.edit_cards(keys, "real"))
+        menu.addAction("In my deck's frame", lambda: self.edit_cards(keys, "same"))
+        menu.addSeparator()
+        menu.addAction(icons.icon("palette"), "Choose this deck's frame…", self.choose_frame)
+
+    def _tools_menu(self, menu: QMenu, key: str):
+        """Picture tools from other add-ons (Keep only the art…)."""
+        try:
+            from mse_studio.core import picture_tools
+        except ImportError:
+            return
+        tools = picture_tools.tools()
+        if not tools:
+            a = menu.addAction(icons.icon("brush"), "Keep only the art (Art only add-on)")
+            a.setEnabled(False)
+            a.setToolTip("Get the Art only add-on: Manage → Add-ons → Store")
+            return
+        for t in tools:
+            a = menu.addAction(icons.icon("brush"), t.label,
+                               lambda t=t: self._run_tool(t, key))
+            a.setToolTip(t.tooltip)
+
+    def _run_tool(self, tool, key: str):
+        c, d = self._by_key.get(key), self.deck
+        if c is None:
+            return
+        item = c.front
+        folder = px.scratch("tool-")
+        info = {"name": c.name, "card": {}, "kind": "proxy", "credit": d.credit() if d else "",
+                "maker": d.creator if d else "", "page": d.page if d else ""}
+
+        def work(progress=None, cancel=None):
+            if item.kind == "file":
+                return item.id
+            progress(0, 0, f"Getting {c.name}…")
+            f = folder / Path(item.name).name
+            f.write_bytes(px.fetch(item))
+            return str(f)
+
+        def done(path):
+            from mse_studio.core import picture_tools
+            try:
+                picture_tools.run(tool, self, Path(path), info)
+            except RuntimeError:
+                return
+        job = Job(work, label=f"Getting {c.name}")
+        job.signals.finished.connect(done)
+        job.signals.failed.connect(self._failed_box)
+        self._jobs.append(start(job))
+
+    # ------------------------------------------------------------ cards to edit
+    def edit_cards(self, keys, frame: str):
+        """The cards as your own cards to edit: Scryfall's text (when they're
+        looked up), the picture's art in the art box (all of it, like MSE's
+        Force to fit) – in ``frame``: this deck's own frame, "real" (like the
+        real card) or "same" (your deck's frame)."""
+        p, d = self.main.project, self.deck
+        keys = keys or self._ticked_keys()
+        cards = [copy.copy(self._by_key[k]) for k in keys if k in self._by_key]
+        if p is None or d is None or not cards:
+            return
+        lookup, folder = self.lookup.isChecked(), str(p.folder)
+        tmp = px.scratch("edit-")
+
+        def work(progress=None, cancel=None):
+            from PIL import Image
+            entries = [dl.Entry(name=c.name, count=c.count, section=c.section) for c in cards]
+            if lookup:
+                dl.resolve(entries, progress, cancel)
+            pics = []
+            for k, c in enumerate(cards):
+                if cancel is not None and cancel.cancelled:
+                    break
+                progress(k, len(cards), f"Art: {c.name}")
+                f = tmp / f"{k}{Path(c.front.name).suffix.lower() or '.png'}"
+                f.write_bytes(px.fetch(c.front))
+                with Image.open(f) as im:
+                    pics.append((str(f), px.art_window(im.size)))
+            return folder, entries[:len(pics)], pics
+
+        def done(res):
+            try:
+                self._edit_ready(res, frame, d)
+            except RuntimeError:
+                return
+        self.status.setText("Getting the art…")
+        job = Job(work, label=f"Cards to edit from {d.title}")
+        job.signals.progress.connect(self._progress)
+        job.signals.finished.connect(done)
+        job.signals.failed.connect(self._failed_box)
+        self._jobs.append(start(job))
+
+    def _edit_ready(self, res, frame: str, deck: px.Deck):
+        from mse_studio.core import art_import
+        folder, entries, pics = res
+        p = self.main.project
+        if p is None or str(p.folder) != folder:
+            self.status.setText("The deck was closed – nothing was added.")
+            return
+        keep = []                          # the art goes in the deck's art folder
+        target = art_import.default_folder(p)
+        for e, (path, crop) in zip(entries, pics):
+            dst = art_import.save_image_bytes(Path(path).read_bytes(), target,
+                                              f"{e.display_name} (proxy)")
+            art_import.set_credit(p, dst, deck.creator, deck.credit(), deck.page)
+            keep.append((dst, crop))
+        tab = self.main.decklists_tab
+        try:
+            n = tab.add_custom(entries, deck.title, frame=frame, pictures=keep,
+                               keep_unknown=True)
+        except TypeError:                  # an MSE Studio before 0.17
+            error(self, "Proxy decks", "Update MSE Studio (0.17 or newer) to add cards to edit.")
+            return
+        if n:
+            px.log_added(p.folder, deck, [e.display_name for e in entries], "edit")
+            self.status.setText(f"Added {n} card(s) to edit – they're on the Cards page, with "
+                                "their art.")
+            self.fill_mine()
+
+    # ------------------------------------------------------------ this deck's frame
+    def choose_frame(self):
+        d = self.deck
+        if d is None:
+            return
+        dlg = FrameDialog(self, d, self.templates)
+        if dlg.exec():
+            px.set_deck_frame(d.id, dlg.frame)
+            self.status.setText(f"{d.title}'s cards are edited in {dlg.frame} now." if dlg.frame
+                                else f"{d.title} has no frame of its own now.")
+
+    def make_frame(self, deck: px.Deck, templates: list):
+        """Frame studio (an add-on) makes a frame from the deck's templates."""
+        page = (getattr(self.main, "addon_pages", {}) or {}).get("frame-studio", (None, None))[1]
+        if page is None:
+            error(self, "Proxy decks", "Frame studio makes a frame from the maker's templates: "
+                                       "get it in Manage → Add-ons → Store.")
+            return
+        folder = px.scratch("templates-")
+
+        def work(progress=None, cancel=None):
+            out = []
+            for k, it in enumerate(templates):
+                if cancel is not None and cancel.cancelled:
+                    break
+                if it.kind == "file":
+                    out.append(it.id)
+                    continue
+                progress(k, len(templates), f"Getting {it.name}")
+                f = folder / f"{k:03d} {Path(it.name).name}"
+                f.write_bytes(px.fetch(it))
+                out.append(str(f))
+            return out
+
+        def done(files):
+            try:
+                self.main.tabs.setCurrentWidget(page)
+                fr = page.start_from([Path(f) for f in files], deck.title, proxy_deck=deck.id)
+                if fr is not None:
+                    px.set_deck_frame(deck.id, fr.style_name)
+            except RuntimeError:
+                return
+        job = Job(work, label=f"Getting {deck.title}'s templates")
+        job.signals.progress.connect(self._progress)
+        job.signals.finished.connect(done)
+        job.signals.failed.connect(self._failed_box)
+        self._jobs.append(start(job))
+
+    # ------------------------------------------------------------ bigger view
+    def _big_view(self, on: bool):
+        self.left.setVisible(not on)
+        self.header.setVisible(not on)
+        self.title.setVisible(not on)
+        self.notes.setVisible(not on and bool(self.notes.text()))
+        self.big_btn.setText("Normal view" if on else "Bigger view")
+        icons.set_icon(self.big_btn, "fullscreen_exit" if on else "fullscreen")
+        px.set_pref("big_view", on)
 
     def use_art(self, key: str, new_card: bool):
         """A proxy's art on your own card: its picture goes in the deck's art
@@ -852,13 +1195,17 @@ class ProxiesPage(QWidget):
                     rc.use_picture(p, e, Path(f), side, credit)
             p.save_config()
             n = sum(e.count for e in ok)
+            if self.deck is not None and self.deck.title == title:
+                px.log_added(p.folder, self.deck, [e.display_name for e in ok], "real")
             self.main.record(f"Proxy decks · {n} real card(s) from {title}")
             self.main.update_title()
-            self.status.setText(f"Added {n} card(s) to your deck – they're on the Order page.")
+            self.status.setText(f"Added {n} real card(s) – they're on the Order page, printed as "
+                                "they are.")
             self.main.statusBar().showMessage(
                 f"Added {n} card(s) from {title} – making their print files; they're on the "
                 "Order page", 10000)
             self.main.order_tab.real_pictures(ok)
+            self.fill_mine()
             unknown = [e.name for e in ok if not e.found] if lookup else []
             if unknown:
                 QMessageBox.information(
@@ -1043,25 +1390,227 @@ class ProxiesPage(QWidget):
             self.fill_list(d.id)
 
     def remove(self):
+        """Take the deck off your list: yours are forgotten, the store's and the
+        ones on this PC are hidden (Bring back removed decks… shows them)."""
         d = self.deck
         if d is None:
             return
-        if d.on_pc:
-            same = [x for x in self._decks.values() if x.on_pc and x.root == d.root]
-            if QMessageBox.question(
-                    self, "Proxy decks",
-                    f"Take {d.root} off the list ({len(same)} deck(s))? The files stay on "
-                    "your PC.") != QMessageBox.Yes:
-                return
-            px.remove_root(d.root)
-            for x in same:
-                px.forget_listing(x.id)
-        elif d.mine:
+        if not _ask_delete(self, f"Take {d.title} off your list?" +
+                           (" The files stay on your PC." if d.on_pc else "")):
+            return
+        if d.mine:
             px.remove_mine(d.id)
         else:
-            return
+            px.hide(d.id)
+        if d.on_pc:
+            px.forget_listing(d.id)
         self.deck = None
         self.fill_list()
+
+    def remove_folder(self):
+        """A folder you added (with all the decks in it) off the list."""
+        d = self.deck
+        if d is None or not d.on_pc:
+            return
+        same = [x for x in self._decks.values() if x.on_pc and x.root == d.root]
+        if not _ask_delete(self, f"Take the folder {d.root} off the list ({len(same)} "
+                                 "deck(s))? The files stay on your PC."):
+            return
+        px.remove_root(d.root)
+        for x in same:
+            px.forget_listing(x.id)
+        self.deck = None
+        self.fill_list()
+
+    def bring_back(self):
+        n = len(px.hidden())
+        px.unhide()
+        self.fill_list()
+        self.main.statusBar().showMessage(f"{n} deck(s) back on your list", 6000)
+
+    def _list_menu(self, pos):
+        it = self.list.itemAt(pos)
+        m = QMenu(self)
+        if it is not None and it.data(0, Qt.UserRole):
+            self.list.setCurrentItem(it)
+            d = self.deck
+            if d is not None:
+                if d.can_open:
+                    m.addAction(icons.icon("download"), "Import again" if px.is_imported(d.id)
+                                else "Import the deck", self.import_deck)
+                    m.addAction(icons.icon("open_in_new"), "Open the folder" if d.on_pc else
+                                "Open its Google Drive", self._open_source)
+                if d.page:
+                    m.addAction(icons.icon("open_in_new"), "Open its Ko-fi page", self._open_page)
+                if d.on_pc or d.mine:
+                    m.addAction(icons.icon("edit"), "Who made it…", self.edit_maker)
+                frame = px.deck_frame(d.id)
+                m.addAction(icons.icon("palette"), "This deck's frame…" +
+                            (f" ({frame})" if frame else ""), self.choose_frame)
+                if self.cards:
+                    m.addAction("Save as a decklist", self.save_decklist)
+                m.addAction("Copy the credit", self.copy_credit)
+                m.addSeparator()
+                a = m.addAction(icons.icon("delete"), "Remove from my list", self.remove)
+                a.setShortcut(Qt.Key_Delete)
+                if d.on_pc:
+                    m.addAction("Remove the whole folder from my list", self.remove_folder)
+        n = len(px.hidden())
+        if n:
+            m.addSeparator()
+            m.addAction(f"Bring back removed decks ({n})", self.bring_back)
+        if not m.isEmpty():
+            m.exec(self.list.viewport().mapToGlobal(pos))
+
+    # ------------------------------------------------------------ what's in my deck
+    def _mine_tab(self) -> QWidget:
+        w = QWidget()
+        v = QVBoxLayout(w)
+        v.setContentsMargins(0, 4, 0, 0)
+        hint = QLabel("The cards of your open deck that came from proxy decks, by deck: real "
+                      "cards are on the Order page, cards to edit on the Cards page. "
+                      "Double-click one to go to it; Delete takes it out of your deck.")
+        hint.setWordWrap(True)
+        hint.setObjectName("Hint")
+        v.addWidget(hint)
+        self.mine = QTreeWidget()
+        self.mine.setHeaderLabels(["Card", "As", "Copies"])
+        self.mine.setColumnWidth(0, 360)
+        self.mine.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.mine.itemDoubleClicked.connect(self._mine_open)
+        self.mine.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.mine.customContextMenuRequested.connect(self._mine_menu)
+        try:
+            from mse_studio.gui.common import delete_key
+            delete_key(self.mine, self.remove_from_deck)
+        except ImportError:
+            pass
+        v.addWidget(self.mine, 1)
+        row = QHBoxLayout()
+        b = QPushButton("Take the selected out of my deck")
+        icons.set_icon(b, "delete")
+        b.clicked.connect(self.remove_from_deck)
+        row.addWidget(b)
+        row.addStretch(1)
+        self.mine_count = QLabel()
+        self.mine_count.setObjectName("Hint")
+        row.addWidget(self.mine_count)
+        v.addLayout(row)
+        return w
+
+    def fill_mine(self):
+        """Real cards (credited to a proxy deck) and cards to edit (from the
+        deck's log), grouped by the proxy deck they came from."""
+        self.mine.clear()
+        p = self.main.project
+        if p is None:
+            self.mine_count.setText("Open a deck first.")
+            return
+        log = px.added_log(p.folder)
+        decks = {d.id: d for d in px.decks(with_hidden=True)}
+        by_credit = {d.credit(): d.id for d in decks.values()}
+        groups: dict = {}
+
+        def group(deck_id: str, title: str):
+            if deck_id not in groups:
+                g = QTreeWidgetItem(self.mine, [title, "", ""])
+                f = g.font(0)
+                f.setBold(True)
+                g.setFont(0, f)
+                g.setFlags(Qt.ItemIsEnabled)
+                groups[deck_id] = g
+            return groups[deck_id]
+
+        real_from = {(d.get("card") or "").lower(): d for d in log if d.get("as") == "real"}
+        n = 0
+        for e in dl.project_real(p):
+            pr = e.printing or {}
+            credit = pr.get("credit") or ""
+            hit = real_from.get(e.display_name.lower()) or real_from.get(e.name.lower())
+            did = (hit or {}).get("deck") or by_credit.get(credit)
+            if not did and not credit:
+                continue
+            title = decks[did].title if did in decks else (hit or {}).get("title") or credit
+            it = QTreeWidgetItem(group(did or credit, title),
+                                 [e.display_name, "Real card (Order page)", str(e.count)])
+            it.setData(0, Qt.UserRole, ("real", e.name, e.section))
+            it.setToolTip(0, credit)
+            n += 1
+        names = {c.name.lower(): i for i, c in enumerate(p.set.cards)}
+        for d in log:
+            if d.get("as") != "edit":
+                continue
+            row = names.get((d.get("card") or "").lower())
+            if row is None:
+                continue
+            did = d.get("deck") or ""
+            title = decks[did].title if did in decks else d.get("title") or did
+            it = QTreeWidgetItem(group(did, title), [p.set.cards[row].name,
+                                                     "To edit (Cards page)", ""])
+            it.setData(0, Qt.UserRole, ("edit", p.set.cards[row].name, ""))
+            n += 1
+        for g in groups.values():
+            g.setText(2, str(g.childCount()))
+        self.mine.expandAll()
+        self.mine_count.setText(f"{n} card(s) from {len(groups)} proxy deck(s)" if n else
+                                "No cards from proxy decks in this deck yet.")
+
+    def _mine_selected(self) -> list:
+        return [it.data(0, Qt.UserRole) for it in self.mine.selectedItems()
+                if it.data(0, Qt.UserRole)]
+
+    def _mine_open(self, it, _col=0):
+        data = it.data(0, Qt.UserRole)
+        p = self.main.project
+        if not data or p is None:
+            return
+        kind, name, _section = data
+        if kind == "real":
+            self.main.tabs.setCurrentWidget(self.main.order_tab)
+            return
+        rows = [i for i, c in enumerate(p.set.cards) if c.name == name]
+        if rows:
+            self.main.tabs.setCurrentWidget(self.main.cards_tab)
+            self.main.cards_tab.select_row(rows[0])
+
+    def _mine_menu(self, pos):
+        it = self.mine.itemAt(pos)
+        if it is None or not it.data(0, Qt.UserRole):
+            return
+        if not it.isSelected():
+            self.mine.clearSelection()
+            it.setSelected(True)
+        m = QMenu(self)
+        m.addAction("Go to it", lambda: self._mine_open(it))
+        a = m.addAction(icons.icon("delete"), "Take it out of my deck", self.remove_from_deck)
+        a.setShortcut(Qt.Key_Delete)
+        m.exec(self.mine.viewport().mapToGlobal(pos))
+
+    def remove_from_deck(self):
+        """The selected cards out of your deck (Undo brings them back)."""
+        sel = self._mine_selected()
+        p = self.main.project
+        if not sel or p is None:
+            return
+        names = sorted({name for _k, name, _s in sel})
+        if not _ask_delete(self, f"Take {', '.join(names[:5])}" + ("…" if len(names) > 5 else "")
+                           + " out of your deck?"):
+            return
+        self.main.cards_tab.editor.commit()
+        real = {(name.lower(), section) for kind, name, section in sel if kind == "real"}
+        if real:
+            dl.set_project_real(p, [e for e in dl.project_real(p)
+                                    if (e.name.lower(), e.section) not in real])
+            p.save_config()
+        edit = {name for kind, name, _s in sel if kind == "edit"}
+        for c in [c for c in p.set.cards if c.name in edit]:
+            p.set.remove_card(c)
+            p.dirty = True
+        px.forget_added(p.folder, names)
+        self.main.record(f"Proxy decks · took {len(sel)} card(s) out")
+        self.main.cards_tab.reload()
+        self.main.update_title()
+        self.fill_mine()
 
     def find_on_reddit(self):
         dlg = RedditDialog(self)
@@ -1071,6 +1620,63 @@ class ProxiesPage(QWidget):
                 px.add_mine(px.deck_from_post(post))
             if added:
                 self.fill_list(px.deck_from_post(added[0]).id)
+
+
+class FrameDialog(QDialog):
+    """The MSE frame a proxy deck's cards are edited in."""
+
+    def __init__(self, parent, deck: px.Deck, templates: list):
+        super().__init__(parent)
+        self.page, self.deck, self.templates = parent, deck, templates
+        self.frame = px.deck_frame(deck.id)
+        self.setWindowTitle(f"{deck.title} – its frame")
+        self.resize(520, 520)
+        lay = QVBoxLayout(self)
+        hint = QLabel("Makers often sell their frame templates with a deck (a deluxe edition). "
+                      "Frame studio (an add-on) turns them into an MSE frame; pick it here and "
+                      "Add to my deck to edit puts this deck's cards in it.")
+        hint.setWordWrap(True)
+        lay.addWidget(hint)
+        self.list = QListWidget()
+        it = QListWidgetItem("No frame of its own (choose when adding)")
+        it.setData(Qt.UserRole, "")
+        self.list.addItem(it)
+        frames = []
+        try:
+            frames = parent.main.known_frames()
+        except Exception:  # noqa: BLE001
+            pass
+        made = [f for f in frames if f.startswith("fs-")]
+        for f in made + [f for f in frames if not f.startswith("fs-")]:
+            it = QListWidgetItem(("★ " if f in made else "") + f)
+            it.setData(Qt.UserRole, f)
+            it.setToolTip("Made with Frame studio" if f in made else "")
+            self.list.addItem(it)
+            if f == self.frame:
+                self.list.setCurrentItem(it)
+        if self.list.currentItem() is None:
+            self.list.setCurrentRow(0)
+        self.list.itemDoubleClicked.connect(lambda *_: self._ok())
+        lay.addWidget(self.list, 1)
+        n = len(templates)
+        b = QPushButton(f"Make one from the deck's {n} template(s) with Frame studio…" if n else
+                        "Make one with Frame studio (pick the maker's pictures)…")
+        icons.set_icon(b, "palette")
+        b.clicked.connect(self._make)
+        lay.addWidget(b)
+        bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        bb.accepted.connect(self._ok)
+        bb.rejected.connect(self.reject)
+        lay.addWidget(bb)
+
+    def _ok(self):
+        it = self.list.currentItem()
+        self.frame = it.data(Qt.UserRole) if it is not None else ""
+        self.accept()
+
+    def _make(self):
+        self.reject()
+        self.page.make_frame(self.deck, self.templates)
 
 
 class AddLinkDialog(QDialog):

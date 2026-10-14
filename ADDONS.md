@@ -155,6 +155,36 @@ class HelloPage(QWidget):
 - **Sharper pictures** (MSE Studio 0.16.0): `mse_studio.gui.thumbs.large()` is a
   second picture cache at 1400 px next to `thumbs.cache()` (300 px) – the same
   `get(source_id, stamp, loader)` and `ready` signal.
+- **Picture tools** (MSE Studio 0.17.0): `mse_studio.core.picture_tools.register(id,
+  label, run, tooltip=…, owner=self)` adds a tool for card pictures (the Art
+  only add-on adds *Keep only the art…*). The Decklists page offers every tool
+  when you right-click a card, and other add-ons can too (`picture_tools.tools()`,
+  `picture_tools.run(tool, parent, picture, info)`). `run(parent, picture,
+  info)` gets the picture file and `{"name", "card" (Scryfall's data or {}),
+  "credit", "kind": "real" | "proxy"}`. Register when the page is made; tools
+  are cleared when MSE Studio builds the pages again.
+- **Your own cards from pictures** (MSE Studio 0.17.0):
+  `main.decklists_tab.add_custom(entries, source, frame=…, pictures=[…],
+  keep_unknown=True)` adds cards to edit – the real card's text (when the
+  entries were looked up), in a frame (`"real"`, `"mine"`, `"same"` or a
+  frame's name), each with its own picture as the art (a file, or `(file,
+  [x, y, w, h])`), fitted like MSE's Force to fit. Proxy decks uses it.
+- **Frames** (MSE Studio 0.17.0): MSE's data folder is
+  `mse_studio.core.styles.data_dir(main.settings.mse_path)`. Add a frame with
+  MSE Studio's frame-pack installer – a zip with a `magic-<name>.mse-style`
+  folder: `mse_studio.core.mse_packages.install_zip(zip, data_dir,
+  backup_root=…)` – and take one out with `remove_package(data_dir, folder_name,
+  backup_root)` (moved, never deleted). Then `main.frames_changed()` refreshes
+  the frame lists. Frame studio is an example; never write MSE's folder
+  yourself.
+- **Deleting** (MSE Studio 0.17.0): `mse_studio.gui.common.delete_key(widget,
+  fn)` makes the Delete key run `fn` on a list, grid or table, and
+  `ask_delete(parent, text)` is True right away – or asks, when the user ticked
+  Settings → Behaviour → *Ask before deleting*. Use them so your page deletes
+  like the rest of MSE Studio.
+- **A card's biggest picture** (MSE Studio 0.17.0):
+  `mse_studio.core.decklists.fetch_full(card)` downloads a real card's PNG
+  from Scryfall (once) and returns the file.
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight
