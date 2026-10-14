@@ -205,6 +205,17 @@ class HelloPage(QWidget):
   frame's own ability and loyalty boxes from it (`mse_studio.core.walkers`)
   when the card is drawn or the deck is saved – cards added with
   `add_custom` get it straight away.
+- **AI** (MSE Studio 0.20.0): `mse_studio.ai.for_addons` asks the AI service
+  set in Settings → AI – the add-on passes `main.settings` and never reads the
+  key itself. `not_ready(settings)` says why it can't be used yet ("" when it
+  can), `service(settings)` names it for the page,
+  `ask_json(settings, system, prompt, images=[png bytes], schema=…)` returns
+  one JSON object (Claude, ChatGPT, Gemini… – pictures for the ones that see),
+  `picture_not_ready(settings)` / `make_picture(settings, prompt, size=…)` make
+  a picture (PNG bytes) with services that do (OpenAI gpt-image-1, xAI…; the
+  model is Settings → AI → *Picture model*). They go over the internet: call
+  them only from a button the user pressed, in a `Job`, and say on the page
+  which service is used (Frame studio's designer and *Ask AI to match them*).
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight

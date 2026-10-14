@@ -19,6 +19,9 @@ them that add-ons in this store are checked. So before merging a **page** or
       (`mse_studio.gui.advanced.install_font_files`), after asking.
 - [ ] It doesn't run other programs, download code, or use `eval` / `exec`.
 - [ ] It doesn't touch MSE Studio's settings (API keys and tokens live there).
+      AI only through MSE Studio's `mse_studio.ai.for_addons` (it passes
+      `main.settings` along and never reads a key), from a button the user
+      pressed, with the page saying which service is used.
 - [ ] Programs: the zip is built from the linked source, and the release is
       from the author's repository.
 - [ ] It installs and works in the newest MSE Studio (Install from file…), and

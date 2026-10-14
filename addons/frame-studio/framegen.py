@@ -104,6 +104,7 @@ class Frame:
     aligns: dict = field(default_factory=dict)  # name, type, text, artist → left|center|right
     shadows: dict = field(default_factory=dict)  # name, type… → {colour, opacity, dx, dy, blur}
     mana_flow: str = ""                         # mana symbols: "" (by the box) | row | down | up
+    design: dict = field(default_factory=dict)  # made with the Frame designer: its settings
 
     @property
     def style_name(self) -> str:
@@ -435,7 +436,7 @@ def psd_picks(psd) -> list[PsdPick]:
                                      _group_vis(info, n.key), root=n.key))
                 groups(n.children, label)
     groups(psd.layers)
-    picks += _mana_picks(psd)
+    picks += _mana_picks(psd, info)
     for n in reversed(list(psd.walk())):
         if n.kind == "pixel" and n.image is not None:
             picks.append(PsdPick(f"Layer: {n.name}" + (" (hidden)" if n.hidden else ""),
@@ -464,43 +465,165 @@ def guess_mana(name: str) -> str:
     return "mana-" + g if g in ("w", "u", "b", "r", "g") else ""
 
 
-def guess_mana_colour(img: Image.Image) -> str:
-    """Which mana symbol a picture is, from its colours: red, green, blue,
-    purple or dark (black), light or yellow (white), grey (colourless)."""
+def _hsv(img: Image.Image, size: int = 64):
+    """(hue in degrees, saturation, value) of a picture's drawn pixels (or None)."""
     im = img.convert("RGBA")
     if im.getbbox() is None:
-        return ""
+        return None
     im = im.crop(im.getbbox())
-    im.thumbnail((64, 64))
+    im.thumbnail((size, size))
     hsv = np.asarray(im.convert("RGB").convert("HSV"), dtype=np.float32)
     alpha = np.asarray(im.getchannel("A")) > 128
     if alpha.sum() < 12:
+        return None
+    return hsv[..., 0][alpha] * 360 / 255, hsv[..., 1][alpha] / 255, hsv[..., 2][alpha] / 255
+
+
+def guess_mana_colour(img: Image.Image) -> str:
+    """Which mana symbol a picture is, from its colours – also a dark tile with
+    a coloured icon: red, green, blue, purple or dark (black), cream or yellow
+    (white), grey (colourless)."""
+    got = _hsv(img)
+    if got is None:
         return ""
-    hue, sat, val = hsv[..., 0][alpha] * 360 / 255, hsv[..., 1][alpha] / 255, \
-        hsv[..., 2][alpha] / 255
-    vivid = (sat > 0.35) & (val > 0.25)
-    if vivid.mean() < 0.08:
-        v = val.mean()
-        return "mana-w" if v > 0.62 else "mana-b" if v < 0.3 else "mana-c"
-    bins = np.histogram(hue[vivid], bins=[0, 20, 70, 170, 260, 330, 361])[0]
-    k = int(np.argmax(bins))
-    return ["mana-r", "mana-w", "mana-g", "mana-u", "mana-b", "mana-r"][k]
+    hue, sat, val = got
+    lit = val > 0.3                                   # the icon and its trim, not the dark tile
+    if lit.mean() < 0.04:
+        return "mana-b"
+    h, s, v = hue[lit], sat[lit], val[lit]
+    vivid = (s > 0.38) & (v > 0.3)
+    if vivid.mean() < 0.12:                           # pale: cream (white) or grey (colourless)
+        tinted = (s > 0.1) & (h >= 25) & (h <= 75)
+        return "mana-w" if tinted.mean() > 0.25 or v.mean() > 0.8 else "mana-c"
+    bins = np.histogram(h[vivid], bins=[0, 18, 75, 170, 255, 335, 361])[0]
+    return ["mana-r", "mana-w", "mana-g", "mana-u", "mana-b", "mana-r"][int(np.argmax(bins))]
 
 
-def _mana_picks(psd) -> list:
-    """Each mana symbol in the template's mana group (its tile and icon, its
-    effects – not the sample number on it)."""
+def guess_frame_colour(img: Image.Image) -> str:
+    """Which colour a whole frame picture is, from its border and bars (not the
+    art window or the rules text box)."""
+    im = img.convert("RGBA").resize((150, 209))
+    a = np.asarray(im, dtype=np.float32) / 255
+    keep = a[..., 3] > 0.5
+    for key in ("art", "text"):                        # their insides say nothing
+        x, y, w, h = DEFAULT_BOXES[key]
+        keep[int(y * 209):int((y + h) * 209), int(x * 150):int((x + w) * 150)] = False
+    if keep.sum() < 50:
+        return ""
+    hsv = np.asarray(im.convert("RGB").convert("HSV"), dtype=np.float32)
+    hue, sat, val = hsv[..., 0][keep] * 360 / 255, hsv[..., 1][keep] / 255, hsv[..., 2][keep] / 255
+    sm, vm = float(np.median(sat)), float(np.median(val))
+    hm = float(np.median(hue[sat > 0.2])) if (sat > 0.2).mean() > 0.3 else -1
+    if sm < 0.13:                                      # greys
+        if vm > 0.75:
+            return "w"
+        if vm < 0.25:
+            return "b"
+        return "a" if (hue[sat > 0.05] > 170).mean() > 0.5 and vm > 0.45 else "c"
+    if 25 <= hm <= 55 and sm > 0.4 and vm > 0.5:
+        return "m"                                     # gold
+    if 15 <= hm <= 45 and vm < 0.55:
+        return "l"                                     # brown: land
+    if vm < 0.22:
+        return "b"
+    if hm < 0 or 40 <= hm <= 70 and vm > 0.7:
+        return "w"
+    for lo, hi, slot in ((0, 18, "r"), (18, 40, "r"), (70, 170, "g"), (170, 255, "u"),
+                         (255, 335, "b"), (335, 361, "r")):
+        if lo <= hm < hi:
+            return slot
+    return ""
+
+
+def _overlap(a: tuple, b: tuple) -> float:
+    """How much two boxes cover each other (0..1, of the smaller one)."""
+    w = min(a[2], b[2]) - max(a[0], b[0])
+    h = min(a[3], b[3]) - max(a[1], b[1])
+    if w <= 0 or h <= 0:
+        return 0.0
+    small = min((a[2] - a[0]) * (a[3] - a[1]), (b[2] - b[0]) * (b[3] - b[1]))
+    return w * h / max(1e-6, small)
+
+
+def _positional(names: list) -> bool:
+    """Layers named by their place, not their colour: "Pos 1", "Slot 2", "3"…"""
+    if len(names) < 2:
+        return False
+    rest = {" ".join(t for t in _tokens(n) if not t.isdigit()) for n in names}
+    return all(any(t.isdigit() for t in _tokens(n)) for n in names) and len(rest) == 1
+
+
+def _mana_picks(psd, info: Optional[dict] = None) -> list:
+    """The template's mana symbols: put together colour by colour when a
+    group holds a layer per colour (also inside groups named by their place,
+    like "Pos 1"); else each symbol in the mana group, told apart by its name
+    or its colours. Never the sample number on a tile."""
     from . import psdread
     g = mana_group(psd)
     if g is None:
         return []
+    if info is None:
+        info = {}
+        _annotate(psd.layers, info)
     kids = [c for c in g.children if c.kind != "text" and (c.is_group or c.image is not None)]
     if len(kids) == 1 and kids[0].is_group:              # Mana › Symbols › …
         kids = [c for c in kids[0].children if c.kind != "text"]
+    names = {"w": "White", "u": "Blue", "b": "Black", "r": "Red", "g": "Green",
+             "c": "Colourless"}
+    # a group with a layer per colour: the first place ("Pos 1"), or the mana group itself
+    holder = None
+    if _positional([c.name for c in kids]) and all(c.is_group for c in kids):
+        first = min(kids, key=lambda c: [int(t) for t in _tokens(c.name) if t.isdigit()][:1])
+        if len(set(info.get(first.key, {}).get("slots", set())) & set(names)) >= 2:
+            holder = first
+    elif len(set(info.get(g.key, {}).get("slots", set())) & set(names)) >= 2:
+        variants = [_bounds(psd, c, False) for c in kids if info.get(c.key, {}).get("variant")]
+        variants = [b for b in variants if b]
+        if variants and all(_overlap(variants[0], b) > 0.5 for b in variants):
+            holder = g                                   # the colours on top of each other
+    if holder is not None:
+        def put_together(slot, root):
+            def vis(n) -> bool:
+                if n.key == root:
+                    return True
+                if n.kind == "text":
+                    return False                         # the sample number
+                i = info.get(n.key) or {}
+                if i.get("variant") and i.get("options"):
+                    return i["variant"] == slot          # slot "" (numbers): none of them
+                if slot and n.is_group and slot in i.get("slots", set()):
+                    return True
+                return not n.hidden
+            return vis
+        picks = []
+        found = [s for s in names if s in info.get(holder.key, {}).get("slots", set())]
+        for s in found:
+            picks.append(PsdPick(f"Mana symbol – {names[s]} (put together from {holder.name})",
+                                 "mana-" + s, put_together(s, holder.key), root=holder.key,
+                                 crop=True))
+        tile = psdread.composite(psd.scaled(min(psd.size[0], 300)), put_together("", holder.key),
+                                 nodes=[n for n in psd.scaled(min(psd.size[0], 300)).walk()
+                                        if n.key == holder.key])
+        if tile.getbbox():                               # what's left: the tile for numbers
+            picks.append(PsdPick(f"Mana symbol – the tile for numbers (from {holder.name})",
+                                 "mana-n", put_together("", holder.key), root=holder.key,
+                                 crop=True))
+        else:                                            # a number's own layer ("2", "Generic")
+            num = next((c for c in holder.children if c.kind != "text" and
+                        guess_mana(c.name) == "mana-n"), None)
+            if num is not None:
+                picks.append(PsdPick(f"Mana symbol – the tile for numbers ({num.name}, without "
+                                     "its number)", "mana-n",
+                                     lambda n, k=num.key: n.key == k or (
+                                         n.kind != "text" and not n.hidden),
+                                     root=num.key, crop=True))
+        return picks
 
     def vis_for(root):
         return lambda n: n.key == root or (n.kind != "text" and not n.hidden)
     guesses = {c.key: guess_mana(c.name) for c in kids}
+    if _positional([c.name for c in kids]):
+        guesses = {k: "" for k in guesses}               # "Pos 3" says nothing
     if not any(guesses.values()):                        # unnamed: by their colours
         small = psd.scaled(min(psd.size[0], 400))
         for c in kids:

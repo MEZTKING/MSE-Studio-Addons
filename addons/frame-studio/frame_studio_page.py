@@ -1,4 +1,4 @@
-"""Frame studio: make a Magic Set Editor frame from pictures – the blank frames
+"""Frame studio: make a Magic Set Editor frame from a frame template – the blank frames
 a proxy maker shares or sells (one picture per colour), or your own – and
 your cards can use it like any other frame. Proxy decks sends a deck's
 templates here (right-click a deck → This deck's frame).
@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Optional
 
+from PIL import Image
 from PySide6.QtCore import QRectF, QSize, Qt
 from PySide6.QtGui import QBrush, QColor, QFont, QIcon, QImage, QPainter, QPen, QPixmap
 from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QColorDialog, QComboBox, QDialog,
@@ -261,7 +262,7 @@ class NewFrameDialog(QDialog):
 
     def __init__(self, parent, files: Optional[list] = None, name: str = ""):
         super().__init__(parent)
-        self.setWindowTitle("A new frame from pictures")
+        self.setWindowTitle("New frame from a template")
         self.resize(820, 700)
         self.rows: list = []           # (label, source, combo): a path, or (psd key, PsdPick)
         self._psds: dict = {}          # psd key → the file read (up to PSD_W wide)
@@ -270,31 +271,33 @@ class NewFrameDialog(QDialog):
         self._queue: list = []         # Photoshop files still to read
         self.fonts: list = []          # font files found
         self._layouts: list = []       # what each Photoshop file's text layers say
+        self._row_imgs: list = []      # each row's small picture (or its file)
+        self._row_kinds: list = []
         lay = QVBoxLayout(self)
         f = QFormLayout()
         self.name = QLineEdit(name)
         self.name.setPlaceholderText("e.g. Death Note – Vibrant")
         f.addRow("Name of the frame", self.name)
         lay.addLayout(f)
-        hint = QLabel("The blank frames: one picture per colour (White, Blue, Black, Red, Green, "
-                      "Gold, Artifact, Colourless, and Land if there is one). Their names "
-                      "usually say which is which – check the guesses below. A Photoshop file's "
-                      "colours are put together from its layers (each colour's own layers, "
-                      "without the sample text and art); its groups and single layers are "
-                      "there too.")
+        hint = QLabel("Add the frame template – a Photoshop file, or the blank frames as "
+                      "files (one per colour: White, Blue, Black, Red, Green, Gold, Artifact, "
+                      "Colourless, Land) – and its fonts. Each colour's frame, P/T box and mana "
+                      "symbol is matched for you: check the choices below, or press Match "
+                      "automatically. A Photoshop file's groups and single layers are there "
+                      "too, to pick by hand.")
         hint.setWordWrap(True)
         hint.setObjectName("Hint")
         lay.addWidget(hint)
         self.tree = QTreeWidget()
-        self.tree.setHeaderLabels(["Picture", "It's the frame for"])
+        self.tree.setHeaderLabels(["Layer or file", "Use it as"])
         self.tree.setIconSize(QSize(42, 58))
         self.tree.setColumnWidth(0, 470)
         lay.addWidget(self.tree, 3)
         row = QHBoxLayout()
         self.add_btns = []
         for label, fn, icon, tip in (
-                ("Add pictures…", self.add_files, "add_photo_alternate",
-                 "Picture files, Photoshop files or fonts"),
+                ("Add files…", self.add_files, "add_photo_alternate",
+                 "Frame pictures, Photoshop files or fonts"),
                 ("Add a folder…", self.add_folder, "folder_open",
                  "Everything in a folder and the folders in it: pictures, Photoshop files and "
                  "a Fonts folder"),
@@ -308,6 +311,24 @@ class NewFrameDialog(QDialog):
             row.addWidget(b)
             self.add_btns.append(b)
         row.addStretch(1)
+        self.match_btn = QPushButton("Match automatically")
+        icons.set_icon(self.match_btn, "auto_fix_high")
+        self.match_btn.setToolTip("Choose what each layer or file is for, from their names and "
+                                  "colours (only the ones not chosen yet)")
+        self.match_btn.clicked.connect(self.match_all)
+        row.addWidget(self.match_btn)
+        self.ai_match_btn = QPushButton("Ask AI to match them")
+        icons.set_icon(self.ai_match_btn, "auto_fix_high")
+        self.ai_match_btn.clicked.connect(self.ai_match)
+        from .designer_dialog import ai_module
+        ai = ai_module()
+        why = "Needs MSE Studio 0.20.0 or newer." if ai is None else \
+            ai.not_ready(parent.main.settings) if hasattr(parent, "main") else "No AI."
+        self.ai_match_btn.setEnabled(not why)
+        self.ai_match_btn.setToolTip(why or "Sends small pictures of the frames, groups and "
+                                     f"symbols to {ai.service(parent.main.settings)} (Settings → "
+                                     "AI), which says what each is for – one request")
+        row.addWidget(self.ai_match_btn)
         lay.addLayout(row)
         # fonts that came with the frame
         self.font_box = QWidget()
@@ -393,6 +414,11 @@ class NewFrameDialog(QDialog):
 
     def add_paths(self, paths: list):
         self.sources = getattr(self, "sources", []) + [str(p) for p in paths]
+        if not self.name.text().strip():                  # named after the template
+            first = next((Path(p) for p in paths if Path(p).is_dir() or
+                          Path(p).suffix.lower() in (".psd", ".psb")), None)
+            if first is not None:
+                self.name.setText(first.stem.replace("_", " ").strip())
         found_fonts = fg.fonts_in(paths)
         for p in paths:
             p = Path(p)
@@ -480,7 +506,10 @@ class NewFrameDialog(QDialog):
                         single = QTreeWidgetItem(top, ["Single layers"])
                         single.setFirstColumnSpanned(True)
                     parent = single
-                self._add_row(parent, pk.label, (key, pk), "", th, guess)
+                kind = "mana" if pk.label.startswith("Mana symbol") else \
+                    "frame" if pk.guess or pk.label.startswith(("The whole", "All layers")) \
+                    else "any"
+                self._add_row(parent, pk.label, (key, pk), "", th, guess, kind)
             if single is not None:
                 single.setText(0, f"Single layers ({single.childCount()})")
             if layout and layout.get("found"):
@@ -529,7 +558,10 @@ class NewFrameDialog(QDialog):
         self.bb.button(QDialogButtonBox.Ok).setEnabled(not on)
 
     # ------------------------------------------------------------ rows
-    def _add_row(self, parent, label: str, source, guess_from: str, img, guess: str = None):
+    def _add_row(self, parent, label: str, source, guess_from: str, img, guess: str = None,
+                 kind: str = "any"):
+        """A layer or file and what it's used as. ``kind``: "frame" (a colour's
+        frame or P/T box), "mana" (a mana symbol) or "any"."""
         it = QTreeWidgetItem(parent if parent is not None else self.tree, [label, ""])
         try:
             pm = QPixmap.fromImage(_qimage(img)) if img is not None else (
@@ -542,12 +574,16 @@ class NewFrameDialog(QDialog):
             pass
         combo = QComboBox()
         combo.addItem("– not used –", "")
-        for k, v in fg.SLOTS:
-            combo.addItem(v, k)
-        for k, v in fg.PT_SLOTS:
-            combo.addItem(f"P/T box – {v}", k)
-        for k, v in fg.MANA_SLOTS:
-            combo.addItem(f"Mana symbol – {v}", k)
+        if kind != "mana":
+            for k, v in fg.SLOTS:
+                combo.addItem(f"{v} frame", k)
+            for k, v in fg.PT_SLOTS:
+                combo.addItem(f"P/T box – {v}", k)
+        if kind != "frame":
+            for k, v in fg.MANA_SLOTS:
+                combo.addItem(f"Mana symbol – {v}", k)
+        combo.setProperty("guess", guess if guess is not None else
+                          (fg.guess_slot(guess_from) or ""))
         if guess is None:
             guess = fg.guess_slot(guess_from) or ""
         if guess and any(r[2].currentData() == guess for r in self.rows):
@@ -556,12 +592,138 @@ class NewFrameDialog(QDialog):
         combo.currentIndexChanged.connect(self._count)
         self.tree.setItemWidget(it, 1, combo)
         self.rows.append((label, source, combo))
+        self._row_imgs.append(img if img is not None else source)
+        self._row_kinds.append(kind)
+
+    def match_all(self):
+        """Fill every unused choice with its best guess: the names, then the
+        colours of frame files whose names say nothing."""
+        used = {r[2].currentData() for r in self.rows if r[2].currentData()}
+        done = 0
+        for label, src, combo in self.rows:
+            if combo.currentData():
+                continue
+            guess = combo.property("guess") or ""
+            if not guess and isinstance(src, Path):
+                try:
+                    guess = fg.guess_frame_colour(fg.card_picture(src)) if \
+                        fg.is_card_shaped(Image.open(src).size) else \
+                        fg.guess_mana_colour(fg.open_picture(src))
+                except Exception:  # noqa: BLE001 - not a picture we can read
+                    guess = ""
+            elif not guess and isinstance(src, tuple) and src[1].label.startswith("Mana symbol"):
+                try:
+                    guess = fg.guess_mana_colour(fg.psd_picture(self._psds[src[0]].scaled(400),
+                                                                src[1]))
+                except Exception:  # noqa: BLE001
+                    guess = ""
+            if guess and guess not in used and combo.findData(guess) >= 0:
+                combo.setCurrentIndex(combo.findData(guess))
+                used.add(guess)
+                done += 1
+        self._count()
+        if not self._jobs:
+            self.status.setText(self.status.text() + (f" – {done} more matched." if done else
+                                                      " – nothing more to match."))
+
+    def ai_match(self):
+        """Ask the AI what the frames, groups and symbols are for (one contact
+        sheet of numbered pictures), then fill the choices still empty."""
+        from PIL import ImageDraw, ImageFont
+        from .designer_dialog import ai_module
+        ai = ai_module()
+        if ai is None:
+            return
+        settings = self.parent().main.settings
+        cands = []
+        for i, (label, src, combo) in enumerate(self.rows):
+            if label.startswith("Layer:") or combo.currentData():
+                continue
+            img = self._row_imgs[i]
+            try:
+                if isinstance(img, Path):
+                    img = fg.open_picture(img)
+                if img is None or img.getbbox() is None:
+                    continue
+            except Exception:  # noqa: BLE001 - not a picture we can show
+                continue
+            cands.append((i, label, img))
+        cands = cands[:48]
+        if not cands:
+            self.status.setText("Nothing left to match.")
+            return
+        cw, ch, cols = 150, 210, 8
+        sheet = Image.new("RGB", (cols * cw, ((len(cands) + cols - 1) // cols) * ch),
+                          (128, 128, 128))
+        dr = ImageDraw.Draw(sheet)
+        try:
+            font = ImageFont.truetype("arial.ttf", 26)
+        except OSError:
+            font = ImageFont.load_default()
+        for n, (_i, _label, img) in enumerate(cands):
+            im = img.convert("RGBA")
+            im = im.crop(im.getbbox())
+            im.thumbnail((cw - 10, ch - 40))
+            x, y = (n % cols) * cw, (n // cols) * ch
+            sheet.paste(im, (x + (cw - im.width) // 2, y + 34), im)
+            dr.rectangle([x, y, x + 34, y + 30], fill=(255, 255, 255))
+            dr.text((x + 4, y + 2), str(n + 1), fill=(0, 0, 0), font=font)
+        import io
+        buf = io.BytesIO()
+        sheet.save(buf, format="PNG")
+        codes = [k for k, _ in fg.SLOTS] + [k for k, _ in fg.PT_SLOTS] + \
+            [k for k, _ in fg.MANA_SLOTS]
+        names = {**{k: f"{v} frame" for k, v in fg.SLOTS},
+                 **{k: f"P/T box – {v}" for k, v in fg.PT_SLOTS},
+                 **{k: f"mana symbol – {v}" for k, v in fg.MANA_SLOTS}}
+        system = ("You sort the parts of a trading card frame template (Magic: The Gathering "
+                  "style). Each numbered picture is a layer, group or file from it. Say what "
+                  "each is for, with one of these codes (each code at most once; leave out "
+                  "what's none of them – sample art, text, symbols of the set, single pieces):\n" +
+                  "\n".join(f"{c}: {names[c]}" for c in codes) +
+                  '\nAnswer {"choices": {"<number>": "<code>"}}.')
+        prompt = "The pictures' names:\n" + "\n".join(
+            f"{n + 1}: {label}" for n, (_i, label, _img) in enumerate(cands))
+        png = buf.getvalue()
+
+        def work(progress=None, cancel=None):
+            progress(0, 0, "Asking the AI…")
+            return ai.ask_json(settings, system, prompt, images=[png])
+
+        self._busy(True, "Asking the AI what each picture is for…")
+        job = Job(work, label="Matching with AI")
+        job.signals.finished.connect(lambda data, c=cands: self._ai_matched(data, c))
+        job.signals.failed.connect(lambda msg: self._psd_failed("the AI's answer", msg))
+        self._jobs.append(start(job))
+
+    def _ai_matched(self, data, cands):
+        try:
+            self._jobs.clear()
+            self._busy(False)
+            choices = data.get("choices", {}) if isinstance(data, dict) else {}
+            used = {r[2].currentData() for r in self.rows if r[2].currentData()}
+            done = 0
+            for key, code in choices.items():
+                try:
+                    i = cands[int(key) - 1][0]
+                except (ValueError, IndexError, TypeError):
+                    continue
+                combo = self.rows[i][2]
+                if code in used or combo.currentData() or combo.findData(code) < 0:
+                    continue
+                combo.setCurrentIndex(combo.findData(code))
+                used.add(code)
+                done += 1
+            self._count()
+            self.status.setText(f"The AI matched {done} – check them below.")
+        except RuntimeError:
+            return
 
     def _count(self, *_):
         n = sum(1 for r in self.rows if r[2].currentData())
         if not self._jobs:
-            self.status.setText(f"{len(self.rows)} picture(s), {n} used" if self.rows else
-                                "Add the frame pictures (or a Photoshop file).")
+            self.status.setText(f"{len(self.rows)} layers and files, {n} used" if self.rows else
+                                "Add the frame template: a Photoshop file, a folder or files.")
 
     # ------------------------------------------------------------ fonts
     def _add_fonts(self, files: list):
@@ -703,10 +865,10 @@ class FrameStudioPage(QWidget):
         self._loading = False
         lay = QVBoxLayout(self)
         lay.addWidget(page_header(
-            "Frame studio", "Make an MSE frame from pictures – the blank frames a proxy maker "
-                            "shares or sells (one per colour), or your own. Place the name, "
-                            "mana cost, art and text on it, and your cards can use it like any "
-                            "other frame."))
+            "Frame studio", "Make an MSE frame from a frame template – a Photoshop file or the "
+                            "blank frames a proxy maker shares or sells – or design your own. "
+                            "Place the name, mana cost, art and text on it, and your cards can "
+                            "use it like any other frame."))
         split = QSplitter(Qt.Horizontal)
         left = QWidget()
         lv = QVBoxLayout(left)
@@ -725,6 +887,14 @@ class FrameStudioPage(QWidget):
         b.setToolTip("From the blank frame pictures (a folder, picture files or a Photoshop "
                      "file)")
         b.clicked.connect(lambda: self.start_from())
+        row.addWidget(b)
+        lv.addLayout(row)
+        row = QHBoxLayout()
+        b = QPushButton("Design a frame…")
+        icons.set_icon(b, "palette")
+        b.setToolTip("The Frame designer: a whole frame drawn for you – every colour, P/T boxes "
+                     "and mana symbols – from lots of settings, or from a description with AI")
+        b.clicked.connect(lambda: self.design_frame())
         row.addWidget(b)
         self.remove_btn = QPushButton("Remove")
         icons.set_icon(self.remove_btn, "delete")
@@ -862,6 +1032,13 @@ class FrameStudioPage(QWidget):
                                    "the text colours and fonts stay")
         self.remake_btn.clicked.connect(self.remake_pictures)
         row.addWidget(self.remake_btn)
+        self.edit_design_btn = QPushButton("Edit the design…")
+        icons.set_icon(self.edit_design_btn, "palette")
+        self.edit_design_btn.setToolTip("Change this frame's settings in the Frame designer and "
+                                        "draw it again")
+        self.edit_design_btn.clicked.connect(lambda: self.design_frame(self.frame))
+        self.edit_design_btn.setVisible(False)
+        row.addWidget(self.edit_design_btn)
         row.addStretch(1)
         v.addLayout(row)
         return w
@@ -1058,6 +1235,8 @@ class FrameStudioPage(QWidget):
         for k, sb in self.size_boxes.items():
             sb.setValue(float(fr.sizes.get(k) or 0) if fr else 0)
             sb.setSpecialValueText(f"automatic ({fr.size(k):g})" if fr else "automatic")
+        self.edit_design_btn.setVisible(bool(fr and fr.design))
+        self.remake_btn.setVisible(not (fr and fr.design))
         self._load_fonts()
         self._check_pictures()
         self._show_fonts()
@@ -1450,6 +1629,54 @@ class FrameStudioPage(QWidget):
         job.signals.failed.connect(self._failed)
         self._jobs.append(start(job))
         return None
+
+    def design_frame(self, frame: Optional[fg.Frame] = None) -> None:
+        """The Frame designer: a new frame, or ``frame`` drawn again."""
+        from . import designer as ds
+        from .designer_dialog import DesignerDialog
+        design = ds.Design.from_dict(frame.design) if frame is not None and frame.design \
+            else None
+        dlg = DesignerDialog(self, self.main, design, frame.name if frame else "")
+        if not dlg.exec():
+            return
+        d, title = dlg.design, dlg.name.text().strip()
+        slug = frame.slug if frame is not None else ""
+
+        def work(progress=None, cancel=None):
+            from mse_studio.pipeline.common import Cancelled
+            from . import psdread
+            try:
+                pics = ds.render_all(d, fg.MAX_W, progress, cancel)
+            except psdread.Stopped:
+                raise Cancelled() from None
+            progress(0, 0, f"Saving {title}…")
+            if slug:
+                fr = next((f for f in fg.load_frames() if f.slug == slug), None)
+                if fr is None:
+                    raise fg.FrameError("The frame isn't there any more.")
+                fr.name = title or fr.name
+                gone = {k: None for k in fr.pictures if k not in pics}
+                fg.set_pictures(fr, {**gone, **pics})
+            else:
+                fr = fg.new_frame(title, pics)
+            ds.apply_to_frame(fr, d)
+            fg.save_frame(fr)
+            return fr.slug
+
+        def made(s):
+            try:
+                self.fill(s)
+                self.tabs.setCurrentIndex(1)
+                self.status.setText("Drawn – check it on Where things go, then Save and add to "
+                                    "MSE." if not slug else "Drawn again – Save and add to MSE to "
+                                    "update it in MSE.")
+            except RuntimeError:
+                return
+        self.status.setText(f"Drawing {title}…")
+        job = Job(work, label=f"Drawing the frame {title}")
+        job.signals.finished.connect(made)
+        job.signals.failed.connect(self._failed)
+        self._jobs.append(start(job))
 
     def _list_menu(self, pos):
         it = self.list.itemAt(pos)

@@ -1,15 +1,20 @@
 # Frame studio
 
-Make a Magic Set Editor frame from pictures, on a **Frame studio** page under
-Create. Use it for the blank frames a proxy maker shares or sells with a deck
+Make a Magic Set Editor frame from a frame template – or design one – on a
+**Frame studio** page under Create. Use it for the blank frames a proxy maker shares or sells with a deck
 (one picture per colour, often in a "templates" folder), or for frames you
 drew yourself. Your cards can then use the frame like any other, so a proxy
 deck's cards can be edited in their maker's own frame.
 
-1. **New frame…** – add the frame pictures: a folder, picture files or a
-   Photoshop file. Frame studio guesses which picture is which colour from
-   its name ("White.png", "wcard.png", "Frame_U.png"…): check the guesses and
-   give the frame a name. Pictures with MPC's 1/8 in margin ("bleed") are
+1. **New frame…** (*New frame from a template*) – add the template: a folder,
+   picture files or a Photoshop file. Frame studio works out which picture
+   is which colour from its name ("White.png", "wcard.png", "Frame_U.png"…)
+   or, when the names say nothing, from its colours: check the choices –
+   each row only offers what fits it (a colour's frame, a P/T box or a mana
+   symbol). **Match automatically** fills the ones not chosen yet; **Ask AI
+   to match them** sends one sheet of small numbered pictures (and their
+   names) to the AI set in MSE Studio's Settings → AI (MSE Studio 0.20.0),
+   which says what each is for. Pictures with MPC's 1/8 in margin ("bleed") are
    trimmed for you.
    - **Photoshop files** are read in the background (a progress bar, and
      Stop). When the file has its colours as layers or groups named White,
@@ -39,8 +44,10 @@ deck's cards can be edited in their maker's own frame.
      it* to place it yourself. Mana symbols in a tall, narrow box go one
      under the other.
    - **The template's own mana symbols**: a *Mana* group with a picture per
-     colour (named White, Blue… or W, U…, else told apart by their colours)
-     and a tile for the numbers become the frame's own **mana symbols** –
+     colour (named White, Blue… or W, U…, else told apart by their colours –
+     also groups named by their place, like *Pos 1*, *Pos 2*, each holding a
+     layer per colour: each colour is put together from the first one) and a
+     tile for the numbers become the frame's own **mana symbols** –
      MSE draws the mana cost with them (numbers and X written on the number
      tile in the template's font and colour; hybrid and other symbols stay
      MSE's usual ones). They're installed for MSE with the frame.
@@ -89,6 +96,43 @@ Colours without a picture use the Colourless picture (or the first one there
 is). Cards of several colours use Gold, lands the Land picture (else their
 colour's). P/T boxes that come as separate pictures can be added too.
 
+## The Frame designer
+
+**Design a frame…** draws a whole frame for you – a frame for every colour,
+P/T boxes and mana symbols, with the text boxes exactly where MSE writes the
+text. Start from a ready-made look (*Gothic*, *Neon*, *Old parchment*,
+*Gilded marble*, *Borderless*, *Full art glass*, *Minimal*…) and change
+anything; the preview shows the colour you pick, every colour below it and
+the mana symbols.
+
+- **Look**: layout (modern, classic, borderless, full art, minimal),
+  material (solid, gradient, brushed metal, stone, parchment, grunge, marble,
+  leather, wood, carbon fibre, or a texture picture of your own), how strong
+  and how coarse the texture is, and *Shuffle* for another pattern.
+- **Colours**: a palette (classic Magic colours, dark, vivid/neon, pastel,
+  black and white, gothic – black with colour trim, gilded) or your own
+  colour for each of White, Blue, Black, Red, Green, Gold, Artifact,
+  Colourless and Land.
+- **Border** colour and width; **bars** (rounded, square, cut corners, torn,
+  none) and how see-through; **text box** (light, parchment, tinted, dark,
+  see-through glass), its shape and how see-through; the **art window**
+  (square, rounded, arched); a **P/T box** or not.
+- **Edges and effects**: pinlines and their colour, bevel, shadows, glow,
+  wear, grain, darker corners.
+- **Mana symbols**: circles, square tiles, diamonds or brushed tiles (or
+  MSE's usual ones), and the mana cost down the right side.
+- **Fonts** for the name and type line and for the rules text.
+- **Design it with AI**: describe the look ("dark gothic, blood-red trim, a
+  parchment text box, mana down the side") – and show an example card if you
+  like – and the AI picks the settings. **Make one with AI** paints a texture
+  picture for the material (a picture service: OpenAI or xAI – Claude doesn't
+  make pictures). Both use MSE Studio's Settings → AI (MSE Studio 0.20.0); the
+  window says which service, and each press is one request on your account.
+
+**Make the frame** draws it (about half a minute); then check it on *Where
+things go* and **Save and add to MSE** as usual. **Edit the design…** (on the
+Pictures tab) opens its settings again and draws it anew.
+
 From **Proxy decks**: right-click a deck → **This deck's frame** → *Make one
 with Frame studio* opens its templates (and fonts) here, and the deck uses the
 frame once it's made.
@@ -98,7 +142,10 @@ its mana symbols and fonts).
 
 ## Network and files
 
-None of its own. It reads the pictures and fonts you pick, keeps its frames
+None of its own – the AI buttons (*Design it with AI*, *Make one with AI*,
+*Ask AI to match them*) go through MSE Studio's AI settings, only when you
+press them, and say which service they use. Textures the AI paints are kept
+in the add-on's data folder. It reads the pictures and fonts you pick, keeps its frames
 (and their fonts) in the add-on's data folder, and adds them to MSE's data
 folder with MSE Studio's frame-pack installer – with its mana symbols, as
 `magic-fs-<its name>-mana`, when it has its own (an older copy of the same
