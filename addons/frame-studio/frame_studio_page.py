@@ -31,10 +31,14 @@ BOX_COLOURS = {"name": "#e8b923", "cost": "#e8b923", "art": "#3fa9f5", "type": "
                "rarity": "#7ed957", "text": "#ff7a59", "pt": "#c07cff", "ptbox": "#c07cff",
                "artist": "#9aa0a6", "credit": "#9aa0a6"}
 COLOUR_LABELS = [("name", "Name"), ("type", "Type line"), ("text", "Rules text"),
-                 ("pt", "Power / toughness"), ("artist", "Artist and credit lines")]
+                 ("pt", "Power / toughness"), ("artist", "Artist and credit lines"),
+                 ("mana", "Numbers on the mana symbols")]
 FONT_LABELS = [("title", "Name and type line"), ("text", "Rules text"),
                ("italic", "Rules text (italic)"), ("pt", "Power / toughness"),
-               ("info", "Artist and credit lines")]
+               ("info", "Artist and credit lines"), ("mana", "Numbers on the mana symbols")]
+MANA_FLOWS = [("", "As the box is (tall: one under the other)"), ("row", "In a row"),
+              ("down", "One under the other, from the top"),
+              ("up", "One under the other, from the bottom (colours on top)")]
 
 
 def _qimage(img) -> QImage:
@@ -102,34 +106,63 @@ class BoxItem(QGraphicsRectItem):
 
     def _paint_sample(self, qp, r: QRectF):
         """The sample text as MSE would place it (roughly: MSE draws the real one)."""
-        text, family, size, colour, bold = self.sample
-        scale = self.bounds.height() / fg.CARD_H        # MSE's points → this picture
-        px = max(4, int(round(size * scale)))
-        if self.key == "cost":                          # mana symbols: circles, right aligned
-            d = px * 1.05
-            x = r.right() - 2
-            y = r.center().y() - d / 2
+        text, family, size, colour, bold, align = self.sample[:6]
+        scale = self.bounds.height() / fg.CARD_H        # the card's units → this picture
+        px = max(4, int(round(size / fg.PT_PER_UNIT * scale)))   # MSE's points → units
+        if self.key == "cost":                          # mana symbols
+            mana, flow = (self.sample[6] if len(self.sample) > 6 else ({}, ""))
+            d = px * 0.95
             syms = [t for t in text.replace("}", "").split("{") if t]
-            for sym in reversed(syms):
-                x -= d
+            vertical = flow in ("down", "up") or (flow != "row" and
+                                                  r.height() > 1.8 * r.width())
+            spots = []
+            if vertical and flow == "up":               # from the bottom: colours on top
+                x, y = r.center().x() - d / 2, r.bottom() - 2 - d
+                for _sym in syms:
+                    spots.append((x, y))
+                    y -= d * 1.08
+            elif vertical:                              # one under the other, from the top
+                x, y = r.center().x() - d / 2, r.top() + 2
+                for _sym in syms:
+                    spots.append((x, y))
+                    y += d * 1.08
+            else:                                       # in a row, from the right
+                x, y = r.right() - 2, r.center().y() - d / 2
+                for _sym in syms:
+                    x -= d
+                    spots.insert(0, (x, y))
+                    x -= d * 0.08
+            for sym, (x, y) in zip(syms, spots):
+                box = QRectF(x, y, d, d)
+                own = mana.get("mana-n" if sym[:1].isdigit() or sym in "XYZ" else
+                               "mana-" + sym.lower())
+                if own is not None:                     # the frame's own symbol
+                    qp.drawPixmap(box.toRect(), own)
+                    if sym[:1].isdigit() or sym in "XYZ":
+                        f = QFont(mana.get("font") or "Arial")
+                        f.setPixelSize(max(4, int(d * 0.62)))
+                        qp.setFont(f)
+                        qp.setPen(QColor(mana.get("colour") or "#000000"))
+                        qp.drawText(box, Qt.AlignCenter, sym)
+                    continue
                 qp.setBrush(QColor("#cac5c0" if sym.isdigit() else "#f8f6d8"))
                 qp.setPen(QPen(QColor("#000000"), max(1.0, d / 14)))
-                qp.drawEllipse(QRectF(x, y, d, d))
+                qp.drawEllipse(box)
                 f = QFont("Arial")
                 f.setPixelSize(max(4, int(d * 0.7)))
                 f.setBold(True)
                 qp.setFont(f)
-                qp.drawText(QRectF(x, y, d, d), Qt.AlignCenter, sym)
-                x -= d * 0.08
+                qp.drawText(box, Qt.AlignCenter, sym)
             return
         f = QFont(family)
         f.setPixelSize(px)
         f.setBold(bold)
         qp.setFont(f)
         qp.setPen(QColor(colour))
-        align = {"pt": Qt.AlignCenter, "name": Qt.AlignLeft | Qt.AlignBottom,
-                 "text": Qt.AlignLeft | Qt.AlignVCenter}.get(self.key,
-                                                              Qt.AlignLeft | Qt.AlignTop)
+        across = {"left": Qt.AlignLeft, "center": Qt.AlignHCenter,
+                  "right": Qt.AlignRight}.get(align, Qt.AlignLeft)
+        align = {"pt": Qt.AlignCenter, "name": across | Qt.AlignBottom,
+                 "text": across | Qt.AlignVCenter}.get(self.key, across | Qt.AlignTop)
         pad = 6 * scale if self.key == "text" else 2 * scale
         qp.drawText(r.adjusted(pad, 0, -pad, 0), align | Qt.TextWordWrap, text)
 
@@ -236,6 +269,7 @@ class NewFrameDialog(QDialog):
         self._ready: Optional[dict] = None
         self._queue: list = []         # Photoshop files still to read
         self.fonts: list = []          # font files found
+        self._layouts: list = []       # what each Photoshop file's text layers say
         lay = QVBoxLayout(self)
         f = QFormLayout()
         self.name = QLineEdit(name)
@@ -292,6 +326,19 @@ class NewFrameDialog(QDialog):
         fl.addLayout(ff)
         self.font_box.setVisible(False)
         lay.addWidget(self.font_box)
+        # where the name, type line… go, from a template's text and guide layers
+        self.layout_cb = QCheckBox()
+        self.layout_cb.setChecked(True)
+        self.layout_cb.setVisible(False)
+        self.layout_cb.setToolTip("The file's own text layers (Card Name, Typeline, Rules "
+                                  "Text…) and guides (Art Frame, Textbox Reference…) say where "
+                                  "each text goes, how big, in which colour and font")
+        lay.addWidget(self.layout_cb)
+        self.layout_hint = QLabel()
+        self.layout_hint.setObjectName("Hint")
+        self.layout_hint.setWordWrap(True)
+        self.layout_hint.setVisible(False)
+        lay.addWidget(self.layout_hint)
         prog = QHBoxLayout()
         self.progress = QProgressBar()
         self.progress.setVisible(False)
@@ -372,6 +419,10 @@ class NewFrameDialog(QDialog):
             try:
                 psd = fg.read_psd(path, progress, cancel)
                 picks = fg.psd_picks(psd)
+                try:
+                    layout = fg.psd_layout(psd)
+                except Exception:  # noqa: BLE001 - a file whose layers say nothing usable
+                    layout = None
                 small = psd.scaled(160)
                 thumbs = []
                 for k, pk in enumerate(picks):
@@ -384,7 +435,7 @@ class NewFrameDialog(QDialog):
                         thumbs.append(None)
             except psdread.Stopped:
                 raise Cancelled() from None
-            return path, psd, picks, thumbs
+            return path, psd, picks, thumbs, layout
 
         self._busy(True, f"Reading {path.name}…")
         job = Job(work, label=f"Reading {path.name}")
@@ -405,7 +456,7 @@ class NewFrameDialog(QDialog):
 
     def _psd_read(self, result):
         try:
-            path, psd, picks, thumbs = result
+            path, psd, picks, thumbs, layout = result
         except (TypeError, ValueError):
             return
         try:
@@ -432,6 +483,9 @@ class NewFrameDialog(QDialog):
                 self._add_row(parent, pk.label, (key, pk), "", th, guess)
             if single is not None:
                 single.setText(0, f"Single layers ({single.childCount()})")
+            if layout and layout.get("found"):
+                self._layouts.append((path.name, layout))
+                self._show_layout()
             n = sum(1 for pk in picks if "put together" in pk.label)
             self.status.setText(f"{path.name}: " + (f"{n} picture(s) put together from its "
                                                     "colour layers – check them below." if n else
@@ -492,6 +546,8 @@ class NewFrameDialog(QDialog):
             combo.addItem(v, k)
         for k, v in fg.PT_SLOTS:
             combo.addItem(f"P/T box – {v}", k)
+        for k, v in fg.MANA_SLOTS:
+            combo.addItem(f"Mana symbol – {v}", k)
         if guess is None:
             guess = fg.guess_slot(guess_from) or ""
         if guess and any(r[2].currentData() == guess for r in self.rows):
@@ -533,6 +589,33 @@ class NewFrameDialog(QDialog):
                 combo.addItem(n, n)
             pick = keep if keep is not None and combo.findData(keep) >= 0 else guess.get(key, "")
             combo.setCurrentIndex(max(0, combo.findData(pick)))
+        self._show_layout()
+
+    def _show_layout(self):
+        if not self._layouts:
+            return
+        name, lay = self._layouts[0]
+        self.layout_cb.setText(f"Place the text where {name} has it – with its sizes, "
+                               "colours and fonts")
+        self.layout_cb.setVisible(True)
+        missing = fg.missing_fonts(lay, self.fonts)
+        text = "Found in its layers: " + ", ".join(lay["found"]) + "."
+        if missing:
+            text += (" It uses fonts that didn't come with it: " + ", ".join(missing) +
+                     " – add their font files (Add fonts…), else MSE draws those texts in its "
+                     "usual fonts.")
+        self.layout_hint.setText(text)
+        self.layout_hint.setVisible(True)
+        for combo, key in ((self.title_font, "title"), (self.text_font, "text")):
+            fam = fg.resolve_font(lay["fonts"].get(key, ""), self.fonts)
+            if fam and combo.findData(fam) >= 0:
+                combo.setCurrentIndex(combo.findData(fam))
+
+    def layout(self) -> Optional[dict]:
+        """What the Photoshop file's text layers say (if it's to be used)."""
+        if self._layouts and self.layout_cb.isChecked():
+            return self._layouts[0][1]
+        return None
 
     def chosen_fonts(self) -> list:
         return [Path(self.font_list.item(i).data(Qt.UserRole))
@@ -730,7 +813,16 @@ class FrameStudioPage(QWidget):
         self.slot_grid = QGridLayout(inner)
         self.slot_widgets: dict = {}
         r = 0
-        for k, label in fg.SLOTS + fg.PT_SLOTS:
+        for k, label in fg.SLOTS + fg.PT_SLOTS + fg.MANA_SLOTS:
+            if k == "mana-w":
+                r += 1
+                lab = QLabel("<b>Mana symbols</b> – the frame's own designs for the mana cost "
+                             "(from a template's Mana group, or pictures of yours). The ones "
+                             "without a picture are MSE's usual symbols; numbers and X are "
+                             "written on the Numbers tile.")
+                lab.setWordWrap(True)
+                self.slot_grid.addWidget(lab, r, 0, 1, 4)
+                r += 1
             if k == "pt-w":
                 r += 1
                 self.pt_label = QLabel("<b>P/T boxes</b> – only if the maker has them as separate "
@@ -743,8 +835,9 @@ class FrameStudioPage(QWidget):
             thumb.setAlignment(Qt.AlignCenter)
             thumb.setStyleSheet("QLabel { border: 1px solid palette(mid); }")
             self.slot_grid.addWidget(thumb, r, 0)
-            self.slot_grid.addWidget(QLabel(label if not k.startswith("pt-") else
-                                            f"P/T box – {label}"), r, 1)
+            self.slot_grid.addWidget(QLabel(f"P/T box – {label}" if k.startswith("pt-") else
+                                            f"Mana – {label}" if k.startswith("mana-") else
+                                            label), r, 1)
             b = QPushButton("Choose…")
             b.clicked.connect(lambda _c=False, k=k: self.choose_picture(k))
             self.slot_grid.addWidget(b, r, 2)
@@ -847,6 +940,26 @@ class FrameStudioPage(QWidget):
             sb.valueChanged.connect(lambda v, k=key: self._size(k, v))
             f.addRow(f"{label} size", sb)
             self.size_boxes[key] = sb
+        self.mana_flow = QComboBox()
+        for key, label in MANA_FLOWS:
+            self.mana_flow.addItem(label, key)
+        self.mana_flow.setToolTip("How MSE puts the mana cost's symbols: in a row, or one "
+                                  "under the other (cards with the cost down the side)")
+        self.mana_flow.currentIndexChanged.connect(self._mana_flow)
+        f.addRow("Mana symbols go", self.mana_flow)
+        self.shadow_cb = QCheckBox("Text shadows, as the Photoshop file has them")
+        self.shadow_cb.setToolTip("The Drop Shadow effects of the template's text layers, for "
+                                  "MSE to draw under the same texts")
+        self.shadow_cb.toggled.connect(self._shadows)
+        f.addRow(self.shadow_cb)
+        self.align_boxes: dict = {}
+        for key, label in fg.ALIGN_NAMES:
+            cb = QComboBox()
+            for a, text in (("left", "Left"), ("center", "Centre"), ("right", "Right")):
+                cb.addItem(text, a)
+            cb.currentIndexChanged.connect(lambda _i, k=key: self._align(k))
+            f.addRow(f"{label} sits", cb)
+            self.align_boxes[key] = cb
         hint = QLabel("MSE's own Magic fonts (Beleren, MPlantin) come with the Full Magic Pack "
                       "– Advanced → Fonts shows which are installed. MSE only draws fonts "
                       "installed in Windows.")
@@ -927,12 +1040,21 @@ class FrameStudioPage(QWidget):
         for b in self.art_group.buttons():
             b.setChecked(bool(fr) and b.property("mode") == fr.art)
         for k, b in self.colour_btns.items():
-            col = fr.colour(k) if fr else "#000000"
+            col = (fg.mana_number_colour(fr) if k == "mana" else fr.colour(k)) if fr else \
+                "#000000"
             b.setText(col)
             b.setStyleSheet(f"QPushButton {{ background: {col}; color: "
                             f"{'#000' if QColor(col).lightness() > 128 else '#fff'}; }}")
         for k, fb in self.font_boxes.items():
-            fb.setCurrentText(fr.font(k) if fr else fg.DEFAULT_FONTS[k])
+            fb.setCurrentText((fr.font(k) or fr.font("title")) if fr else
+                              (fg.DEFAULT_FONTS[k] or fg.DEFAULT_FONTS["title"]))
+        for k, cb in self.align_boxes.items():
+            cb.setCurrentIndex(max(0, cb.findData(fr.align(k) if fr else "left")))
+        self.mana_flow.setCurrentIndex(max(0, self.mana_flow.findData(fr.mana_flow if fr
+                                                                      else "")))
+        has_shadows = bool(fr) and any(k != "_off" for k in fr.shadows)
+        self.shadow_cb.setVisible(has_shadows)
+        self.shadow_cb.setChecked(has_shadows and not fr.shadows.get("_off"))
         for k, sb in self.size_boxes.items():
             sb.setValue(float(fr.sizes.get(k) or 0) if fr else 0)
             sb.setSpecialValueText(f"automatic ({fr.size(k):g})" if fr else "automatic")
@@ -1119,20 +1241,60 @@ class FrameStudioPage(QWidget):
         self.size_boxes[key].setSpecialValueText(f"automatic ({self.frame.size(key):g})")
         self._draw_layout()
 
+    def _mana_flow(self, *_):
+        if self.frame is None or self._loading:
+            return
+        self.frame.mana_flow = self.mana_flow.currentData() or ""
+        self._changed()
+        self._draw_layout()
+
+    def _shadows(self, on: bool):
+        if self.frame is None or self._loading:
+            return
+        if on:
+            self.frame.shadows.pop("_off", None)
+        else:
+            self.frame.shadows["_off"] = True
+        self._changed()
+
+    def _align(self, key: str):
+        if self.frame is None or self._loading:
+            return
+        self.frame.aligns[key] = self.align_boxes[key].currentData()
+        self._changed()
+        self._draw_layout()
+
     def _samples(self, fr) -> dict:
         """box → (text, font family, size, colour, bold) for the sample text."""
         return {"name": ("Card Name", fr.font("title"), fr.size("title"), fr.colour("name"),
-                         False),
-                "cost": ("{2}{W}", fr.font("text"), fr.size("cost"), "#000000", False),
+                         False, fr.align("name")),
+                "cost": ("{2}{B}{R}" if fr.vertical_cost() else "{2}{W}", fr.font("text"),
+                         fr.size("cost"), "#000000", False, "", (self._mana_pixmaps(fr),
+                                                                fr.mana_flow)),
                 "type": ("Creature — Human Wizard", fr.font("title"), fr.size("type"),
-                         fr.colour("type"), False),
+                         fr.colour("type"), False, fr.align("type")),
                 "text": ("Flying\nWhen this creature enters, draw a card, then discard a "
-                         "card.", fr.font("text"), fr.size("text"), fr.colour("text"), False),
-                "pt": ("2/3", fr.font("pt"), fr.size("pt"), fr.colour("pt"), False),
+                         "card.", fr.font("text"), fr.size("text"), fr.colour("text"), False,
+                         fr.align("text")),
+                "pt": ("2/3", fr.font("pt"), fr.size("pt"), fr.colour("pt"), False, "center"),
                 "artist": ("Illus. Artist Name", fr.font("info"), fr.size("info"),
-                           fr.colour("artist"), False),
+                           fr.colour("artist"), False, fr.align("artist")),
                 "credit": ("Your credit line", fr.font("info"), fr.size("info"),
-                           fr.colour("artist"), False)}
+                           fr.colour("artist"), False, fr.align("credit"))}
+
+    def _mana_pixmaps(self, fr) -> dict:
+        """The frame's own mana symbols for the sample text (and the numbers' look)."""
+        out: dict = {"font": fr.font("mana") or fr.font("title"),
+                     "colour": fg.mana_number_colour(fr)}
+        for k, _label in fg.MANA_SLOTS:
+            pic = fr.pictures.get(k)
+            if pic:
+                try:
+                    out[k] = QPixmap.fromImage(_qimage(fg.mana_picture(fg.frame_dir(fr.slug) /
+                                                                       pic)))
+                except Exception:  # noqa: BLE001 - drawn as MSE's usual symbol
+                    pass
+        return out
 
     def _load_fonts(self):
         """The frame's own fonts, for the sample text (only inside MSE Studio –
@@ -1181,6 +1343,7 @@ class FrameStudioPage(QWidget):
         if not dlg.exec():
             return
         chosen, fonts, names = dlg.chosen(), dlg.chosen_fonts(), dlg.font_names()
+        layout = dlg.layout()
         frame = fr
 
         def work(progress=None, cancel=None):
@@ -1188,7 +1351,9 @@ class FrameStudioPage(QWidget):
             fg.set_pictures(frame, chosen)
             if fonts:
                 fg.keep_fonts(frame, fonts)
-                frame.fonts.update(names)
+            if layout:
+                fg.apply_layout(frame, layout)
+            frame.fonts.update(names)
             frame.sources = list(dict.fromkeys(frame.sources + getattr(dlg, "sources", [])))
             fg.save_frame(frame)
             return frame.slug
@@ -1250,6 +1415,7 @@ class FrameStudioPage(QWidget):
         if not dlg.exec():
             return None
         chosen, fonts, names = dlg.chosen(), dlg.chosen_fonts(), dlg.font_names()
+        layout = dlg.layout()
         title = dlg.name.text()
         sources = list(dict.fromkeys(getattr(dlg, "sources", [])))
         first = Path(sources[0]) if sources else None
@@ -1258,7 +1424,7 @@ class FrameStudioPage(QWidget):
         def work(progress=None, cancel=None):
             progress(0, 0, f"Making {title}…")
             frame = fg.new_frame(title, chosen, made_from=made_from, fonts=fonts,
-                                 font_names=names)
+                                 font_names=names, layout=layout)
             frame.proxy_deck = proxy_deck
             frame.sources = sources
             fg.save_frame(frame)
@@ -1268,8 +1434,11 @@ class FrameStudioPage(QWidget):
             try:
                 self.fill(frame.slug)
                 self.tabs.setCurrentIndex(1)
-                self.status.setText("Check where the name, art and text go (drag the boxes), "
-                                    "then Save and add to MSE.")
+                self.status.setText(
+                    ("The boxes, sizes, colours and fonts come from the Photoshop file – "
+                     "check them, " if layout else
+                     "Check where the name, art and text go (drag the boxes), ") +
+                    "then Save and add to MSE.")
             except RuntimeError:
                 return
             if callable(done):

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import math
 import re
 import shutil
 import zipfile
@@ -21,6 +22,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Optional
 
+import numpy as np
 from PIL import Image
 
 ADDON_ID = "frame-studio"
@@ -34,6 +36,11 @@ SLOTS = [("w", "White"), ("u", "Blue"), ("b", "Black"), ("r", "Red"), ("g", "Gre
          ("m", "Gold (multicolour)"), ("a", "Artifact"), ("c", "Colourless"), ("l", "Land")]
 SLOT_NAMES = dict(SLOTS)
 PT_SLOTS = [("pt-" + k, v) for k, v in SLOTS if k != "l"]     # P/T boxes, if separate
+# the frame's own mana symbols (a template's designs), for the mana cost
+MANA_SLOTS = [("mana-w", "White"), ("mana-u", "Blue"), ("mana-b", "Black"), ("mana-r", "Red"),
+              ("mana-g", "Green"), ("mana-c", "Colourless (diamond)"),
+              ("mana-n", "Numbers and X (the tile behind them)")]
+MANA_SIZE = 200                         # each mana symbol picture: this many pixels square
 BASE = ["w", "u", "b", "r", "g", "m", "a", "c"]
 
 # where things go, as parts of the card (left, top, width, height) – a modern
@@ -57,7 +64,7 @@ DEFAULT_BOXES = {
 FULL_ART = {"art": [0.0, 0.0, 1.0, 1.0]}
 TEXT_BOXES = ["name", "type", "text", "pt", "artist"]       # each gets a text colour
 DEFAULT_FONTS = {"title": "Beleren Bold", "text": "MPlantin", "italic": "MPlantin-Italic",
-                 "pt": "Beleren Bold", "info": "MPlantin"}
+                 "pt": "Beleren Bold", "info": "MPlantin", "mana": ""}
 
 # text sizes when you haven't set one: (its box, part of the box's height, at most)
 SIZE_RULES = {"title": ("name", 0.7, 17), "cost": ("cost", 0.68, 16), "type": ("type", 0.65, 14),
@@ -65,6 +72,11 @@ SIZE_RULES = {"title": ("name", 0.7, 17), "cost": ("cost", 0.68, 16), "type": ("
 SIZE_NAMES = [("title", "Name"), ("cost", "Mana symbols"), ("type", "Type line"),
               ("text", "Rules text"), ("pt", "Power / toughness"),
               ("info", "Artist and credit lines")]
+
+# how each text sits in its box (left, center or right)
+ALIGN_NAMES = [("name", "Name"), ("type", "Type line"), ("text", "Rules text"),
+               ("artist", "Artist line"), ("credit", "Credit line")]
+PT_PER_UNIT = 0.75             # MSE's text sizes are points: 1 pt = 96/72 of the card's units
 
 ART_MODES = {"under": "Under the frame – it shows through the frame's clear parts",
              "over": "On top of the frame, in the art box"}
@@ -89,6 +101,9 @@ class Frame:
     font_files: list = field(default_factory=list)   # fonts that came with it (in fonts/)
     sizes: dict = field(default_factory=dict)   # title, type, text, cost, pt, info → size
     sources: list = field(default_factory=list)  # the files and folders it was made from
+    aligns: dict = field(default_factory=dict)  # name, type, text, artist → left|center|right
+    shadows: dict = field(default_factory=dict)  # name, type… → {colour, opacity, dx, dy, blur}
+    mana_flow: str = ""                         # mana symbols: "" (by the box) | row | down | up
 
     @property
     def style_name(self) -> str:
@@ -108,6 +123,17 @@ class Frame:
     def colour(self, key: str) -> str:
         return self.colours.get(key) or "#000000"
 
+    def align(self, key: str) -> str:
+        a = self.aligns.get(key)
+        return a if a in ("left", "center", "right") else ("center" if key == "pt" else "left")
+
+    def vertical_cost(self) -> bool:
+        """Mana symbols one under the other (set so, or a tall, narrow cost box)."""
+        if self.mana_flow in ("row", "down", "up"):
+            return self.mana_flow != "row"
+        _x, _y, w, h = self.box("cost")
+        return h * CARD_H > 1.8 * w * CARD_W
+
     def size(self, key: str) -> float:
         """A text's size in MSE's points: the one you set, else one that fits
         its box (never bigger than a real frame's)."""
@@ -119,6 +145,8 @@ class Frame:
             return v
         box, share, cap = SIZE_RULES[key]
         h = self.box(box)[3] * CARD_H
+        if key == "cost" and self.vertical_cost():
+            h = self.box("cost")[2] * CARD_W       # one symbol a line: as wide as the box
         return round(max(4.0, min(h * share, cap)), 1)
 
 
@@ -247,16 +275,33 @@ PSD_W = 1700                    # Photoshop files are read up to this wide (then
 # layers that aren't part of the frame: the art, the set symbol, mana symbols…
 _PLACEHOLDER = {"art", "artwork", "illustration", "illus", "image", "picture", "photo",
                 "symbol", "symbols", "setsymbol", "rarity", "mana", "watermark", "placeholder",
-                "expansion", "insert", "paste"}
+                "expansion", "insert", "paste", "reference", "ref", "guide", "guides", "icons",
+                "legal"}
 _KEEP = {"box", "bar", "frame", "border", "bg", "background", "plate", "pinline", "pinlines",
          "line", "lines", "window", "shadow", "outline", "trim", "crown", "texture", "overlay"}
+# parts only some cards have (Proxyshop-style templates switch them on per card):
+# left out unless the file was saved showing them
+_OPTIONAL = {"legendary", "crown", "nyx", "companion", "indicator", "hollow", "snow",
+             "miracle", "mdfc", "transform", "flipside", "devoid", "fuse"}
+# the words a colour layer's name is when it's just the colour ("W", "Gold"…)
+_EXACT = {"w", "u", "b", "r", "g", "white", "blue", "black", "red", "green", "gold",
+          "multicolor", "multicolour", "artifact", "colorless", "colourless", "land"}
 
 
 def _is_placeholder(layer) -> bool:
     if layer.kind == "text":                   # the sample name, type line, rules…
         return True
     toks = set(_tokens(layer.name))
+    if toks & {"reference", "ref", "guide", "guides"}:
+        return True                            # Textbox Reference, Art Frame guides…
     return bool(toks & _PLACEHOLDER) and not toks & _KEEP
+
+
+def _is_art_ref(name: str) -> bool:
+    """Where the art goes ("Art Frame", "Art Reference"…), not a frame part."""
+    toks = set(_tokens(name))
+    return "art" in toks and bool(toks & {"frame", "reference", "ref", "box", "window", "area",
+                                          "bounds"})
 
 
 def _is_pt(name: str) -> bool:
@@ -272,28 +317,61 @@ class PsdPick:
     visible: object = None                       # layer key → drawn? (None: as saved)
     root: Optional[int] = None                   # only this group / layer (its key)
     merged: bool = False                         # Photoshop's own merged picture
+    crop: bool = False                           # cut to what's drawn (a mana symbol)
 
 
 def _annotate(nodes: list, info: dict, in_pt: bool = False) -> None:
     """For each layer (by key): which colour it is in a set of colour versions
-    ("White", "Blue"… side by side), whether it's the P/T box or a placeholder."""
-    colours = {}
+    ("White", "Blue"… side by side), whether it's the P/T box, a placeholder,
+    a part only some cards have, or the land version of a part."""
+    colours, best = {}, {}
     for n in nodes:
         g = guess_slot(n.name)
-        if g:
-            colours[n.key] = g[3:] if g.startswith("pt-") else g
+        if not g:
+            continue
+        g = g[3:] if g.startswith("pt-") else g
+        exact = " ".join(_tokens(n.name)) in _EXACT
+        if g in best and best[g][1] >= exact:
+            continue                             # "Vehicle" next to "Artifact": one each
+        if g in best:
+            colours.pop(best[g][0], None)
+        best[g] = (n.key, exact)
+        colours[n.key] = g
     options = set(colours.values()) if len(set(colours.values())) >= 2 else set()
+    # the art goes in the window: the layers under "Art Frame" are the sample art
+    refs = [k for k, n in enumerate(nodes) if _is_art_ref(n.name)]
+    under_art = {n.key for n in nodes[:max(refs)]
+                 if not n.is_group and not set(_tokens(n.name)) & _KEEP} if refs else set()
+    # "Land Pinlines & Textbox" next to "Pinlines & Textbox": the land version
+    by_toks = {tuple(sorted(set(_tokens(n.name)))): n.key for n in nodes if n.is_group}
+    land_of = {}
+    for n in nodes:
+        toks = set(_tokens(n.name))
+        if n.is_group and "land" in toks and len(toks) > 1:
+            other = by_toks.get(tuple(sorted(toks - {"land"})))
+            if other is not None:
+                land_of[n.key] = other
     for n in nodes:
         pt = in_pt or _is_pt(n.name)
+        toks = set(_tokens(n.name))
         i = info[n.key] = {"variant": colours.get(n.key) if options else None,
                            "options": options, "pt": pt, "has_pt": pt,
-                           "placeholder": _is_placeholder(n), "slots": set()}
+                           "placeholder": _is_placeholder(n) or n.key in under_art,
+                           "slots": set(), "optional": bool(toks & _OPTIONAL),
+                           "land_version": n.key in land_of,
+                           "has_land": n.key in land_of.values()}
         if n.is_group:
             _annotate(n.children, info, pt)
             for c in n.children:
                 ci = info[c.key]
                 i["has_pt"] = i["has_pt"] or ci["has_pt"]
                 i["slots"] |= ci["slots"] | ({ci["variant"]} if ci["variant"] else set())
+            if i["optional"]:                    # shown only if saved showing a colour
+                i["on"] = not n.hidden and any(
+                    not c.hidden for c in n.children if info[c.key]["variant"])
+    for land, normal in land_of.items():         # a land version without a Land layer
+        if "l" not in info[land]["slots"]:
+            info[land]["land_version"] = info[normal]["has_land"] = False
 
 
 def _visible(info: dict, slot: Optional[str], part: str = "frame"):
@@ -308,6 +386,14 @@ def _visible(info: dict, slot: Optional[str], part: str = "frame"):
             return False
         if part == "pt" and not (i["pt"] or i["has_pt"]):
             return False
+        if i["optional"] and n.is_group and not i.get("on"):
+            return False                          # the crown, Nyx, companion…
+        if i["land_version"] and slot:
+            if slot != "l":
+                return False                      # land pinlines: lands only
+            return True
+        if i["has_land"] and slot == "l":
+            return False                          # lands use the land version instead
         if slot and i["variant"] and slot in i["options"]:
             return i["variant"] == slot
         if slot and n.is_group and slot in i["slots"]:
@@ -349,10 +435,90 @@ def psd_picks(psd) -> list[PsdPick]:
                                      _group_vis(info, n.key), root=n.key))
                 groups(n.children, label)
     groups(psd.layers)
+    picks += _mana_picks(psd)
     for n in reversed(list(psd.walk())):
         if n.kind == "pixel" and n.image is not None:
             picks.append(PsdPick(f"Layer: {n.name}" + (" (hidden)" if n.hidden else ""),
                                  guess_slot(n.name) or "", lambda _n: True, root=n.key))
+    return picks
+
+
+def mana_group(psd):
+    """The group a template keeps its mana symbols in ("Mana", "Mana Symbols"…)."""
+    for n in reversed(list(psd.walk())):
+        toks = set(_tokens(n.name))
+        if n.is_group and "mana" in toks and not toks & _KEEP:
+            return n
+    return None
+
+
+def guess_mana(name: str) -> str:
+    """Which mana symbol a layer is, from its name ("W", "Mana Blue", "Generic"…)."""
+    toks = set(_tokens(name)) - {"mana", "symbol", "symbols", "icon", "pip", "cost"}
+    if toks & {"generic", "number", "numbers", "numeric", "num", "x", "any"} or \
+            any(t.isdigit() for t in toks):
+        return "mana-n"
+    if toks & {"colorless", "colourless", "diamond"} or toks == {"c"}:
+        return "mana-c"
+    g = guess_slot(" ".join(sorted(toks)) or name)
+    return "mana-" + g if g in ("w", "u", "b", "r", "g") else ""
+
+
+def guess_mana_colour(img: Image.Image) -> str:
+    """Which mana symbol a picture is, from its colours: red, green, blue,
+    purple or dark (black), light or yellow (white), grey (colourless)."""
+    im = img.convert("RGBA")
+    if im.getbbox() is None:
+        return ""
+    im = im.crop(im.getbbox())
+    im.thumbnail((64, 64))
+    hsv = np.asarray(im.convert("RGB").convert("HSV"), dtype=np.float32)
+    alpha = np.asarray(im.getchannel("A")) > 128
+    if alpha.sum() < 12:
+        return ""
+    hue, sat, val = hsv[..., 0][alpha] * 360 / 255, hsv[..., 1][alpha] / 255, \
+        hsv[..., 2][alpha] / 255
+    vivid = (sat > 0.35) & (val > 0.25)
+    if vivid.mean() < 0.08:
+        v = val.mean()
+        return "mana-w" if v > 0.62 else "mana-b" if v < 0.3 else "mana-c"
+    bins = np.histogram(hue[vivid], bins=[0, 20, 70, 170, 260, 330, 361])[0]
+    k = int(np.argmax(bins))
+    return ["mana-r", "mana-w", "mana-g", "mana-u", "mana-b", "mana-r"][k]
+
+
+def _mana_picks(psd) -> list:
+    """Each mana symbol in the template's mana group (its tile and icon, its
+    effects – not the sample number on it)."""
+    from . import psdread
+    g = mana_group(psd)
+    if g is None:
+        return []
+    kids = [c for c in g.children if c.kind != "text" and (c.is_group or c.image is not None)]
+    if len(kids) == 1 and kids[0].is_group:              # Mana › Symbols › …
+        kids = [c for c in kids[0].children if c.kind != "text"]
+
+    def vis_for(root):
+        return lambda n: n.key == root or (n.kind != "text" and not n.hidden)
+    guesses = {c.key: guess_mana(c.name) for c in kids}
+    if not any(guesses.values()):                        # unnamed: by their colours
+        small = psd.scaled(min(psd.size[0], 400))
+        for c in kids:
+            try:
+                img = psdread.composite(small, vis_for(c.key), nodes=[
+                    n for n in small.walk() if n.key == c.key])
+                guesses[c.key] = guess_mana_colour(img)
+            except Exception:  # noqa: BLE001 - left for picking by hand
+                guesses[c.key] = ""
+    seen: set = set()
+    picks = []
+    for c in reversed(kids):                             # top first, as Photoshop lists them
+        guess = guesses.get(c.key, "")
+        if guess in seen:
+            guess = ""
+        seen.add(guess)
+        picks.append(PsdPick(f"Mana symbol: {c.name}", guess, vis_for(c.key), root=c.key,
+                             crop=True))
     return picks
 
 
@@ -373,7 +539,10 @@ def psd_picture(psd, pick: PsdPick, cancel=None) -> Image.Image:
     nodes = None
     if pick.root is not None:
         nodes = [n for n in psd.walk() if n.key == pick.root]
-    return psdread.composite(psd, pick.visible, nodes=nodes, cancel=cancel)
+    img = psdread.composite(psd, pick.visible, nodes=nodes, cancel=cancel)
+    if pick.crop and img.getbbox():
+        img = img.crop(img.getbbox())
+    return img
 
 
 def read_psd(path: Path, progress=None, cancel=None):
@@ -381,8 +550,308 @@ def read_psd(path: Path, progress=None, cancel=None):
     return psdread.read(Path(path), max_w=PSD_W, progress=progress, cancel=cancel)
 
 
+# ------------------------------------------------------------------ boxes from a template
+# text layers by what they're for: the words their names have (best first)
+_TEXT_ROLES = [
+    ("name", ({"card", "name"}, {"name"}, {"title"})),
+    ("cost", ({"mana", "cost"}, {"cost"}, {"mana"})),
+    ("type", ({"typeline"}, {"type", "line"}, {"type"})),
+    ("text", ({"rules", "noncreature"}, {"rules", "text"}, {"rules"}, {"oracle"},
+              {"abilities"})),
+    ("pt", ({"power", "toughness"}, {"pt"})),
+    ("rarity", ({"expansion", "symbol"}, {"set", "symbol"}, {"rarity"})),
+    ("artist", ({"artist"}, {"illustrator"}, {"illus"})),
+    ("credit", ({"copyright"}, {"credit"}, {"collector"}, {"set"})),
+]
+_ROLE_LABELS = {"name": "name", "cost": "mana cost", "type": "type line", "text": "rules text",
+                "pt": "P/T", "rarity": "set symbol", "artist": "artist line",
+                "credit": "credit line", "art": "art", "ptbox": "P/T box"}
+
+
+def _role(name: str, roles=_TEXT_ROLES) -> tuple:
+    """(role, how sure: lower is better) for a layer name, or ("", 99)."""
+    toks = set(_tokens(name))
+    for role, wants in roles:
+        for k, want in enumerate(wants):
+            if want <= toks:
+                return role, k
+    return "", 99
+
+
+def _union(boxes: list) -> Optional[tuple]:
+    boxes = [b for b in boxes if b and b[2] > b[0] and b[3] > b[1]]
+    if not boxes:
+        return None
+    return (min(b[0] for b in boxes), min(b[1] for b in boxes),
+            max(b[2] for b in boxes), max(b[3] for b in boxes))
+
+
+def _bounds(psd, n, shown_only: bool = True) -> Optional[tuple]:
+    """Where a layer or group is on the (shrunk) canvas: its pixels, else its
+    vector mask's outline."""
+    from . import psdread
+    if n.is_group:
+        return _union([_bounds(psd, c, shown_only) for c in n.children
+                       if not (shown_only and c.hidden)])
+    if n.image is not None and n.box[2] > n.box[0]:
+        return n.box
+    vb = psdread.vector_bounds(n.vmask)
+    if vb:
+        w, h = psd.size
+        return (vb[0] * w, vb[1] * h, vb[2] * w, vb[3] * h)
+    return None
+
+
+def psd_layout(psd) -> dict:
+    """What a template's text and guide layers say (Proxyshop-style files and
+    others that name their layers): {"boxes": {box: [x, y, w, h] parts of the
+    card}, "sizes", "colours", "aligns", "fonts" (PostScript names),
+    "found": [what was found]}."""
+    s = psd.size[0] / max(1, psd.full_size[0])
+    cl, ct, cr, cb = card_area(psd.size)
+    cw, ch = max(1, cr - cl), max(1, cb - ct)
+    texts: dict = {}
+    refs: dict = {}
+    groups: dict = {}
+    for n in psd.walk():
+        if n.kind == "text" and n.text:
+            role, sure = _role(n.name)
+            if role and (role not in texts or (sure, n.hidden) < texts[role][0]):
+                texts[role] = ((sure, n.hidden), n)
+            continue
+        toks = set(_tokens(n.name))
+        if _is_art_ref(n.name) and "full" not in toks:
+            refs.setdefault("art", n)
+        elif toks & {"reference", "ref"}:
+            if toks & {"textbox", "text", "rules"}:
+                refs.setdefault("text", n)
+            elif toks & {"pt", "power"}:
+                refs.setdefault("ptref", n)
+            elif toks & {"expansion", "symbol", "rarity"}:
+                refs.setdefault("rarity", n)
+        elif n.is_group and "mana" in toks and not toks & _KEEP:
+            groups.setdefault("cost", n)
+        elif n.is_group and _is_pt(n.name) and not toks & {"reference", "ref"}:
+            groups.setdefault("ptbox", n)
+    texts = {k: v[1] for k, v in texts.items()}
+    # the text sizes: points (× the resolution) or pixels – whichever matches
+    # how tall the sample text's letters are
+    factor = 1.0
+    tries = [(n.text, n.box[3] - n.box[1]) for n in texts.values()
+             if n.text.get("size") and not n.text.get("box") and n.box[3] > n.box[1]]
+    if tries and psd.dpi and abs(psd.dpi - 72) > 1:
+        def off(fac):
+            return sum(abs(math.log(max(1e-6, (h / s) / (tx["size"] * tx["scale"] * fac)) / 0.8))
+                       for tx, h in tries)
+        factor = min((1.0, psd.dpi / 72), key=off)
+
+    def em(n) -> float:                          # on the shrunk canvas
+        tx = n.text
+        return tx["size"] * tx["scale"] * factor * s if tx.get("size") else \
+            (n.box[3] - n.box[1]) / 0.75
+
+    def frac(b) -> list:
+        x0, y0, x1, y1 = b
+        x0, x1 = max(cl, min(cr, x0)), max(cl, min(cr, x1))
+        y0, y1 = max(ct, min(cb, y0)), max(ct, min(cb, y1))
+        return [round((x0 - cl) / cw, 5), round((y0 - ct) / ch, 5),
+                round((x1 - x0) / cw, 5), round((y1 - y0) / ch, 5)]
+
+    def line_box(n, role) -> tuple:
+        """A one-line text's box: around its baseline, as wide as it can be."""
+        e = em(n)
+        tx = n.text
+        ox, oy = tx.get("origin") or (0, 0)
+        ox, oy = ox * s, oy * s
+        bx0, by0, bx1, by1 = n.box
+        if not (by0 - e <= oy <= by1 + e):        # no usable origin: from the letters
+            oy = by1 - 0.15 * e
+            ox = {"right": bx1, "center": (bx0 + bx1) / 2}.get(tx["align"], bx0)
+        bottom = oy + 0.28 * e
+        top = bottom - 1.3 * e
+        margin = 0.045 * cw
+        if role in ("pt",):
+            half = max((bx1 - bx0) * 0.8, 1.3 * e)
+            mid = (bx0 + bx1) / 2
+            return mid - half, top, mid + half, bottom
+        if tx["align"] == "right":
+            return min(bx0, cl + margin), top, max(ox, bx1), bottom
+        if tx["align"] == "center":
+            half = max((bx1 - bx0) / 2, min(ox - cl, cr - ox) - margin)
+            return ox - half, top, ox + half, bottom
+        return min(ox, bx0), top, max(bx1, cr - margin), bottom
+
+    boxes, sizes, colours, aligns, fonts, found, shadows = {}, {}, {}, {}, {}, [], {}
+    size_key = {"name": "title", "type": "type", "text": "text", "pt": "pt", "artist": "info",
+                "cost": "cost"}
+    for role, n in texts.items():
+        tx = n.text
+        if role == "text":
+            b = _bounds(psd, refs["text"], False) if "text" in refs else None
+            if b is None and tx.get("box"):
+                b = tuple(v * s for v in tx["box"])
+            if b is None:
+                b = n.box
+        elif role == "rarity":
+            b = _bounds(psd, refs["rarity"], False) if "rarity" in refs else n.box
+        else:
+            b = line_box(n, role)
+        boxes[role] = frac(b)
+        found.append(_ROLE_LABELS[role])
+        if role in size_key and tx.get("size"):
+            sizes[size_key[role]] = round(em(n) / ch * CARD_H * PT_PER_UNIT * 2) / 2
+        if tx.get("colour") and role in ("name", "type", "text", "pt", "artist"):
+            colours[role] = tx["colour"]
+        sh = tx.get("shadow")
+        if sh and role in ("name", "type", "text", "pt", "artist"):
+            ang = math.radians(psd.angle if sh.get("global_angle") else sh["angle"])
+            unit = CARD_H / ch * s                  # the file's pixels → the card's units
+            shadows[role] = {"colour": sh["colour"], "opacity": round(sh["opacity"], 2),
+                             "dx": round(-math.cos(ang) * sh["distance"] * unit, 2),
+                             "dy": round(math.sin(ang) * sh["distance"] * unit, 2),
+                             "blur": round(sh["size"] * unit, 2)}
+        if role in ("name", "type", "text", "artist", "credit"):
+            aligns[role] = tx["align"] if tx["align"] in ("left", "center", "right") else "left"
+        font_key = {"name": "title", "text": "text", "pt": "pt", "artist": "info"}.get(role)
+        if font_key and tx.get("font"):
+            fonts[font_key] = tx["font"]
+    mg = mana_group(psd)
+    if mg is not None:                            # the number on the template's mana tile
+        for n in psd.walk(mg.children):
+            if n.kind == "text" and n.text and re.search(r"[0-9XYZ]", n.text.get("text", "")):
+                if n.text.get("font"):
+                    fonts["mana"] = n.text["font"]
+                if n.text.get("colour"):
+                    colours["mana"] = n.text["colour"]
+                break
+    if "cost" not in texts and "cost" in groups:  # mana symbols as pictures
+        b = _bounds(psd, groups["cost"])
+        if b:
+            boxes["cost"] = frac(b)
+            found.append(_ROLE_LABELS["cost"])
+            w, h = b[2] - b[0], b[3] - b[1]
+            d = w if h > 1.8 * w else h
+            sizes["cost"] = round(d / ch * CARD_H * PT_PER_UNIT * 0.95 * 2) / 2
+    if "art" in refs:
+        b = _bounds(psd, refs["art"], False)
+        if b:
+            boxes["art"] = frac(b)
+            found.append(_ROLE_LABELS["art"])
+    ptb = None
+    if "ptbox" in groups:
+        kids = [c for c in groups["ptbox"].children if not c.is_group or c.children]
+        ptb = _union([_bounds(psd, c, False) for c in kids[:1]]) if kids else None
+    if ptb is None and "ptref" in refs:
+        ptb = _bounds(psd, refs["ptref"], False)
+    if ptb:
+        boxes["ptbox"] = frac(ptb)
+        found.append(_ROLE_LABELS["ptbox"])
+        if "pt" not in boxes:
+            x0, y0, x1, y1 = ptb
+            boxes["pt"] = frac((x0 + (x1 - x0) * 0.1, y0 + (y1 - y0) * 0.15,
+                                x1 - (x1 - x0) * 0.1, y1 - (y1 - y0) * 0.15))
+    # a name or type line beside the mana cost or set symbol stops before it
+    for line, other in (("name", "cost"), ("type", "rarity")):
+        a, o = boxes.get(line), boxes.get(other)
+        if a and o and aligns.get(line, "left") == "left":
+            overlap = min(a[1] + a[3], o[1] + o[3]) - max(a[1], o[1])
+            if overlap > 0.3 * a[3] and o[0] > a[0]:
+                a[2] = round(max(0.05, o[0] - a[0] - 0.01), 5)
+    if fonts.get("mana") or colours.get("mana"):
+        found.append("the mana numbers' font")
+    if shadows:
+        found.append("text shadows")
+    return {"boxes": boxes, "sizes": sizes, "colours": colours, "aligns": aligns,
+            "fonts": fonts, "found": found, "shadows": shadows}
+
+
+def apply_layout(frame: "Frame", layout: Optional[dict]) -> None:
+    """Put what a template's layers say into a frame: boxes, sizes, colours,
+    alignment and fonts (when the frame has them, or they're MSE's own)."""
+    if not layout:
+        return
+    frame.boxes.update({k: list(v) for k, v in layout.get("boxes", {}).items()})
+    frame.sizes.update(layout.get("sizes", {}))
+    cols = layout.get("colours", {})
+    frame.colours.update(cols)
+    if "artist" in cols:
+        frame.colours["credit"] = cols["artist"]
+    frame.aligns.update(layout.get("aligns", {}))
+    frame.shadows.update(layout.get("shadows", {}))
+    files = frame_fonts(frame)
+    for key, ps in layout.get("fonts", {}).items():
+        fam = resolve_font(ps, files)
+        if fam:
+            frame.fonts[key] = fam
+    art = frame.boxes.get("art")
+    if art and art[2] * art[3] > 0.85:
+        frame.art = "under"
+
+
+def missing_fonts(layout: Optional[dict], files: list) -> list[str]:
+    """The template's fonts that neither came with it nor are MSE's own."""
+    out = []
+    for ps in (layout or {}).get("fonts", {}).values():
+        if ps and not resolve_font(ps, files) and ps not in out:
+            out.append(ps)
+    return out
+
+
 # ------------------------------------------------------------------ fonts
 FONT_EXTS = (".ttf", ".otf", ".ttc")
+# Photoshop's names for the fonts MSE's Magic frames use
+_KNOWN_FONTS = {"beleren2016bold": "Beleren Bold", "belerenbold": "Beleren Bold",
+                "beleren2016smallcapsbold": "Beleren Small Caps Bold",
+                "belerensmallcapsbold": "Beleren Small Caps Bold",
+                "plantinmtproregular": "MPlantin", "mplantin": "MPlantin",
+                "plantinmtproitalic": "MPlantin-Italic", "mplantinitalic": "MPlantin-Italic",
+                "plantinmtprobold": "MPlantin", "mplantinbold": "MPlantin"}
+
+
+def _norm(s: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+
+
+def ps_name(path: Path) -> str:
+    """A font file's PostScript name (what Photoshop files call it)."""
+    import struct
+    try:
+        data = Path(path).read_bytes()
+        off = int.from_bytes(data[12:16], "big") if data[:4] == b"ttcf" else 0
+        for k in range(int.from_bytes(data[off + 4:off + 6], "big")):
+            rec = off + 12 + 16 * k
+            if data[rec:rec + 4] != b"name":
+                continue
+            toff = int.from_bytes(data[rec + 8:rec + 12], "big")
+            count = int.from_bytes(data[toff + 2:toff + 4], "big")
+            store = toff + int.from_bytes(data[toff + 4:toff + 6], "big")
+            for j in range(count):
+                pid, _eid, _lid, nid, ln, o = struct.unpack(
+                    ">6H", data[toff + 6 + 12 * j:toff + 18 + 12 * j])
+                if nid == 6:
+                    raw = data[store + o:store + o + ln]
+                    return raw.decode("utf-16-be" if pid in (0, 3) else "latin-1",
+                                      "replace").strip("\x00 ")
+    except Exception:  # noqa: BLE001 - not a font we can read
+        pass
+    return ""
+
+
+def resolve_font(ps: str, files: list) -> str:
+    """The name MSE knows a template's font by: one of the fonts that came with
+    it (by its PostScript or family name), or one of MSE's own; "" if not."""
+    n = _norm(ps)
+    if not n:
+        return ""
+    best, best_len = "", 0
+    for f in files:
+        fam = font_name(f)
+        if n in (_norm(ps_name(f)), _norm(fam)):
+            return fam
+        nf = _norm(fam)
+        if len(nf) >= 4 and (n.startswith(nf) or nf.startswith(n)) and len(nf) > best_len:
+            best, best_len = fam, len(nf)
+    return best or _KNOWN_FONTS.get(n, "")
 
 
 def fonts_in(paths: list) -> list[Path]:
@@ -636,6 +1105,137 @@ def _map(name: str, values: dict) -> list[str]:
     return lines
 
 
+def _shadow(frame: Frame, key: str) -> list[str]:
+    """A text's shadow (from the template's Drop Shadow) as MSE's font settings."""
+    sh = frame.shadows.get(key)
+    if frame.shadows.get("_off") or not isinstance(sh, dict) or \
+            float(sh.get("opacity", 1)) < 0.15:
+        return []
+    return [f"\t\t\tshadow color: {_rgb(sh.get('colour', '#000000'))}",
+            f"\t\t\tshadow displacement x: {_n(float(sh.get('dx', 1)))}",
+            f"\t\t\tshadow displacement y: {_n(float(sh.get('dy', 1)))}",
+            f"\t\t\tshadow blur: {_n(float(sh.get('blur', 0)))}"]
+
+
+# ------------------------------------------------------------------ the frame's mana symbols
+# MSE's own symbols for everything else (their pictures stay in its mana package)
+_STD_MANA = [("T", "mana_t.png", 0), ("Q", "mana_q.png", 0), ("E", "energy.png", 230),
+             ("W/U/B/R/G", "mana_wubrg.png", 0)] + \
+    [(f"{a}/{b}", f"mana_{a.lower()}{b.lower()}.png", 145)
+     for a, b in ("WU", "UB", "BR", "RG", "GW", "WB", "UR", "BG", "RW", "GU")] + \
+    [(f"C/{c}", f"mana_cmc_c{c.lower()}.png", 145) for c in "WUBRG"] + \
+    [(f"H/{c}", f"mana_phy{c.lower()}.png", 120) for c in "WUBRG"] + \
+    [("H", "mana_phyc.png", 120), ("1/2", "mana_1_half.png", 0), ("I", "mana_infinite.png", 0)]
+_STD_SINGLE = {"mana-w": ("W", "mana_w.png"), "mana-u": ("U", "mana_u.png"),
+               "mana-b": ("B", "mana_b.png"), "mana-r": ("R", "mana_r.png"),
+               "mana-g": ("G", "mana_g.png"), "mana-c": ("C", "mana_c.png")}
+_STD = "/magic-mana-large.mse-symbol-font/"
+
+
+def has_mana(frame: Frame) -> bool:
+    return any(frame.pictures.get(k) for k, _ in MANA_SLOTS)
+
+
+def mana_name(frame: Frame) -> str:
+    """The MSE symbol font with the frame's own mana symbols."""
+    return f"magic-{frame.style_name}-mana"
+
+
+def mana_picture(path: Path) -> Image.Image:
+    """A mana symbol picture: cut to what's drawn, square, MANA_SIZE pixels."""
+    im = open_picture(path)
+    a = im.getchannel("A").point(lambda v: 255 if v > 8 else 0)
+    if a.getbbox():
+        im = im.crop(a.getbbox())
+    side = max(im.width, im.height)
+    sq = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    sq.paste(im, ((side - im.width) // 2, (side - im.height) // 2))
+    return sq.resize((MANA_SIZE, MANA_SIZE), Image.LANCZOS)
+
+
+def mana_number_colour(frame: Frame) -> str:
+    """The numbers on the tile: the template's colour, else light on a dark tile."""
+    if frame.colours.get("mana"):
+        return frame.colours["mana"]
+    pic = frame.pictures.get("mana-n")
+    if not pic:
+        return "#000000"
+    try:
+        im = mana_picture(frame_dir(frame.slug) / pic)
+    except OSError:
+        return "#000000"
+    a = np.asarray(im.getchannel("A"), dtype=np.float32) / 255
+    lum = np.asarray(im.convert("L"), dtype=np.float32) / 255
+    mean = (lum * a).sum() / max(1.0, a.sum())
+    return "#ffffff" if mean < 0.5 else "#000000"
+
+
+def symbol_font_text(frame: Frame, version: str = "") -> str:
+    """The MSE ``symbol-font`` file of the frame's mana symbols."""
+    today = version or _dt.date.today().isoformat()
+    short = (frame.name.replace("\n", " ").strip() or "Frame")[:24]
+    font = frame.font("mana") or frame.font("title")
+    first = next((k for k, _ in MANA_SLOTS if frame.pictures.get(k)), "mana-w")
+    L = ["mse version: 2.0.2", f"short name: {short} mana",
+         f"full name: {short} – mana symbols", f"icon: {first}.png", "position hint: 900",
+         f"installer group: magic/Frame studio/{short}", f"version: {today}",
+         "depends on:", "\tpackage: magic-mana-large.mse-symbol-font",
+         "\tversion: 2007-09-23", "", f"image font size: {MANA_SIZE}",
+         "horizontal space: 2", "",
+         "#### Made with Frame studio (an MSE Studio add-on) from a template's mana symbols."]
+    for code, img, size in _STD_MANA:                   # hybrids and the rest: MSE's own
+        L += ["symbol:", f"\tcode: {code}", f"\timage: {_STD}{img}"]
+        L += [f"\timage font size: {size or 135}"]
+    for slot, (code, img) in _STD_SINGLE.items():       # the colours: the template's
+        if frame.pictures.get(slot):
+            L += ["symbol:", f"\tcode: {code}", f"\timage: {slot}.png"]
+        else:
+            L += ["symbol:", f"\tcode: {code}", f"\timage: {_STD}{img}",
+                  "\timage font size: 135"]
+    L += ["symbol:", "\tcode: S", f"\timage: {_STD}mana_s.png", "\timage font size: 135"]
+    for c in "WUBRG":                                   # 2/W and the like: MSE's own
+        L += ["symbol:", f"\tcode: ([XYZ0-9])/{c}", "\tregex: yes",
+              f"\timage: {_STD}mana_n{c.lower()}.png", "\timage font size: 145",
+              "\tdraw text: 1", "\ttext margin left: -.25", "\ttext margin right: .2",
+              "\ttext margin top: -.14", "\ttext margin bottom: .4", "\ttext font:",
+              "\t\tname: MPlantin", "\t\tsize: .6", "\t\tcolor: rgb(0,0,0)",
+              "\t\tmax stretch: 0.5"]
+    tile = frame.pictures.get("mana-n")
+    for code, colour, fname, own in (("[0-9]+|[XYZ]", mana_number_colour(frame), font, True),
+                                     (".", "#000000", "MPlantin", False)):
+        L += ["symbol:", f"\tcode: {code}", "\tregex: yes"]
+        if tile and own:
+            L += ["\timage: mana-n.png", "\ttext margin left: .2", "\ttext margin right: .2",
+                  "\ttext margin top: .12", "\ttext margin bottom: .18"]
+        else:
+            L += [f"\timage: {_STD}mana_circle.png", "\timage font size: 135",
+                  "\ttext margin left: .28", "\ttext margin right: .21",
+                  "\ttext margin top: -.15", "\ttext margin bottom: -.06"]
+        L += ["\tdraw text: 0", "\ttext font:", f"\t\tname: {fname}", "\t\tsize: 1",
+              f"\t\tcolor: {_rgb(colour)}", "\t\tmax stretch: 0.6"]
+    L += ["insert symbol menu:"] + [f"\titem: {c}" for c in "WUBRGC"] + [
+        "\titem:", "\t\ttype: line", "\titem: X", "\titem:", "\t\ttype: custom",
+        "\t\tname: generic"]
+    return "\n".join(L) + "\n"
+
+
+def build_mana(frame: Frame, out_dir: Path) -> Optional[Path]:
+    """Write the frame's mana symbol font (if it has its own symbols) in ``out_dir``."""
+    if not has_mana(frame):
+        return None
+    dest = Path(out_dir) / f"{mana_name(frame)}.mse-symbol-font"
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    for slot, _label in MANA_SLOTS:
+        pic = frame.pictures.get(slot)
+        if pic:
+            mana_picture(frame_dir(frame.slug) / pic).save(dest / f"{slot}.png", "PNG",
+                                                           optimize=True)
+    (dest / "symbol-font").write_text(symbol_font_text(frame), encoding="utf-8")
+    return dest
+
+
 def style_text(frame: Frame, version: str = "") -> str:
     """The MSE ``style`` file of a frame."""
     names, pts = _files_for(frame)
@@ -727,29 +1327,44 @@ def style_text(frame: Frame, version: str = "") -> str:
     nr, cr = _rect(frame.box("name")), _rect(frame.box("cost"))
     cost_right = float(cr["left"]) + float(cr["width"])
     name_right = float(nr["left"]) + float(nr["width"])
-    L += ["\tname:", f"\t\tleft: {nr['left']}", f"\t\ttop: {nr['top']}",
-          f"\t\tright: {{ min({_n(name_right)}, {_n(cost_right)} - "
-          "card_style.casting_cost.content_width - 4) }",
+    nb, cb = frame.box("name"), frame.box("cost")
+    beside = min(nb[1] + nb[3], cb[1] + cb[3]) - max(nb[1], cb[1]) > 0.3 * nb[3] and \
+        cb[0] > nb[0] and frame.align("name") == "left" and not frame.vertical_cost()
+    right = (f"\t\tright: {{ min({_n(name_right)}, {_n(cost_right)} - "
+             "card_style.casting_cost.content_width - 4) }") if beside else \
+        f"\t\twidth: {nr['width']}"
+    L += ["\tname:", f"\t\tleft: {nr['left']}", f"\t\ttop: {nr['top']}", right,
           f"\t\theight: {nr['height']}",
-          "\t\talignment: bottom shrink-overflow", "\t\tpadding bottom: 0", "\t\tz index: 3",
+          f"\t\talignment: bottom {frame.align('name')} shrink-overflow",
+          "\t\tpadding bottom: 0", "\t\tz index: 3",
           "\t\tfont:", f"\t\t\tname: {frame.font('title')}",
           f"\t\t\tsize: {_n(frame.size('title'))}",
-          f"\t\t\tcolor: {_rgb(frame.colour('name'))}"]
-    L += ["\tcasting cost:", f"\t\tright: {_n(cost_right)}", f"\t\ttop: {cr['top']}",
-          "\t\twidth: { max(30, card_style.casting_cost.content_width) + 5 }",
-          f"\t\theight: {cr['height']}", "\t\talignment: middle right",
-          "\t\tfont:", f"\t\t\tname: {frame.font('text')}",
+          f"\t\t\tcolor: {_rgb(frame.colour('name'))}"] + _shadow(frame, "name")
+    if frame.vertical_cost():                    # one symbol under the other
+        L += ["\tcasting cost:"] + [f"\t\t{k}: {v}" for k, v in cr.items()] + [
+            "\t\talignment: bottom center" if frame.mana_flow == "up" else
+            "\t\talignment: top center",
+            "\t\tdirection: bottom to top" if frame.mana_flow == "up" else
+            "\t\tdirection: top to bottom"]
+    else:
+        L += ["\tcasting cost:", f"\t\tright: {_n(cost_right)}", f"\t\ttop: {cr['top']}",
+              "\t\twidth: { max(30, card_style.casting_cost.content_width) + 5 }",
+              f"\t\theight: {cr['height']}", "\t\talignment: middle right"]
+    L += ["\t\tfont:", f"\t\t\tname: {frame.font('text')}",
           f"\t\t\tsize: {_n(frame.size('cost'))}",
-          "\t\tsymbol font:", "\t\t\tname: magic-mana-large",
+          "\t\tsymbol font:", f"\t\t\tname: {mana_name(frame) if has_mana(frame) else
+                                              'magic-mana-large'}",
           f"\t\t\tsize: {_n(frame.size('cost'))}",
+          "\t\t\talignment: middle center" if frame.vertical_cost() else
           "\t\t\talignment: middle right", "\t\talways symbol: true", "\t\tz index: 4",
           "\t\tpadding top: 0"]
     tr = _rect(frame.box("type"))
     L += ["\ttype:"] + [f"\t\t{k}: {v}" for k, v in tr.items()] + [
-        "\t\talignment: top shrink-overflow", "\t\tz index: 3", "\t\tpadding top: 2",
+        f"\t\talignment: top {frame.align('type')} shrink-overflow", "\t\tz index: 3",
+        "\t\tpadding top: 2",
         "\t\tfont:", f"\t\t\tname: {frame.font('title')}",
         f"\t\t\tsize: {_n(frame.size('type'))}",
-        f"\t\t\tcolor: {_rgb(frame.colour('type'))}",
+        f"\t\t\tcolor: {_rgb(frame.colour('type'))}", *_shadow(frame, "type"),
         "\t\t\tseparator color: rgb(128,128,128)"]
     rr = _rect(frame.box("rarity"))
     L += ["\trarity:"] + [f"\t\t{k}: {v}" for k, v in rr.items()] + [
@@ -765,9 +1380,11 @@ def style_text(frame: Frame, version: str = "") -> str:
         "\t\tfont:", f"\t\t\tname: {frame.font('text')}",
         f"\t\t\titalic name: {frame.font('italic')}", f"\t\t\tsize: {_n(frame.size('text'))}",
         "\t\t\tscale down to: 6", f"\t\t\tcolor: {_rgb(frame.colour('text'))}",
+        *_shadow(frame, "text"),
         "\t\tsymbol font:", "\t\t\tname: magic-mana-small",
         f"\t\t\tsize: {_n(frame.size('text'))}",
-        "\t\talignment: middle left", "\t\tz index: 3", "\t\tpadding left: 6",
+        f"\t\talignment: middle {frame.align('text')}", "\t\tz index: 3",
+        "\t\tpadding left: 6",
         "\t\tpadding right: 4", "\t\tline height hard: 1.2", "\t\tline height line: 1.5",
         "\t\tline height soft: 0.9", "\t\tline height hard max: 1.3",
         "\t\tline height line max: 1.6"]
@@ -776,14 +1393,16 @@ def style_text(frame: Frame, version: str = "") -> str:
         "\t\tz index: 4", "\t\talignment: center middle shrink-overflow", "\t\tfont:",
         f"\t\t\tname: {frame.font('pt')}",
         f"\t\t\tsize: {_n(frame.size('pt'))}",
-        f"\t\t\tcolor: {_rgb(frame.colour('pt'))}", "\t\t\tseparator color: rgb(200,0,0)"]
+        f"\t\t\tcolor: {_rgb(frame.colour('pt'))}", "\t\t\tseparator color: rgb(200,0,0)",
+        *_shadow(frame, "pt")]
     for field_name, key, col in (("illustrator", "artist", "artist"),
                                  ("secondary copyright", "credit", "artist")):
         ar = _rect(frame.box(key))
         L += [f"\t{field_name}:"] + [f"\t\t{k}: {v}" for k, v in ar.items()] + [
+            f"\t\talignment: top {frame.align(key)}",
             "\t\tz index: 3", "\t\tfont:", f"\t\t\tname: {frame.font('info')}",
             f"\t\t\tsize: {_n(frame.size('info'))}",
-            f"\t\t\tcolor: {_rgb(frame.colour(col))}"]
+            f"\t\t\tcolor: {_rgb(frame.colour(col))}"] + _shadow(frame, "artist")
     if pts:
         br = _rect(frame.box("ptbox"))
         L += ["############################################################## P/T box",
@@ -820,15 +1439,19 @@ def build(frame: Frame, out_dir: Path) -> Path:
         icon.thumbnail((60, 84))
         icon.save(dest / "card-sample.png", "PNG")
     (dest / "style").write_text(style_text(frame), encoding="utf-8")
+    build_mana(frame, out_dir)
     return dest
 
 
 def zip_frame(folder: Path) -> Path:
+    """The frame (and its mana symbols, built next to it) as one frame pack."""
     out = folder.parent / (folder.name + ".zip")
+    mana = folder.parent / folder.name.replace(".mse-style", "-mana.mse-symbol-font")
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        for f in sorted(folder.rglob("*")):
-            if f.is_file():
-                z.write(f, f"{folder.name}/{f.relative_to(folder).as_posix()}")
+        for d in [folder] + ([mana] if mana.is_dir() else []):
+            for f in sorted(d.rglob("*")):
+                if f.is_file():
+                    z.write(f, f"{d.name}/{f.relative_to(d).as_posix()}")
     return out
 
 
@@ -858,6 +1481,9 @@ def uninstall(frame: Frame, data_dir: Path) -> None:
     from mse_studio.core import mse_packages
     if data_dir and (Path(data_dir) / frame.folder_name).exists():
         mse_packages.remove_package(Path(data_dir), frame.folder_name, _data() / "replaced")
+    mana = f"{mana_name(frame)}.mse-symbol-font"
+    if data_dir and (Path(data_dir) / mana).exists():
+        mse_packages.remove_package(Path(data_dir), mana, _data() / "replaced")
 
 
 def is_installed(frame: Frame, data_dir: Optional[Path]) -> bool:
@@ -866,10 +1492,11 @@ def is_installed(frame: Frame, data_dir: Optional[Path]) -> bool:
 
 # ------------------------------------------------------------------ a new frame
 def new_frame(name: str, slots: dict, made_from: str = "", fonts: Optional[list] = None,
-              font_names: Optional[dict] = None) -> Frame:
+              font_names: Optional[dict] = None, layout: Optional[dict] = None) -> Frame:
     """A frame from pictures ({slot: picture file or PIL image}): they're copied
-    into its own folder, and the art box and text colours are guessed. Fonts
-    that came with it are kept with it (``font_names``: which goes where)."""
+    into its own folder, and the art box and text colours are guessed – or
+    taken from a template's layers (``layout``, see psd_layout). Fonts that
+    came with it are kept with it (``font_names``: which goes where)."""
     taken = {f.slug for f in load_frames()}
     frame = Frame(name=name.strip() or "My frame", made_from=made_from)
     frame.slug = slug_for(frame.name, taken)
@@ -884,6 +1511,10 @@ def new_frame(name: str, slots: dict, made_from: str = "", fonts: Optional[list]
         if art_box:
             frame.boxes["art"] = art_box
         frame.colours = guess_colours(img, {k: frame.box(k) for k in TEXT_BOXES})
+    if layout:
+        apply_layout(frame, layout)
+        if font_names:
+            frame.fonts.update(font_names)          # what was picked by hand wins
     return frame
 
 
