@@ -14,7 +14,9 @@ them that add-ons in this store are checked. So before merging a **page** or
       the description says so – Card prices reads the Card database.) MSE's
       own data folder is changed only through MSE Studio's frame-pack
       installer (`mse_packages.install_zip` / `remove_package`), as Frame
-      studio does, never by writing files there.
+      studio does, never by writing files there. Fonts are installed only
+      through MSE Studio's font installer
+      (`mse_studio.gui.advanced.install_font_files`), after asking.
 - [ ] It doesn't run other programs, download code, or use `eval` / `exec`.
 - [ ] It doesn't touch MSE Studio's settings (API keys and tokens live there).
 - [ ] Programs: the zip is built from the linked source, and the release is

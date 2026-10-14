@@ -229,6 +229,23 @@ def is_template(item) -> bool:
     return any(TEMPLATE_DIR.match(p) for p in (item.path or "").split("/") if p)
 
 
+FONT_EXT = (".ttf", ".otf", ".ttc")
+
+
+def fonts_in(items: list) -> list:
+    """Fonts that came with the deck's templates (font files, or a .zip with
+    "font" in its name or folder)."""
+    out = []
+    for it in items:
+        if getattr(it, "folder", False):
+            continue
+        low = it.name.lower()
+        if low.endswith(FONT_EXT) or (low.endswith(".zip") and
+                                      "font" in (low + " " + (it.path or "").lower())):
+            out.append(it)
+    return out
+
+
 def templates_in(items: list) -> list:
     """The deck's frame templates (pictures and Photoshop files)."""
     return [it for it in items if is_template(it) and
@@ -367,6 +384,45 @@ def load_texts(deck_id: str) -> dict:
                     .get("texts") or {})
     except (OSError, ValueError):
         return {}
+
+
+def set_scans(deck_id: str, scans: dict) -> None:
+    """What's written on each picture (picture id → {"rules", "any"}), kept
+    with the import."""
+    try:
+        f = _listing_file(deck_id)
+        data = json.loads(f.read_text(encoding="utf-8"))
+        data["scans"] = scans
+        f.write_text(json.dumps(data), encoding="utf-8")
+    except (OSError, ValueError):
+        pass
+
+
+def load_scans(deck_id: str) -> dict:
+    try:
+        return dict(json.loads(_listing_file(deck_id).read_text(encoding="utf-8"))
+                    .get("scans") or {})
+    except (OSError, ValueError):
+        return {}
+
+
+def scan_picture(item, http=None) -> Optional[dict]:
+    """Look for text on a card's picture (a 600 px picture: Google's
+    thumbnail for Drive files, the file itself on this PC)."""
+    from . import textscan
+    if item.kind == "drive":
+        data = gdrive.thumbnail(item.id, 600, http=http)
+    else:
+        data = local.read(item)
+    r = textscan.scan_file(data)
+    return {"rules": r["rules"], "any": r["any"]} if r else None
+
+
+def text_on_picture(card: "Card", scans: dict, what: str) -> Optional[bool]:
+    """Is there ``what`` ("rules" text, or "any" text) on the card's picture?
+    None: not looked at yet."""
+    r = scans.get(card.front.id) if card.front is not None else None
+    return None if r is None else bool(r.get(what))
 
 
 def load_types(deck_id: str) -> dict:
@@ -624,11 +680,26 @@ def _has_rules(text: str) -> bool:
     return bool(re.sub(r"\([^)]*\)", "", text or "").strip())
 
 
+def resolve(entries: list, progress=None, cancel=None) -> None:
+    """Scryfall's cards for the names on proxy pictures. A name written with
+    hyphens for spaces ("Academy-Manufactor") is tried again with spaces when
+    Scryfall doesn't know it (real names keep theirs: "Will-o'-the-Wisp")."""
+    from mse_studio.core import decklists as dl
+    dl.resolve(entries, progress, cancel)
+    retry = [(e, dl.Entry(name=re.sub(r"\s*-\s*", " ", e.name).strip()))
+             for e in entries if not e.found and "-" in e.name]
+    if retry:
+        dl.resolve([r for _e, r in retry], progress, cancel)
+        for e, r in retry:
+            if r.found:
+                e.card = r.card
+
+
 def lookup_cards(cards: list[Card], progress=None, cancel=None) -> tuple[dict, dict]:
     """(name → type line, name → has rules text) for the cards that were found."""
     from mse_studio.core import decklists as dl
     entries = [dl.Entry(name=c.name) for c in cards if not c.token]
-    dl.resolve(entries, progress, cancel)
+    resolve(entries, progress, cancel)
     found = [e for e in entries if e.found]
     types = {e.name.lower(): str((e.card or {}).get("type_line", "")) for e in found}
     texts = {}

@@ -185,6 +185,26 @@ class HelloPage(QWidget):
 - **A card's biggest picture** (MSE Studio 0.17.0):
   `mse_studio.core.decklists.fetch_full(card)` downloads a real card's PNG
   from Scryfall (once) and returns the file.
+- **A browser that stays on one site** (MSE Studio 0.18.0):
+  `WebPanel(parent, url, …, stay_on=("mpcfill.com",))` doesn't follow links to
+  other sites (the files the site downloads – pictures on Google's servers –
+  still come through); its address bar is read-only. `panel.allowed(url)`
+  says where it may go.
+- **Fonts** (MSE Studio 0.18.0): install fonts that came with a frame only
+  through `mse_studio.gui.advanced.install_font_files(parent, files)` (for the
+  Windows user, no administrator needed) – after asking. MSE is started again
+  for the next preview (`main.fonts_changed()`), so it draws them.
+  `mse_studio.gui.advanced.qt_installed_fonts()` + `mse_studio.core.fonts.
+  is_installed(name, installed)` tell which are there already.
+- **A new deck** (MSE Studio 0.18.0): `main.new_deck(name=…)` shows the New
+  deck window with the name filled in and returns the new deck once it's open
+  (None if cancelled) – then add its cards (the Card database add-on's *Make a
+  new deck with it*).
+- **Planeswalkers** (MSE Studio 0.18.0): write a planeswalker's rules text like
+  the real card ("+1: Draw a card.", one ability a line). MSE Studio fills the
+  frame's own ability and loyalty boxes from it (`mse_studio.core.walkers`)
+  when the card is drawn or the deck is saved – cards added with
+  `add_custom` get it straight away.
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight

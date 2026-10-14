@@ -79,6 +79,7 @@ class Frame:
     made_from: str = ""                         # the folder or file it came from
     proxy_deck: str = ""                        # a Proxy decks deck it's for (its id)
     when: str = ""
+    font_files: list = field(default_factory=list)   # fonts that came with it (in fonts/)
 
     @property
     def style_name(self) -> str:
@@ -217,6 +218,246 @@ def sort_pictures(files: list[Path]) -> tuple[dict, list[Path]]:
         else:
             rest.append(f)
     return slots, rest
+
+
+# ------------------------------------------------------------------ Photoshop files
+PSD_W = 1700                    # Photoshop files are read up to this wide (then cut to MAX_W)
+# layers that aren't part of the frame: the art, the set symbol, mana symbols…
+_PLACEHOLDER = {"art", "artwork", "illustration", "illus", "image", "picture", "photo",
+                "symbol", "symbols", "setsymbol", "rarity", "mana", "watermark", "placeholder",
+                "expansion", "insert", "paste"}
+_KEEP = {"box", "bar", "frame", "border", "bg", "background", "plate", "pinline", "pinlines",
+         "line", "lines", "window", "shadow", "outline", "trim", "crown", "texture", "overlay"}
+
+
+def _is_placeholder(layer) -> bool:
+    if layer.kind == "text":                   # the sample name, type line, rules…
+        return True
+    toks = set(_tokens(layer.name))
+    return bool(toks & _PLACEHOLDER) and not toks & _KEEP
+
+
+def _is_pt(name: str) -> bool:
+    return any(t in _PT_WORDS for t in _tokens(name)) or "p/t" in name.lower()
+
+
+@dataclass
+class PsdPick:
+    """A picture a Photoshop file can give: a colour's frame put together from
+    its groups, the whole file, a group or a single layer."""
+    label: str
+    guess: str                                   # the slot it's probably for, or ""
+    visible: object = None                       # layer key → drawn? (None: as saved)
+    root: Optional[int] = None                   # only this group / layer (its key)
+    merged: bool = False                         # Photoshop's own merged picture
+
+
+def _annotate(nodes: list, info: dict, in_pt: bool = False) -> None:
+    """For each layer (by key): which colour it is in a set of colour versions
+    ("White", "Blue"… side by side), whether it's the P/T box or a placeholder."""
+    colours = {}
+    for n in nodes:
+        g = guess_slot(n.name)
+        if g:
+            colours[n.key] = g[3:] if g.startswith("pt-") else g
+    options = set(colours.values()) if len(set(colours.values())) >= 2 else set()
+    for n in nodes:
+        pt = in_pt or _is_pt(n.name)
+        i = info[n.key] = {"variant": colours.get(n.key) if options else None,
+                           "options": options, "pt": pt, "has_pt": pt,
+                           "placeholder": _is_placeholder(n), "slots": set()}
+        if n.is_group:
+            _annotate(n.children, info, pt)
+            for c in n.children:
+                ci = info[c.key]
+                i["has_pt"] = i["has_pt"] or ci["has_pt"]
+                i["slots"] |= ci["slots"] | ({ci["variant"]} if ci["variant"] else set())
+
+
+def _visible(info: dict, slot: Optional[str], part: str = "frame"):
+    """Which layers make the frame (``part`` "frame") or the P/T box ("pt")
+    for a colour: in each set of colour versions only that colour's; the art,
+    sample text and symbols left out."""
+    def vis(n) -> bool:
+        i = info.get(n.key)
+        if i is None or i["placeholder"]:
+            return False
+        if part == "frame" and i["pt"]:
+            return False
+        if part == "pt" and not (i["pt"] or i["has_pt"]):
+            return False
+        if slot and i["variant"] and slot in i["options"]:
+            return i["variant"] == slot
+        if slot and n.is_group and slot in i["slots"]:
+            return True
+        if part == "pt" and not i["pt"]:
+            return True                          # a group the P/T box is in
+        return not n.hidden
+    return vis
+
+
+def psd_picks(psd) -> list[PsdPick]:
+    """What a Photoshop file can give, best first."""
+    info: dict = {}
+    _annotate(psd.layers, info)
+    options = set()
+    pt_options = set()
+    for i in info.values():
+        if i["variant"]:
+            (pt_options if i["pt"] else options).update(i["options"])
+    picks = []
+    names = dict(SLOTS)
+    for slot in [k for k, _ in SLOTS if k in options]:
+        picks.append(PsdPick(f"{names[slot]} frame (put together from the layers)", slot,
+                             _visible(info, slot, "frame")))
+    for slot in [k for k, _ in SLOTS if k in pt_options and k != "l"]:
+        picks.append(PsdPick(f"P/T box – {names[slot]} (put together)", "pt-" + slot,
+                             _visible(info, slot, "pt")))
+    picks.append(PsdPick("The whole frame as saved (without sample text and art)", "",
+                         _visible(info, None, "frame")))
+    if psd.merged is not None:
+        picks.append(PsdPick("All layers (Photoshop's own picture, with effects)", "",
+                             merged=True))
+
+    def groups(nodes, path=""):
+        for n in reversed(nodes):                # top first, as Photoshop lists them
+            label = f"{path} › {n.name}" if path else n.name
+            if n.is_group and not info[n.key]["placeholder"]:
+                picks.append(PsdPick(f"Group: {label}", guess_slot(n.name) or "",
+                                     _group_vis(info, n.key), root=n.key))
+                groups(n.children, label)
+    groups(psd.layers)
+    for n in reversed(list(psd.walk())):
+        if n.kind == "pixel" and n.image is not None:
+            picks.append(PsdPick(f"Layer: {n.name}" + (" (hidden)" if n.hidden else ""),
+                                 guess_slot(n.name) or "", lambda _n: True, root=n.key))
+    return picks
+
+
+def _group_vis(info: dict, root: int):
+    def vis(n) -> bool:
+        i = info.get(n.key)
+        if n.key == root:
+            return True
+        return i is not None and not i["placeholder"] and not n.hidden
+    return vis
+
+
+def psd_picture(psd, pick: PsdPick, cancel=None) -> Image.Image:
+    """A pick drawn (at the size ``psd`` was read)."""
+    from . import psdread
+    if pick.merged:
+        return psd.merged.copy()
+    nodes = None
+    if pick.root is not None:
+        nodes = [n for n in psd.walk() if n.key == pick.root]
+    return psdread.composite(psd, pick.visible, nodes=nodes, cancel=cancel)
+
+
+def read_psd(path: Path, progress=None, cancel=None):
+    from . import psdread
+    return psdread.read(Path(path), max_w=PSD_W, progress=progress, cancel=cancel)
+
+
+# ------------------------------------------------------------------ fonts
+FONT_EXTS = (".ttf", ".otf", ".ttc")
+
+
+def fonts_in(paths: list) -> list[Path]:
+    """Font files among files and folders (and in .zip files there, unpacked
+    into the add-on's data folder)."""
+    out: list[Path] = []
+    for p in paths:
+        p = Path(p)
+        if p.is_dir():
+            for f in sorted(p.rglob("*")):
+                if f.is_file() and (f.suffix.lower() in FONT_EXTS or
+                                    (f.suffix.lower() == ".zip" and "font" in f.name.lower())):
+                    out += fonts_in([f])
+        elif p.suffix.lower() in FONT_EXTS and p.is_file():
+            out.append(p)
+        elif p.suffix.lower() == ".zip" and p.is_file():
+            out += _fonts_from_zip(p)
+    seen, keep = set(), []
+    for f in out:                                # the same font twice ("… copy.ttf")
+        key = (f.stat().st_size, font_name(f).lower())
+        if key not in seen:
+            seen.add(key)
+            keep.append(f)
+    return keep
+
+
+def _fonts_from_zip(z: Path) -> list[Path]:
+    import hashlib
+    out = []
+    dest = _data() / "font-inbox" / hashlib.sha1(str(z).encode()).hexdigest()[:10]
+    try:
+        with zipfile.ZipFile(z) as zf:
+            for n in zf.namelist():
+                base = Path(n).name
+                if n.endswith("/") or Path(base).suffix.lower() not in FONT_EXTS or \
+                        base.startswith((".", "__MACOSX")) or "__MACOSX" in n:
+                    continue
+                dest.mkdir(parents=True, exist_ok=True)
+                f = dest / base
+                f.write_bytes(zf.read(n))
+                out.append(f)
+    except (OSError, zipfile.BadZipFile):
+        return []
+    return out
+
+
+def font_name(path: Path) -> str:
+    """The name MSE uses for a font file (its family)."""
+    try:
+        from PIL import ImageFont
+        fam, _sty = ImageFont.truetype(str(path), 12).getname()
+        return (fam or Path(path).stem).strip()
+    except Exception:  # noqa: BLE001 - not a font Pillow can read
+        return Path(path).stem
+
+
+def guess_fonts(files: list) -> dict:
+    """Which of a frame's fonts go where: the most title-like one for the
+    name and type line (the rules text keeps MSE's MPlantin unless one says
+    it's for text)."""
+    names = [font_name(f) for f in files]
+    if not names:
+        return {}
+
+    def score(n: str) -> int:
+        t = set(_tokens(n))
+        s = 0
+        s += 3 * bool(t & {"title", "name", "header", "heading", "beleren", "display", "logo"})
+        s -= 3 * bool(t & {"hand", "handwriting", "handwritten", "script", "note", "notes"})
+        s -= 1 * bool(t & {"extra", "copy", "italic", "light"})
+        return s
+    out = {"title": sorted(names, key=lambda n: -score(n))[0]}
+    body = [n for n in names if set(_tokens(n)) & {"text", "body", "rules", "plantin", "book"}]
+    if body:
+        out["text"] = body[0]
+    return out
+
+
+def keep_fonts(frame: Frame, files: list) -> None:
+    """Fonts that came with the frame, kept in its folder."""
+    d = frame_dir(frame.slug) / "fonts"
+    for f in files:
+        f = Path(f)
+        if not f.is_file():
+            continue
+        d.mkdir(parents=True, exist_ok=True)
+        dest = d / f.name
+        if dest.resolve() != f.resolve():
+            shutil.copyfile(f, dest)
+        rel = f"fonts/{f.name}"
+        if rel not in frame.font_files:
+            frame.font_files.append(rel)
+
+
+def frame_fonts(frame: Frame) -> list[Path]:
+    return [frame_dir(frame.slug) / f for f in frame.font_files
+            if (frame_dir(frame.slug) / f).is_file()]
 
 
 # ------------------------------------------------------------------ pictures
@@ -590,13 +831,18 @@ def is_installed(frame: Frame, data_dir: Optional[Path]) -> bool:
 
 
 # ------------------------------------------------------------------ a new frame
-def new_frame(name: str, slots: dict, made_from: str = "") -> Frame:
+def new_frame(name: str, slots: dict, made_from: str = "", fonts: Optional[list] = None,
+              font_names: Optional[dict] = None) -> Frame:
     """A frame from pictures ({slot: picture file or PIL image}): they're copied
-    into its own folder, and the art box and text colours are guessed."""
+    into its own folder, and the art box and text colours are guessed. Fonts
+    that came with it are kept with it (``font_names``: which goes where)."""
     taken = {f.slug for f in load_frames()}
     frame = Frame(name=name.strip() or "My frame", made_from=made_from)
     frame.slug = slug_for(frame.name, taken)
     set_pictures(frame, slots)
+    if fonts:
+        keep_fonts(frame, fonts)
+        frame.fonts.update(font_names if font_names is not None else guess_fonts(fonts))
     first = next((frame.pictures[k] for k in BASE + ["l"] if frame.pictures.get(k)), None)
     if first:
         img = card_picture(frame_dir(frame.slug) / first)
@@ -621,3 +867,38 @@ def set_pictures(frame: Frame, slots: dict) -> None:
         else:
             open_picture(Path(src)).save(out, "PNG")
         frame.pictures[slot] = f"pictures/{slot}.png"
+    if any(k.startswith("pt-") and v is not None for k, v in slots.items()):
+        fit_pt_boxes(frame)
+
+
+def fit_pt_boxes(frame: Frame) -> bool:
+    """P/T box pictures the size of the whole card (put together from a
+    Photoshop file) are cut to the box, and the P/T box and its numbers are
+    placed where it is on the card. Returns True when they were."""
+    d = frame_dir(frame.slug)
+    pts = {k: d / v for k, v in frame.pictures.items() if k.startswith("pt-") and v}
+    imgs, box = {}, None
+    for k, f in pts.items():
+        try:
+            im = open_picture(f)
+        except Exception:  # noqa: BLE001 - a picture that can't be read
+            continue
+        if not is_card_shaped(im.size):
+            continue
+        im = im.crop(card_area(im.size))
+        bb = im.getchannel("A").point(lambda a: 255 if a > 24 else 0).getbbox()
+        if bb is None:
+            continue
+        imgs[k] = im
+        box = bb if box is None else (min(box[0], bb[0]), min(box[1], bb[1]),
+                                      max(box[2], bb[2]), max(box[3], bb[3]))
+    if not imgs or box is None:
+        return False
+    w, h = next(iter(imgs.values())).size
+    for k, im in imgs.items():
+        im.crop(box).save(pts[k], "PNG")
+    x, y, bw, bh = box[0] / w, box[1] / h, (box[2] - box[0]) / w, (box[3] - box[1]) / h
+    frame.boxes["ptbox"] = [round(v, 5) for v in (x, y, bw, bh)]
+    frame.boxes["pt"] = [round(v, 5) for v in (x + bw * 0.16, y + bh * 0.07, bw * 0.74,
+                                                bh * 0.67)]
+    return True

@@ -20,6 +20,7 @@ SORTING = re.compile(r"^(?:artifacts?|creatures?|enchantments?|instants?|sorcer(
                      r"main(?: ?deck)?|side(?:board)?|backs?|card ?backs?|emblems?|alt(?:ernate)?s?"
                      r"(?: arts?)?|basics?|basic lands?|front|fronts|double[- ]faced|dfcs?)$", re.I)
 TEMPLATE_EXT = (".psd", ".psb")      # a maker's Photoshop frame templates
+FONT_EXT = (".ttf", ".otf", ".ttc")  # fonts that come with the templates
 SKIP = re.compile(r"(?:^|/)(?:__MACOSX|\.)|(?:^|/)(?:thumbs\.db|desktop\.ini)$", re.I)
 MAX_DEPTH = 5
 
@@ -159,7 +160,9 @@ def list_items(sources: list[str], cancel=None) -> list[Item]:
                 dirs[:] = [d for d in dirs if not SKIP.search(d)] if depth < MAX_DEPTH else []
                 for f in files:
                     rel = str(Path(folder, f).relative_to(p)).replace(os.sep, "/")
-                    if not SKIP.search(rel) and f.lower().endswith(PICTURE_EXT + TEXT_EXT + TEMPLATE_EXT):
+                    if not SKIP.search(rel) and (
+                            f.lower().endswith(PICTURE_EXT + TEXT_EXT + TEMPLATE_EXT + FONT_EXT)
+                            or (f.lower().endswith(".zip") and "font" in rel.lower())):
                         rels.append(rel)
             cut = _wrapper(rels)
             for rel in sorted(rels, key=str.lower):
@@ -168,7 +171,8 @@ def list_items(sources: list[str], cancel=None) -> list[Item]:
             try:
                 with zipfile.ZipFile(p) as z:
                     names = [n for n in z.namelist() if not n.endswith("/") and not SKIP.search(n)
-                             and n.lower().endswith(PICTURE_EXT + TEXT_EXT + TEMPLATE_EXT)]
+                             and n.lower().endswith(PICTURE_EXT + TEXT_EXT + TEMPLATE_EXT +
+                                                    FONT_EXT)]
             except (OSError, zipfile.BadZipFile):
                 continue
             cut = _wrapper(names)

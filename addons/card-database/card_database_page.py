@@ -17,12 +17,11 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDoubleSpinBox,
                                QFormLayout, QGridLayout, QHBoxLayout, QInputDialog, QLabel,
                                QLineEdit, QListView, QListWidget, QListWidgetItem, QMenu,
                                QMessageBox, QPushButton, QSpinBox, QSplitter, QTabWidget,
-                               QTextBrowser, QToolButton, QTreeWidget, QTreeWidgetItem,
-                               QVBoxLayout, QWidget)
+                               QTextBrowser, QToolButton, QVBoxLayout, QWidget)
 
 from mse_studio.core import decklists as dl
 from mse_studio.gui import icons, thumbs
-from mse_studio.gui.common import clear_tree, error, forget, Job, start
+from mse_studio.gui.common import error, forget, Job, start
 from mse_studio.gui.nav import page_header
 
 from . import carddb
@@ -105,8 +104,24 @@ class CardDatabasePage(QWidget):
         dl.remove_local_source(_lookup)
         forget(self._jobs)                # the page is going: nothing may call it back
 
+    def _prices_on(self) -> bool:
+        """Prices are for the Card prices add-on: only when it's installed and on."""
+        try:
+            from mse_studio.core import addons
+            a = addons.get("card-prices")
+            return a is not None and addons.is_enabled(a, self.main.settings)
+        except Exception:  # noqa: BLE001
+            return False
+
+    def _show_prices(self):
+        on = self._prices_on()
+        self.price_box.setVisible(on)
+        self.build_price.setVisible(on)
+        self.build_price_lbl.setVisible(on)
+
     # ------------------------------------------------------------ the database file
     def _show_info(self):
+        self._show_prices()
         if not carddb.exists():
             self.db_lbl.setText("<b>No cards yet.</b> Import a Scryfall bulk file you downloaded, "
                                 "or download one from Scryfall (Oracle cards is enough).")
@@ -242,15 +257,17 @@ class CardDatabasePage(QWidget):
         self.legal = QCheckBox("Commander-legal")
         self.legal.setChecked(True)
         g.addWidget(self.legal, 1, 3)
-        pr = QHBoxLayout()
+        self.price_box = QWidget()
+        pr = QHBoxLayout(self.price_box)
+        pr.setContentsMargins(0, 0, 0, 0)
         pr.addWidget(QLabel("Max $"))
         self.max_usd = QDoubleSpinBox()
         self.max_usd.setRange(0, 10000)
         self.max_usd.setSpecialValueText("any")
         self.max_usd.setToolTip("Leave out cards dearer than this (Scryfall's TCGplayer price; "
-                                "the database's day)")
+                                "the database's day) – with the Card prices add-on")
         pr.addWidget(self.max_usd)
-        g.addLayout(pr, 1, 4)
+        g.addWidget(self.price_box, 1, 4)
         self.sort = QComboBox()
         for key, label in carddb.SORTS.items():
             self.sort.addItem(label, key)
@@ -318,7 +335,7 @@ class CardDatabasePage(QWidget):
             types=self.type.currentData(), mv_min=self.mv_min.value() or None,
             mv_max=self.mv_max.value() if self.mv_max.value() < 16 else None,
             rarity=self.rarity.currentData(), commander_legal=self.legal.isChecked(),
-            max_usd=self.max_usd.value() or None)
+            max_usd=(self.max_usd.value() or None) if self._prices_on() else None)
 
     def _deck_colors(self):
         from mse_studio.ai.planner import commander_of, deck_colors
@@ -387,6 +404,15 @@ class CardDatabasePage(QWidget):
                     pm = self._thumb(r)
                     if pm is not None:
                         it.setIcon(QIcon(pm))
+            d = self.built
+            for i in range(self.built_grid.count() if d is not None else 0):
+                it = self.built_grid.item(i)
+                k = it.data(Qt.UserRole)
+                r = d.lead if k == -1 else (d.picks[k].row if 0 <= k < len(d.picks) else None)
+                if r and r.get("id") == cid:
+                    pm = self._thumb(r)
+                    if pm is not None:
+                        it.setIcon(QIcon(pm))
         except (RuntimeError, IndexError):
             return
 
@@ -398,18 +424,21 @@ class CardDatabasePage(QWidget):
         if it is None:
             self.details.setHtml("")
             return
-        r = self.rows[it.data(Qt.UserRole)]
+        self.details.setHtml(self._card_html(self.rows[it.data(Qt.UserRole)]))
+
+    def _card_html(self, r: dict) -> str:
         prices = " · ".join(x for x in (f"${r['usd']:.2f}" if r["usd"] is not None else "",
                                         f"€{r['eur']:.2f}" if r["eur"] is not None else "") if x)
         links = " · ".join(f"<a href='{u}'>{n}</a>" for n, u in
                            (("TCGplayer", r["tcgplayer"]), ("Cardmarket", r["cardmarket"])) if u)
         text = (r["oracle_text"] or "").replace("\n", "<br>")
         pt = f"<p><b>{r['power']}/{r['toughness']}</b></p>" if r["power"] or r["toughness"] else ""
-        self.details.setHtml(
-            f"<h3>{r['name']}</h3><p>{r['mana_cost'] or ''}</p><p><i>{r['type_line']}</i></p>"
-            f"<p>{text}</p>{pt}<p style='color:gray'>{r['set_name']} ({r['set_code'].upper()}) "
-            f"· {r['rarity']}" + (f" · EDHREC #{r['edhrec']}" if r["edhrec"] else "") + "</p>"
-            + (f"<p>{prices}</p>" if prices else "") + (f"<p>{links}</p>" if links else ""))
+        if not self._prices_on():
+            prices = links = ""
+        return (f"<h3>{r['name']}</h3><p>{r['mana_cost'] or ''}</p><p><i>{r['type_line']}</i></p>"
+                f"<p>{text}</p>{pt}<p style='color:gray'>{r['set_name']} ({r['set_code'].upper()}) "
+                f"· {r['rarity']}" + (f" · EDHREC #{r['edhrec']}" if r["edhrec"] else "") + "</p>"
+                + (f"<p>{prices}</p>" if prices else "") + (f"<p>{links}</p>" if links else ""))
 
     # ------------------------------------------------------------ into the deck
     def _entries(self, rows: list[dict]) -> list:
@@ -462,26 +491,76 @@ class CardDatabasePage(QWidget):
         b.clicked.connect(self._deck_commander)
         lead.addWidget(b)
         f.addRow("Commander", lead)
+        how = QHBoxLayout()
+        self.style = QComboBox()
+        for key, st in carddb.STYLES.items():
+            self.style.addItem(st.label, key)
+            self.style.setItemData(self.style.count() - 1, st.tip, Qt.ToolTipRole)
+        self.style.setToolTip("How the deck plays: it sets the numbers below and what kind of "
+                              "cards it likes")
+        self.style.currentIndexChanged.connect(self._style_changed)
+        how.addWidget(self.style)
+        how.addWidget(QLabel("Power"))
+        self.power = QComboBox()
+        for key, (label, _w) in carddb.POWER.items():
+            self.power.addItem(label, key)
+        self.power.setCurrentIndex(self.power.findData("focused"))
+        self.power.setToolTip("Casual leaves out extra turns, land destruction and locks; high "
+                              "power picks the most played cards")
+        how.addWidget(self.power)
+        how.addStretch(1)
+        f.addRow("Play style", how)
+        th = QHBoxLayout()
+        self.theme_btn = QToolButton()
+        self.theme_btn.setText("Themes ▾")
+        self.theme_btn.setPopupMode(QToolButton.InstantPopup)
+        self.theme_btn.setToolTip("Ready-made themes and tribes – tick as many as you like")
+        tm = QMenu(self.theme_btn)
+        self.theme_acts = {}
+        for name in carddb.THEMES:
+            a = tm.addAction(name)
+            a.setCheckable(True)
+            a.toggled.connect(self._themes_changed)
+            self.theme_acts[name] = a
+        self.theme_btn.setMenu(tm)
+        th.addWidget(self.theme_btn)
+        self.theme_lbl = QLabel("none")
+        self.theme_lbl.setObjectName("Hint")
+        th.addWidget(self.theme_lbl)
+        self.theme = QLineEdit()
+        self.theme.setPlaceholderText("and/or your own theme words, e.g. counters lifelink")
+        th.addWidget(self.theme, 1)
+        f.addRow("Themes", th)
         nums = QHBoxLayout()
         self.counts = {}
         for key, label in (("lands", "Lands"), ("ramp", "Ramp"), ("draw", "Card draw"),
                            ("removal", "Removal"), ("wipe", "Wipes"), ("protection", "Protection")):
-            s = QSpinBox()
-            s.setRange(0, 60)
-            s.setValue(carddb.DEFAULT_COUNTS[key])
+            sb = QSpinBox()
+            sb.setRange(0, 60)
+            sb.setValue(carddb.DEFAULT_COUNTS[key])
             nums.addWidget(QLabel(label))
-            nums.addWidget(s)
-            self.counts[key] = s
+            nums.addWidget(sb)
+            self.counts[key] = sb
         nums.addStretch(1)
         f.addRow("How many", nums)
-        self.theme = QLineEdit()
-        self.theme.setPlaceholderText("optional: theme words, e.g. counters lifelink zombies")
-        f.addRow("Theme", self.theme)
-        self.build_usd = QDoubleSpinBox()
-        self.build_usd.setRange(0, 10000)
-        self.build_usd.setSpecialValueText("any")
-        self.build_usd.setToolTip("Leave out cards dearer than this (in US dollars)")
-        f.addRow("Max price per card", self.build_usd)
+        opts = QHBoxLayout()
+        self.avoid = {}
+        for key, label in (("extra turns", "No extra turns"),
+                           ("land destruction", "No land destruction"),
+                           ("tutors", "No tutors"), ("stax", "No taxes or locks")):
+            cb = QCheckBox(label)
+            opts.addWidget(cb)
+            self.avoid[key] = cb
+        opts.addStretch(1)
+        f.addRow("Leave out", opts)
+        self.build_price = QDoubleSpinBox()
+        self.build_price.setRange(0, 10000)
+        self.build_price.setSpecialValueText("any")
+        self.build_price.setToolTip("Leave out cards dearer than this (in US dollars) – with the "
+                                    "Card prices add-on")
+        self.build_price_lbl = QLabel("Max price per card")
+        f.addRow(self.build_price_lbl, self.build_price)
+        self.build_usd = self.build_price            # the name before 1.1
         v.addLayout(f)
         row = QHBoxLayout()
         b = QPushButton("Build the deck")
@@ -497,20 +576,94 @@ class CardDatabasePage(QWidget):
         self.build_lbl.setObjectName("Hint")
         row.addWidget(self.build_lbl)
         v.addLayout(row)
-        self.tree = QTreeWidget()
-        self.tree.setHeaderLabels(["Card", "Mana value"])
-        v.addWidget(self.tree, 1)
+        # the cards it picked: pictures, pick some or all
+        split = QSplitter(Qt.Horizontal)
+        left = QWidget()
+        lv = QVBoxLayout(left)
+        lv.setContentsMargins(0, 0, 0, 0)
+        fr = QHBoxLayout()
+        fr.addWidget(QLabel("Show"))
+        self.built_show = QComboBox()
+        self.built_show.currentIndexChanged.connect(lambda *_: self._fill_built())
+        fr.addWidget(self.built_show)
+        fr.addStretch(1)
+        self.built_count = QLabel()
+        self.built_count.setObjectName("Hint")
+        fr.addWidget(self.built_count)
+        lv.addLayout(fr)
+        self.built_grid = QListWidget()
+        self.built_grid.setViewMode(QListView.IconMode)
+        self.built_grid.setResizeMode(QListView.Adjust)
+        self.built_grid.setMovement(QListView.Static)
+        self.built_grid.setIconSize(THUMB)
+        self.built_grid.setSpacing(6)
+        self.built_grid.setWordWrap(True)
+        self.built_grid.setSelectionMode(QListWidget.ExtendedSelection)
+        self.built_grid.setToolTip("Click a card to see it; Ctrl+click or Shift+click to pick "
+                                   "several; right-click for more")
+        self.built_grid.currentRowChanged.connect(lambda *_: self._built_details())
+        self.built_grid.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.built_grid.customContextMenuRequested.connect(self._built_menu)
+        try:
+            from mse_studio.gui.common import delete_key
+            delete_key(self.built_grid, self.drop_picked)
+        except ImportError:
+            pass
+        lv.addWidget(self.built_grid, 1)
+        split.addWidget(left)
+        right = QWidget()
+        rv = QVBoxLayout(right)
+        rv.setContentsMargins(6, 0, 0, 0)
+        self.built_info = QTextBrowser()
+        self.built_info.setOpenExternalLinks(True)
+        rv.addWidget(self.built_info, 1)
+        for label, icon, tip, fn in (
+                ("Add the picked to my deck (real cards)", "add",
+                 "The cards you picked, printed with their real picture – on the Order page",
+                 lambda: self.add_real(self.built_rows())),
+                ("Add the picked to my deck to edit", "edit",
+                 "New cards of your own with the picked cards' text and artwork",
+                 lambda: self.add_custom(self.built_rows())),
+                ("Another card for this job", "refresh",
+                 "Swap the picked cards for the next best ones doing the same job",
+                 self.swap_picked),
+                ("Take out of the deck", "delete", "Leave the picked cards out of this build",
+                 self.drop_picked)):
+            b = QPushButton(label)
+            icons.set_icon(b, icon)
+            b.setToolTip(tip)
+            b.clicked.connect(fn)
+            rv.addWidget(b)
+        split.addWidget(right)
+        split.setSizes([800, 330])
+        v.addWidget(split, 1)
         row = QHBoxLayout()
-        b = QPushButton("Save as a decklist")
-        b.setToolTip("Playtest it, or add it to your deck, from the Decklists page")
-        b.clicked.connect(self.save_built)
+        b = QPushButton("Make a new deck with it…")
+        b.setProperty("kind", "primary")
+        icons.set_icon(b, "create_new_folder")
+        b.setToolTip("A new MSE Studio deck with all these cards as real cards (the commander "
+                     "as its commander) – for a deck you're starting")
+        b.clicked.connect(self.new_deck_from_build)
         row.addWidget(b)
-        b = QPushButton("Add all to my deck as real cards")
-        b.clicked.connect(self.add_built)
+        b = QPushButton("Save as a decklist")
+        b.setToolTip("Playtest it, or add it to a deck, from the Decklists page")
+        b.clicked.connect(self.save_built)
         row.addWidget(b)
         row.addStretch(1)
         v.addLayout(row)
         return w
+
+    def _style_changed(self, *_):
+        st = carddb.STYLES.get(self.style.currentData())
+        if st is None:
+            return
+        for k, sb in self.counts.items():
+            sb.setValue({**carddb.DEFAULT_COUNTS, **st.counts}.get(k, sb.value()))
+
+    def _themes_changed(self, *_):
+        on = [n for n, a in self.theme_acts.items() if a.isChecked()]
+        self.theme_lbl.setText(", ".join(on[:3]) + (f" +{len(on) - 3}" if len(on) > 3 else "")
+                               if on else "none")
 
     def _deck_commander(self):
         from mse_studio.ai.planner import commander_of
@@ -529,16 +682,22 @@ class CardDatabasePage(QWidget):
             return
         if new:
             self._seed = random.randrange(1, 10 ** 6)
-        counts = {k: s.value() for k, s in self.counts.items()}
-        theme, seed, usd = self.theme.text(), self._seed, self.build_usd.value() or None
+        counts = {k: sb.value() for k, sb in self.counts.items()}
+        theme, seed = self.theme.text(), self._seed
+        usd = (self.build_price.value() or None) if self._prices_on() else None
+        style, power = self.style.currentData(), self.power.currentData()
+        themes = [n for n, a in self.theme_acts.items() if a.isChecked()]
+        avoid = {k for k, cb in self.avoid.items() if cb.isChecked()}
 
         def work(progress=None, cancel=None):
             conn = carddb.connect()
             try:
-                deck = carddb.build_deck(conn, name, counts, theme, seed, usd)
+                deck = carddb.build_deck(conn, name, counts, theme, seed, usd, style=style,
+                                         power=power, themes=themes, avoid=avoid)
                 for p in deck.picks:          # plain data: the connection closes here
                     p.row = dict(p.row) if p.row is not None else None
                 deck.lead = dict(deck.lead)
+                deck.spares = {k: [dict(r) for r in v] for k, v in deck.spares.items()}
                 return deck
             finally:
                 conn.close()
@@ -552,25 +711,114 @@ class CardDatabasePage(QWidget):
     def _show_built(self, deck):
         try:
             self.built = deck
-            clear_tree(self.tree)
-            groups = {}
+            keep = self.built_show.currentData()
+            self.built_show.blockSignals(True)
+            self.built_show.clear()
+            self.built_show.addItem("Every card", "")
+            groups = []
             for p in deck.picks:
-                g = groups.get(p.why)
-                if g is None:
-                    g = groups[p.why] = QTreeWidgetItem(self.tree, [p.why])
-                    g.setFlags(Qt.ItemIsEnabled)
-                QTreeWidgetItem(g, [f"{p.count}× {p.name}" if p.count > 1 else p.name,
-                                    f"{p.row['cmc']:g}" if p.row else ""])
-            for g in groups.values():
-                n = sum(int(g.child(i).text(0).split("×")[0]) if "×" in g.child(i).text(0) else 1
-                        for i in range(g.childCount()))
-                g.setText(0, f"{g.text(0)} ({n})")
-            self.tree.expandAll()
-            self.tree.resizeColumnToContents(0)
+                if p.why not in groups:
+                    groups.append(p.why)
+            for g in groups:
+                n = sum(p.count for p in deck.picks if p.why == g)
+                self.built_show.addItem(f"{g} ({n})", g)
+            self.built_show.setCurrentIndex(max(0, self.built_show.findData(keep)))
+            self.built_show.blockSignals(False)
+            self._fill_built()
             self.build_lbl.setText(f"{deck.size} cards with {deck.commander} · "
                                    + ("; ".join(deck.notes) if deck.notes else "ready"))
         except RuntimeError:
             pass
+
+    def _fill_built(self):
+        d = self.built
+        self.built_grid.clear()
+        if d is None:
+            return
+        want = self.built_show.currentData() or ""
+        shown = [(-1, None)] if not want else []
+        shown += [(k, p) for k, p in enumerate(d.picks) if not want or p.why == want]
+        for k, p in shown:
+            row = d.lead if p is None else p.row
+            label = (f"★ {d.commander}" if p is None else
+                     (f"{p.count}× {p.name}" if p.count > 1 else p.name))
+            it = QListWidgetItem(label)
+            it.setData(Qt.UserRole, k)
+            it.setToolTip("The commander" if p is None else p.why)
+            it.setSizeHint(QSize(THUMB.width() + 12, THUMB.height() + 36))
+            pm = self._thumb(row) if row else None
+            if pm is not None:
+                it.setIcon(QIcon(pm))
+            self.built_grid.addItem(it)
+        self.built_count.setText(f"{len(shown)} shown")
+
+    def picked(self) -> list:
+        """The picks selected in the grid (not the commander)."""
+        d = self.built
+        if d is None:
+            return []
+        ks = sorted({it.data(Qt.UserRole) for it in self.built_grid.selectedItems()})
+        return [d.picks[k] for k in ks if 0 <= k < len(d.picks)]
+
+    def built_rows(self) -> list:
+        """The selected cards as rows (the commander too when it's selected)."""
+        d = self.built
+        if d is None:
+            return []
+        out = []
+        for it in self.built_grid.selectedItems():
+            k = it.data(Qt.UserRole)
+            row = d.lead if k == -1 else (d.picks[k].row if 0 <= k < len(d.picks) else None)
+            if row:
+                out.append(row)
+        return out
+
+    def _built_details(self):
+        it = self.built_grid.currentItem()
+        d = self.built
+        if it is None or d is None:
+            self.built_info.setHtml("")
+            return
+        k = it.data(Qt.UserRole)
+        row = d.lead if k == -1 else d.picks[k].row
+        why = "The commander" if k == -1 else d.picks[k].why
+        self.built_info.setHtml(f"<p style='color:gray'>{why}</p>" + self._card_html(row)
+                                if row else "")
+
+    def _built_menu(self, pos):
+        if self.built_grid.itemAt(pos) is None:
+            return
+        n = len(self.built_grid.selectedItems())
+        m = QMenu(self)
+        m.addAction(icons.icon("add"), "Add to my deck (real card)" if n == 1 else
+                    f"Add the {n} to my deck (real cards)",
+                    lambda: self.add_real(self.built_rows()))
+        m.addAction(icons.icon("edit"), "Add to my deck to edit" if n == 1 else
+                    f"Add the {n} to my deck to edit", lambda: self.add_custom(self.built_rows()))
+        m.addSeparator()
+        m.addAction(icons.icon("refresh"), "Another card for this job", self.swap_picked)
+        a = m.addAction(icons.icon("delete"), "Take out of the deck", self.drop_picked)
+        a.setShortcut(Qt.Key_Delete)
+        m.exec(self.built_grid.viewport().mapToGlobal(pos))
+
+    def swap_picked(self):
+        d = self.built
+        picks = self.picked()
+        if d is None or not picks:
+            return
+        done = [p for p in picks if p.why != "Basic land" and d.swap(p) is not None]
+        self._show_built(d)
+        self.build_lbl.setText(f"Swapped {len(done)} card(s)." if done else
+                               "No other card does that job here.")
+
+    def drop_picked(self):
+        d = self.built
+        picks = self.picked()
+        if d is None or not picks:
+            return
+        gone = {id(p) for p in picks}
+        d.picks = [p for p in d.picks if id(p) not in gone]
+        self._show_built(d)
 
     def save_built(self):
         d = self.built
@@ -578,7 +826,30 @@ class CardDatabasePage(QWidget):
             return
         self.save_list([], f"{d.commander} – built", d.entries())
 
+    def new_deck_from_build(self):
+        """A new MSE Studio deck with every card of the build (real cards)."""
+        d = self.built
+        if d is None:
+            return
+        before = self.main.project
+        try:
+            p = self.main.new_deck(name=d.commander)        # MSE Studio 0.18
+        except TypeError:
+            self.main.new_deck()
+            p = self.main.project if self.main.project is not before else None
+        if p is None:
+            return
+        entries = [e for e in d.entries() if e.found]
+        n = dl.add_to_project(p, entries)
+        p.save_config()
+        self.main.record(f"Card database · new deck around {d.commander} · {n} real card(s)")
+        self.main.update_title()
+        self.main.statusBar().showMessage(f"{p.name}: {n} real cards with {d.commander} – "
+                                          "they're on the Order page", 10000)
+        self.main.order_tab.real_pictures(entries)
+
     def add_built(self):
+        """Every card of the build into the open deck (as before 1.1)."""
         d = self.built
         p = self.main.project
         if d is None or p is None:

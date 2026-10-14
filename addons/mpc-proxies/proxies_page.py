@@ -42,7 +42,8 @@ SORTS = [("deck", "Deck order"), ("name", "Name"), ("folder", "Folder (card type
          ("count", "Copies")]
 
 
-NO_TEXT = "__no_text__"            # the type filter's "no rules text (often full art)"
+NO_TEXT = "__no_text__"            # the type filter's "no text at all on the picture"
+NO_RULES = "__no_rules__"          # "no rules text on the picture"
 REAL_HINT = ("<b>Add to my order</b>: real cards, straight to the Order page – printed as they "
              "are, with the maker's credit. <b>Add to my deck to edit</b>: your own cards on the "
              "Cards page, with the card's text and its art – in this deck's own frame when it has "
@@ -300,11 +301,13 @@ class ProxiesPage(QWidget):
         self.type_filter.addItem("All types", "")
         for t in px.TYPES:
             self.type_filter.addItem({"Sorcery": "Sorceries"}.get(t, t + "s"), t)
-        self.type_filter.addItem("No rules text (often full art)", NO_TEXT)
+        self.type_filter.addItem("No text at all on the picture", NO_TEXT)
+        self.type_filter.addItem("No rules text on the picture (full art…)", NO_RULES)
         self.type_filter.setToolTip("Types come from Scryfall when the cards are looked up, "
-                                    "else from the deck's folders (Creature, Land…). No rules "
-                                    "text: basic lands, vanilla creatures and pictures named "
-                                    "full art / textless – most likely full-art pictures")
+                                    "else from the deck's folders (Creature, Land…). The last "
+                                    "two look at the pictures themselves for lines of letters "
+                                    "(the name, type line and rules text) – once per deck, it "
+                                    "takes a moment; very busy art can fool it now and then")
         self.type_filter.currentIndexChanged.connect(self._fill_grid)
         row.addWidget(self.type_filter)
         row.addSpacing(12)
@@ -588,9 +591,11 @@ class ProxiesPage(QWidget):
         self.text = text
         self.cards, self.backs = px.cards_in(items, text, d.id if d else "")
         self.templates = px.templates_in(items)
+        self.fonts = px.fonts_in(items)
         self._by_key = {c.key: c for c in self.cards}
         self.types = px.load_types(d.id) if d else {}
         self.texts = px.load_texts(d.id) if d else {}
+        self.scans = px.load_scans(d.id) if d else {}
         if d is not None and self.lookup.isChecked() and not self.types and self.cards:
             self._look_up(d.id)
         self._ticked = {c.key for c in self.cards if not c.extra}
@@ -644,6 +649,62 @@ class ProxiesPage(QWidget):
         except RuntimeError:
             return
 
+    def _scan_pictures(self, deck_id: str):
+        """Look for text on every card's picture (once per deck; kept with the
+        import). Stopping keeps what was looked at already."""
+        if deck_id in getattr(self, "_scanning", set()):
+            return
+        self._scanning = getattr(self, "_scanning", set()) | {deck_id}
+        done = dict(getattr(self, "scans", {}))
+        todo = [c.front for c in self.cards if c.front is not None and c.front.id not in done]
+        todo = list({it.id: it for it in todo}.values())
+
+        def work(progress=None, cancel=None):
+            from mse_studio.pipeline.common import Cancelled
+            out = dict(done)
+            try:
+                for k, it in enumerate(todo):
+                    progress(k, len(todo), f"Looking for text on the pictures: {it.name}")
+                    try:
+                        r = px.scan_picture(it)
+                    except Cancelled:
+                        raise
+                    except Exception:  # noqa: BLE001 - this picture can't be read
+                        r = None
+                    if r is not None:
+                        out[it.id] = r
+                    if k % 20 == 19:
+                        px.set_scans(deck_id, out)       # kept as it goes
+            except Cancelled:
+                pass
+            return deck_id, out
+
+        job = Job(work, label="Looking for text on the pictures")
+        job.signals.progress.connect(self._progress)
+        job.signals.finished.connect(self._scanned)
+        job.signals.failed.connect(self._scan_failed)
+        self._jobs.append(start(job))
+        self.status.setText(f"Looking for text on {len(todo)} picture(s)… the cards show up "
+                            "when it's done (Stop keeps what's checked so far).")
+
+    def _scanned(self, res):
+        try:
+            did, scans = res
+            self._scanning.discard(did)
+            px.set_scans(did, scans)
+            if self.deck is not None and self.deck.id == did:
+                self.scans = scans
+                self._fill_grid()
+        except RuntimeError:
+            return
+
+    def _scan_failed(self, msg: str):
+        try:
+            self._scanning = set()
+            self.status.setText("Couldn't look at the pictures: " + msg.splitlines()[0])
+        except RuntimeError:
+            return
+
     def _lookup_toggled(self, on: bool):
         px.set_pref("lookup", on)
         if on and self.deck is not None and self.cards and (not self.types or not self.texts):
@@ -673,14 +734,21 @@ class ProxiesPage(QWidget):
         q = self.search.text().strip().lower()
         sort = self.sort.currentData()
         want = self.type_filter.currentData() or ""
-        if want == NO_TEXT and self.lookup.isChecked() and self.deck is not None and \
-                self.cards and not self.texts:
-            self._look_up(self.deck.id)          # which cards have rules text
+        scans = getattr(self, "scans", {})
+        if want in (NO_TEXT, NO_RULES) and self.deck is not None and self.cards and \
+                any(c.front is not None and c.front.id not in scans for c in self.cards):
+            self._scan_pictures(self.deck.id)    # what's written on each picture
+
+        def kind_ok(c) -> bool:
+            if not want:
+                return True
+            if want in (NO_TEXT, NO_RULES):
+                has = px.text_on_picture(c, scans, "any" if want == NO_TEXT else "rules")
+                return has is False              # not looked at yet: not shown yet
+            return want in px.card_types(c, self.types)
         cards = [c for c in self.cards if (self.show_extra.isChecked() or not c.extra) and
                  (not q or q in c.name.lower() or q in c.category.lower()
-                  or q in c.front.name.lower()) and
-                 (not want or (px.no_rules_text(c, self.texts) if want == NO_TEXT
-                               else want in px.card_types(c, self.types)))]
+                  or q in c.front.name.lower()) and kind_ok(c)]
         if sort == "name":
             cards.sort(key=lambda c: c.name.lower())
         elif sort == "folder":
@@ -719,6 +787,10 @@ class ProxiesPage(QWidget):
                 it.setSelected(True)
         self.grid.blockSignals(False)
         self._buttons()
+        if want in (NO_TEXT, NO_RULES) and not getattr(self, "_scanning", set()):
+            self.status.setText(f"{len(cards)} card(s) with " +
+                                ("no text at all" if want == NO_TEXT else "no rules text") +
+                                " on the picture.")
 
     def _thumb(self, c: px.Card):
         item = c.front
@@ -911,7 +983,7 @@ class ProxiesPage(QWidget):
             from PIL import Image
             entries = [dl.Entry(name=c.name, count=c.count, section=c.section) for c in cards]
             if lookup:
-                dl.resolve(entries, progress, cancel)
+                px.resolve(entries, progress, cancel)
             pics = []
             for k, c in enumerate(cards):
                 if cancel is not None and cancel.cancelled:
@@ -967,7 +1039,7 @@ class ProxiesPage(QWidget):
         d = self.deck
         if d is None:
             return
-        dlg = FrameDialog(self, d, self.templates)
+        dlg = FrameDialog(self, d, self.templates + getattr(self, "fonts", []))
         if dlg.exec():
             px.set_deck_frame(d.id, dlg.frame)
             self.status.setText(f"{d.title}'s cards are edited in {dlg.frame} now." if dlg.frame
@@ -996,12 +1068,20 @@ class ProxiesPage(QWidget):
                 out.append(str(f))
             return out
 
+        def made(frame):
+            px.set_deck_frame(deck.id, frame.style_name)
+
         def done(files):
             try:
                 self.main.tabs.setCurrentWidget(page)
-                fr = page.start_from([Path(f) for f in files], deck.title, proxy_deck=deck.id)
+                try:                   # Frame studio 1.1 makes it in the background
+                    fr = page.start_from([Path(f) for f in files], deck.title,
+                                         proxy_deck=deck.id, done=made)
+                except TypeError:
+                    fr = page.start_from([Path(f) for f in files], deck.title,
+                                         proxy_deck=deck.id)
                 if fr is not None:
-                    px.set_deck_frame(deck.id, fr.style_name)
+                    made(fr)
             except RuntimeError:
                 return
         job = Job(work, label=f"Getting {deck.title}'s templates")
@@ -1042,7 +1122,7 @@ class ProxiesPage(QWidget):
             if new_card and lookup:
                 entry = dl.Entry(name=name)
                 try:
-                    dl.resolve([entry], progress, cancel)
+                    px.resolve([entry], progress, cancel)
                 except Exception:  # noqa: BLE001 - the card gets just its name
                     entry = None
             return folder, str(path), crop, credit, maker, new_card, name, entry
@@ -1156,7 +1236,7 @@ class ProxiesPage(QWidget):
             entries = [dl.Entry(name=c.name, count=c.count, section=c.section) for c in cards]
             both = cards
             if lookup:                                   # card data (Scryfall), if it's real
-                dl.resolve(entries, progress, cancel)
+                px.resolve(entries, progress, cancel)
                 both, entries = px.pair_faces(cards, entries, pool)
             out = []
             for k, (c, e) in enumerate(zip(both, entries)):
@@ -1658,9 +1738,11 @@ class FrameDialog(QDialog):
             self.list.setCurrentRow(0)
         self.list.itemDoubleClicked.connect(lambda *_: self._ok())
         lay.addWidget(self.list, 1)
-        n = len(templates)
-        b = QPushButton(f"Make one from the deck's {n} template(s) with Frame studio…" if n else
-                        "Make one with Frame studio (pick the maker's pictures)…")
+        fonts = px.fonts_in(templates)
+        n = len(templates) - len(fonts)
+        extra = f" and {len(fonts)} font file(s)" if fonts else ""
+        b = QPushButton(f"Make one from the deck's {n} template(s){extra} with Frame studio…"
+                        if n else "Make one with Frame studio (pick the maker's pictures)…")
         icons.set_icon(b, "palette")
         b.clicked.connect(self._make)
         lay.addWidget(b)

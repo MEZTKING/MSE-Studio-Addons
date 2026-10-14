@@ -431,6 +431,135 @@ gets get gain gains has have up down beginning step""".split())
 
 
 @dataclass
+class Style:
+    """A way to play: how many of each kind of card, how many creatures, the
+    mana curve, and what it likes."""
+    label: str
+    tip: str
+    counts: dict
+    creatures: float = 0.6            # share of the deck's other spells that are creatures
+    max_mv: float = 0                 # cards above this cost count less (0: no limit)
+    roles: dict = field(default_factory=dict)     # role → bonus
+    words: tuple = ()                 # words on cards it likes
+
+
+STYLES = {
+    "balanced": Style("Balanced (midrange)", "A bit of everything: the usual numbers",
+                      dict(DEFAULT_COUNTS)),
+    "aggressive": Style("Aggressive", "Cheap creatures that attack early – haste, combat, few "
+                        "wipes", {"lands": 33, "ramp": 8, "draw": 8, "removal": 6, "wipe": 0,
+                                  "protection": 4},
+                        0.75, 3.5, {"evasion": 0.3, "anthem": 0.4, "trick": 0.2, "burn": 0.2},
+                        ("haste", "attacks", "attack", "combat", "double", "menace", "trample",
+                         "first", "strike")),
+    "defensive": Style("Defensive (control)", "Answer everything, win late: removal, wipes, "
+                       "counterspells, life gain", {"lands": 37, "ramp": 10, "draw": 12,
+                                                    "removal": 12, "wipe": 5, "protection": 3},
+                       0.35, 0, {"counter": 0.5, "lifegain": 0.25, "lock": 0.2,
+                                 "graveyardhate": 0.2},
+                       ("defender", "counter", "prevent", "tap", "lifelink", "can't")),
+    "ramp": Style("Ramp (big spells)", "Lots of mana early for huge threats later",
+                  {"lands": 38, "ramp": 16, "draw": 9, "removal": 7, "wipe": 2, "protection": 2},
+                  0.55, 0, {"landsearch": 0.4, "finisher": 0.4},
+                  ("trample", "x", "landfall")),
+    "go-wide": Style("Go wide (tokens)", "Many small creatures and tokens, then pump them all",
+                     {"lands": 35, "ramp": 9, "draw": 10, "removal": 6, "wipe": 1,
+                      "protection": 4},
+                     0.5, 4.5, {"tokens": 0.6, "anthem": 0.6, "sacrifice": 0.2},
+                     ("token", "tokens", "populate", "convoke")),
+    "voltron": Style("Voltron (one big threat)", "Make one creature (often the commander) huge "
+                     "and hard to stop", {"lands": 36, "ramp": 10, "draw": 8, "removal": 6,
+                                          "wipe": 1, "protection": 9},
+                     0.3, 0, {"protection": 0.5, "evasion": 0.3},
+                     ("equipment", "equipped", "aura", "enchanted", "attach", "hexproof",
+                      "indestructible", "double", "shroud")),
+    "spells": Style("Spells (spellslinger)", "Instants and sorceries – copy them, get paid for "
+                    "casting them", {"lands": 35, "ramp": 10, "draw": 12, "removal": 9,
+                                     "wipe": 3, "protection": 3},
+                    0.25, 4.5, {"copy": 0.5, "counter": 0.2, "burn": 0.2},
+                    ("instant", "sorcery", "cast", "copy", "prowess", "magecraft", "storm")),
+    "combo": Style("Combo (find the pieces)", "Card draw and tutors to put a winning "
+                   "combination together", {"lands": 34, "ramp": 12, "draw": 12, "removal": 6,
+                                            "wipe": 2, "protection": 4},
+                   0.4, 0, {"tutor": 0.7, "draw": 0.2}, ("search", "untap", "infinite")),
+    "graveyard": Style("Graveyard (reanimator)", "Fill the graveyard and bring the best back",
+                       {"lands": 36, "ramp": 8, "draw": 10, "removal": 8, "wipe": 3,
+                        "protection": 3},
+                       0.55, 0, {"recursion": 0.6, "mill": 0.4, "discard": 0.2},
+                       ("graveyard", "return", "mill", "dies", "flashback", "escape")),
+    "casual": Style("Casual (group fun)", "Friendly and splashy: group hug, big creatures, no "
+                    "harsh locks", {"lands": 37, "ramp": 10, "draw": 10, "removal": 6, "wipe": 2,
+                                    "protection": 3},
+                    0.6, 0, {"finisher": 0.3, "lifegain": 0.2},
+                    ("each", "players", "draw")),
+}
+
+POWER = {
+    "casual": ("Casual – fun cards, nothing harsh", 0.5),
+    "focused": ("Focused – good cards, some staples", 1.0),
+    "high": ("High power – the strongest cards", 1.7),
+}
+
+# ready-made themes: (words on the cards, roles) – tribes match the type line too
+THEMES = {
+    "+1/+1 counters": ({"counter", "counters", "proliferate", "modified", "adapt", "evolve"},
+                       {"counters"}),
+    "Tokens (go wide)": ({"token", "tokens", "populate", "convoke"}, {"tokens", "anthem"}),
+    "Sacrifice (aristocrats)": ({"sacrifice", "dies", "died", "blood"}, {"sacrifice"}),
+    "Life gain": ({"lifelink", "life"}, {"lifegain"}),
+    "Graveyard (reanimator)": ({"graveyard", "reanimate", "mill", "flashback", "escape"},
+                               {"recursion", "mill"}),
+    "Spells (spellslinger)": ({"instant", "sorcery", "prowess", "magecraft", "storm"}, {"copy"}),
+    "Artifacts": ({"artifact", "artifacts", "treasure", "equipment", "construct", "thopter"},
+                  set()),
+    "Enchantments": ({"enchantment", "enchantments", "aura", "auras", "constellation", "saga"},
+                     set()),
+    "Equipment and auras (voltron)": ({"equipment", "equipped", "aura", "enchanted", "attach"},
+                                      {"protection"}),
+    "Landfall (lands)": ({"landfall", "land", "lands"}, {"landsearch"}),
+    "Blink (flicker)": ({"exile", "return", "enters", "flicker"}, {"flicker"}),
+    "Mill": ({"mill", "mills"}, {"mill"}),
+    "Card draw (wheels)": ({"draw", "draws", "discard", "wheel"}, {"draw", "discard"}),
+    "Treasure, Clues and Food": ({"treasure", "clue", "clues", "food", "blood"}, set()),
+    "Poison (infect)": ({"infect", "poison", "toxic", "proliferate"}, {"poison"}),
+    "Planeswalkers (superfriends)": ({"planeswalker", "planeswalkers", "loyalty"}, set()),
+    "Burn (direct damage)": ({"damage"}, {"burn"}),
+    "Steal their stuff": ({"control", "exchange", "steal"}, {"steal"}),
+    "Copies and clones": ({"copy", "clone", "copies"}, {"copy"}),
+    "Flyers": ({"flying"}, {"evasion"}),
+    "Extra combats": ({"combat", "attack", "attacks", "additional"}, set()),
+    "Group hug": ({"each", "players", "player"}, set()),
+    "Vehicles": ({"vehicle", "vehicles", "crew"}, set()),
+    "Discard": ({"discard", "discards"}, {"discard"}),
+    "Dragons": ({"dragon", "dragons"}, set()),
+    "Elves": ({"elf", "elves"}, set()),
+    "Zombies": ({"zombie", "zombies"}, set()),
+    "Goblins": ({"goblin", "goblins"}, set()),
+    "Vampires": ({"vampire", "vampires"}, set()),
+    "Angels": ({"angel", "angels"}, set()),
+    "Merfolk": ({"merfolk"}, set()),
+    "Wizards": ({"wizard", "wizards"}, set()),
+    "Dinosaurs": ({"dinosaur", "dinosaurs"}, set()),
+    "Knights": ({"knight", "knights"}, set()),
+    "Spirits": ({"spirit", "spirits"}, set()),
+    "Humans": ({"human", "humans"}, set()),
+    "Cats": ({"cat", "cats"}, set()),
+    "Pirates": ({"pirate", "pirates"}, set()),
+    "Demons": ({"demon", "demons"}, set()),
+    "Slivers": ({"sliver", "slivers"}, set()),
+    "Warriors": ({"warrior", "warriors"}, set()),
+    "Elementals": ({"elemental", "elementals"}, set()),
+    "Faeries": ({"faerie", "faeries"}, set()),
+    "Rats": ({"rat", "rats"}, set()),
+}
+
+# what "avoid" options leave out
+EXTRA_TURN = re.compile(r"extra turn")
+LAND_DESTRUCTION = re.compile(r"destroy all lands|each player sacrifices [^.]*lands|"
+                              r"destroy each land")
+
+
+@dataclass
 class Pick:
     name: str
     why: str
@@ -445,18 +574,34 @@ class BuiltDeck:
     picks: list = field(default_factory=list)       # [Pick]
     notes: list = field(default_factory=list)
     lead: object = None                              # the commander's row
+    spares: dict = field(default_factory=dict)       # why → [rows] the next best picks
 
     @property
     def size(self) -> int:
         return 1 + sum(p.count for p in self.picks)
 
-    def entries(self) -> list:
-        out = [entry_of(self.lead, 1, "commander") if self.lead is not None else
-               dl.Entry(name=self.commander, section="commander")]
-        for p in self.picks:
+    def entries(self, picks: Optional[list] = None, commander: bool = True) -> list:
+        out = []
+        if commander:
+            out.append(entry_of(self.lead, 1, "commander") if self.lead is not None else
+                       dl.Entry(name=self.commander, section="commander"))
+        for p in (self.picks if picks is None else picks):
             out.append(entry_of(p.row, p.count) if p.row is not None else
                        dl.Entry(name=p.name, count=p.count))
         return out
+
+    def swap(self, pick: "Pick") -> Optional["Pick"]:
+        """Another card for the same job (the next best one). Returns the new
+        pick, or None when there's no other."""
+        taken = {p.name.lower() for p in self.picks}
+        for r in self.spares.get(pick.why, []):
+            if r["lname"] not in taken:
+                new = Pick(r["name"], pick.why, r)
+                self.picks[self.picks.index(pick)] = new
+                self.spares[pick.why] = [x for x in self.spares[pick.why] if x is not r] + \
+                    ([pick.row] if pick.row is not None else [])
+                return new
+        return None
 
 
 def theme_words(text: str) -> set[str]:
@@ -464,42 +609,73 @@ def theme_words(text: str) -> set[str]:
     return {w for w in words if w not in _THEME_STOP}
 
 
+def _words(text: str) -> set[str]:
+    return set(re.findall(r"[a-z][a-z'+/-]*", (text or "").lower()))
+
+
 def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] = None,
                theme: str = "", seed: Optional[int] = None,
-               max_usd: Optional[float] = None) -> BuiltDeck:
+               max_usd: Optional[float] = None, style: str = "balanced",
+               power: str = "focused", themes: Optional[list] = None,
+               avoid: Optional[set] = None) -> BuiltDeck:
     """A Commander deck around ``commander``: lands (staples and basics),
     ramp, card draw, removal, wipes and protection in the numbers asked for,
-    then the cards that fit the commander's themes best. Only cards in its
-    colours and legal in Commander; one of each (but basics)."""
+    then the cards that fit the commander, the play ``style`` and the
+    ``themes`` best. Only cards in its colours and legal in Commander; one
+    of each (but basics). ``avoid``: "extra turns", "land destruction",
+    "tutors", "stax"."""
     from mse_studio.core import mana_base as mb
     from mse_studio.core import roles
     lead = best_printing(conn, commander)
     if lead is None:
         raise CardDbError(f"{commander} isn't in the card database.")
-    counts = {**DEFAULT_COUNTS, **(counts or {})}
+    st = STYLES.get(style) or STYLES["balanced"]
+    counts = {**DEFAULT_COUNTS, **st.counts, **(counts or {})}
+    pop_weight = POWER.get(power, POWER["focused"])[1]
+    avoid = set(avoid or ())
+    if power == "casual":
+        avoid |= {"extra turns", "land destruction", "stax"}
     identity = lead["identity"]
     rng = random.Random(seed)
     deck = BuiltDeck(lead["name"], identity, lead=lead)
-    themes = theme_words(lead["oracle_text"]) | theme_words(lead["type_line"].split("—")[-1]) | \
-        theme_words(theme)
+    themes_words = theme_words(lead["oracle_text"]) | \
+        theme_words(lead["type_line"].split("—")[-1]) | theme_words(theme)
+    theme_roles: set = set()
+    for t in themes or ():
+        words, rls = THEMES.get(t, (set(), set()))
+        themes_words |= set(words)
+        theme_roles |= set(rls)
+    style_words = set(st.words)
     pool = search(conn, Filters(colors=identity or "C", color_rule="within",
                                 commander_legal=True, max_usd=max_usd), limit=10 ** 6)
     pool = [r for r in pool if r["lname"] != lead["lname"] and r["layout"] not in ("token",)
             and "basic land" not in r["ltype"]]
+    roles_of = {r["lname"]: roles.detect(r["ltext"]) for r in pool}
+
+    def avoided(r) -> bool:
+        t = r["ltext"]
+        return (("extra turns" in avoid and EXTRA_TURN.search(t) is not None) or
+                ("land destruction" in avoid and LAND_DESTRUCTION.search(t) is not None) or
+                ("tutors" in avoid and "tutor" in roles_of[r["lname"]]) or
+                ("stax" in avoid and "lock" in roles_of[r["lname"]]))
+    pool = [r for r in pool if not avoided(r)]
     by_name = {r["lname"]: r for r in pool}
     taken: set[str] = set()
 
     def score(r) -> float:
         rank = r["edhrec"] if r["edhrec"] is not None else 30000
-        pop = 1.0 / (1.0 + rank / 2000.0)
-        hits = len(themes & theme_words(r["oracle_text"] + " " + r["type_line"]))
-        return pop + 0.35 * hits + rng.random() * 0.15
-
-    def role_of(r) -> list[str]:
-        return roles.detect(r["ltext"])
+        pop = pop_weight / (1.0 + rank / 2000.0)
+        words = _words(r["oracle_text"] + " " + r["type_line"])
+        rl = roles_of.get(r["lname"], [])
+        s = pop + 0.35 * len(themes_words & words) + 0.45 * len(theme_roles & set(rl))
+        s += sum(st.roles.get(x, 0) for x in rl) + 0.2 * len(style_words & words)
+        if st.max_mv and (r["cmc"] or 0) > st.max_mv:
+            s -= 0.35 * ((r["cmc"] or 0) - st.max_mv)
+        return s + rng.random() * 0.15
 
     def take(rows, n: int, why: str):
-        for r in sorted(rows, key=score, reverse=True):
+        ranked = sorted(rows, key=score, reverse=True)
+        for r in ranked:
             if n <= 0:
                 break
             if r["lname"] in taken:
@@ -507,6 +683,8 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
             taken.add(r["lname"])
             deck.picks.append(Pick(r["name"], why, r))
             n -= 1
+        spare = deck.spares.setdefault(why, [])
+        spare += [r for r in ranked if r["lname"] not in taken][:15]
 
     nonland = [r for r in pool if "land" not in r["ltype"].split("//")[0]]
     # ramp: the usual mana rocks first
@@ -514,26 +692,27 @@ def build_deck(conn: sqlite3.Connection, commander: str, counts: Optional[dict] 
     rocks = [by_name[n] for n, s in staples.items() if n in by_name and s.group == "Mana rocks"]
     take(rocks[:4], min(4, counts["ramp"]), "Ramp (a staple)")
     have = sum(1 for p in deck.picks if p.why.startswith("Ramp"))
-    take([r for r in nonland if "ramp" in role_of(r) or "manarock" in role_of(r)],
-         counts["ramp"] - have, "Ramp")
+    take([r for r in nonland if "ramp" in roles_of[r["lname"]] or
+          "manarock" in roles_of[r["lname"]]], counts["ramp"] - have, "Ramp")
     for role, label in (("draw", "Card draw"), ("removal", "Removal"), ("wipe", "Board wipe"),
                         ("protection", "Protection")):
-        take([r for r in nonland if role in role_of(r)], counts[role], label)
+        take([r for r in nonland if role in roles_of[r["lname"]]], counts[role], label)
     # lands: staples for the colours, then basics
     lands_wanted = counts["lands"]
     land_staples = [by_name[n] for n, s in staples.items() if n in by_name and
                     s.group != "Mana rocks" and "land" in by_name[n]["ltype"]]
     n_colors = len(identity)
-    nonbasic = min(len(land_staples), {0: 2, 1: 4, 2: 10, 3: 14}.get(n_colors, 16))
+    nonbasic = min(len(land_staples), {0: 2, 1: 4, 2: 10, 3: 14}.get(n_colors, 16),
+                   lands_wanted)
     take(land_staples, nonbasic, "Land (fixing)")
-    # the rest: what fits the commander best, about two-thirds creatures
+    # the rest: what fits the commander, the style and the themes best
     spells_left = 99 - lands_wanted - sum(p.count for p in deck.picks
                                          if not p.why.startswith("Land"))
     creatures = [r for r in nonland if "creature" in r["ltype"]]
-    take(creatures, max(0, int(spells_left * 0.6)), "Fits the commander")
+    take(creatures, max(0, int(spells_left * st.creatures)), "Fits the deck – creatures")
     spells_left = 99 - lands_wanted - sum(p.count for p in deck.picks
                                          if not p.why.startswith("Land"))
-    take(nonland, max(0, spells_left), "Fits the commander")
+    take(nonland, max(0, spells_left), "Fits the deck – other spells")
     # basics, split by the colours' mana symbols in the picks
     lands_have = sum(p.count for p in deck.picks if p.why.startswith("Land"))
     basics = max(0, 99 - sum(p.count for p in deck.picks))

@@ -36,13 +36,16 @@ Then:
   Shift+click to tick everything up to a card, Ctrl+A for all of them, or
   **Tick all** / **Untick all**. All of the deck's cards start ticked; tokens
   and extras don't.
-- Find a card by name, show one **type** (creatures, lands…) or **No rules text
-  (often full art)** – basic lands, vanilla creatures and pictures named full
-  art or textless – sort by name, folder or copies, and make the cards as big
-  as you like (**Size**). **Bigger view** hides the list of decks for more room.
+- Find a card by name, show one **type** (creatures, lands…), **No text at all
+  on the picture** or **No rules text on the picture** (full art…) – these two
+  look at the pictures themselves for lines of letters (the name, the type
+  line, the rules text), once per deck; very busy art can fool them now and
+  then. Sort by name, folder or copies, and make the cards as big as you like
+  (**Size**). **Bigger view** hides the list of decks for more room.
 - **Look the cards up on Scryfall** (on by default) gives their types, which
   have rules text, both faces of double-faced cards and the card details in
-  your deck. Untick it for custom cards Scryfall doesn't know – nothing is
+  your deck. Names written with hyphens for spaces ("Academy-Manufactor") are
+  found too. Untick it for custom cards Scryfall doesn't know – nothing is
   looked up then. (With the Card database add-on installed, cards are looked
   up there first.)
 - **Add the ticked to my order** – real cards, straight to the Order page:
@@ -67,8 +70,9 @@ Makers often sell a deck's frame templates too (a deluxe edition – the
 blank frames, often in a *Templates* folder, or Photoshop files). Right-click
 the deck → **This deck's frame…**: pick an MSE frame, or **Make one from the
 deck's templates with Frame studio** (an add-on that turns them into an MSE
-frame). Then *Add to my deck to edit* puts the deck's cards in it. Templates
-aren't shown as cards.
+frame – its fonts too: a Fonts folder, font files or a fonts .zip in the
+deck). The deck uses the frame once it's made; then *Add to my deck to edit*
+puts the deck's cards in it. Templates and fonts aren't shown as cards.
 
 ### The list of decks
 

@@ -32,7 +32,8 @@ two the same).
 - Page and program add-ons run code on people's computers, and MSE Studio tells
   them store add-ons were checked. Every change to one must pass the checklist
   in [CONTRIBUTING.md](CONTRIBUTING.md): no hidden network calls, no files
-  outside the deck / add-on / its data folder / what the user picked, no `eval`/`exec`, no
+  outside the deck / add-on / its data folder / what the user picked (MSE's
+  data folder and fonts only through MSE Studio's installers), no `eval`/`exec`, no
   downloading code, no touching MSE Studio's settings (API keys live there).
 - Card lists: the authors' own wording – no real cards' text or art.
 - Commits end with the attribution lines the session gives you. No model
@@ -101,6 +102,10 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `main.decklists_tab.add_custom(entries, source, frame=, pictures=, keep_unknown=True)` | Your own cards to edit with the text, a frame and their own art, fitted like Force to fit (0.17.0; see mpc-proxies) |
 | `mse_packages.install_zip(zip, styles.data_dir(main.settings.mse_path))`, `remove_package(…)`, `main.frames_changed()` | Add or take out an MSE frame – the only way to change MSE's data folder (0.17.0; see frame-studio) |
 | `mse_studio.gui.common.delete_key(widget, fn)`, `ask_delete(parent, text)` | The Delete key on a list, and Settings' *Ask before deleting* (0.17.0) |
+| `WebPanel(…, stay_on=("site.com",))` | A browser that doesn't leave the site (its downloads still come through) (0.18.0; see mpcfill) |
+| `mse_studio.gui.advanced.install_font_files(parent, files)`, `qt_installed_fonts()` | Install fonts that came with something, after asking – MSE is restarted for previews (`main.fonts_changed()`) (0.18.0; see frame-studio) |
+| `main.new_deck(name=…)` | The New deck window with a name; returns the new deck or None (0.18.0; see card-database) |
+| Planeswalkers | Write the rules text like the real card ("+1: …", one ability a line): MSE Studio fills the walker frame's boxes (`mse_studio.core.walkers`) (0.18.0) |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 
 Keep a deck's add-on data in a file in `main.project.folder` (like Deck notes'

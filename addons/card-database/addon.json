@@ -1,9 +1,9 @@
 {
   "id": "card-database",
   "name": "Card database",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "kind": "page",
-  "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters, pick random cards, build a whole Commander deck around a commander, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
+  "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters, pick random cards, build a whole Commander deck around a commander in a play style and themes you pick – see the cards, pick the ones you want or start a new deck with all of them – and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
   "author": "MEZTKING",
   "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-database",
   "license": "MIT",

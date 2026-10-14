@@ -1,13 +1,13 @@
 {
   "id": "mpcfill",
   "name": "MPCFill",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "kind": "page",
-  "description": "mpcfill.com right inside MSE Studio: import your decklist there and pick the pictures, then Download → XML – the order comes straight to this page, its cards are added to your deck as real cards printed with those pictures, and its card back can be your deck's back.",
+  "description": "mpcfill.com right inside MSE Studio (it opens on Explore and stays on MPCFill). Pictures you download there show up as cards: add them to your order printed with that picture, or to your deck to edit with the card's text and that art. An order (Download → XML) comes straight to the page too, its cards become real cards printed with those pictures, and its card back can be your deck's back.",
   "author": "MEZTKING",
   "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/mpcfill",
   "license": "MIT",
-  "min_app_version": "0.16.0",
+  "min_app_version": "0.17.0",
   "tags": [
     "mpcfill",
     "proxies",

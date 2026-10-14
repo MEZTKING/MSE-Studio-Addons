@@ -1,9 +1,9 @@
 {
   "id": "frame-studio",
   "name": "Frame studio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "kind": "page",
-  "description": "Make a Magic Set Editor frame from pictures: the blank frames a proxy maker shares or sells (one per colour, also from Photoshop files), or your own. Drag where the name, mana cost, art, type line, rules text and P/T go, pick the text colours and fonts, and add it to MSE – your cards can use it like any other frame, so proxy cards can be edited in their maker's frame.",
+  "description": "Make a Magic Set Editor frame from pictures: the blank frames a proxy maker shares or sells (one per colour, also Photoshop files – each colour put together from its layers), or your own. Fonts that come with it are installed for MSE. Drag where the name, mana cost, art, type line, rules text and P/T go, pick the text colours and fonts, and add it to MSE – your cards can use it like any other frame.",
   "author": "MEZTKING",
   "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/frame-studio",
   "license": "MIT",

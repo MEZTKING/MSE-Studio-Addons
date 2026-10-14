@@ -16,9 +16,9 @@ from PySide6.QtWidgets import (QButtonGroup, QColorDialog, QComboBox, QDialog,
                                QDialogButtonBox, QFileDialog, QFontComboBox, QFormLayout,
                                QGraphicsItem, QGraphicsPixmapItem, QGraphicsRectItem,
                                QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QListWidget, QListWidgetItem, QMenu, QPushButton,
-                               QRadioButton, QScrollArea, QSplitter, QTabWidget, QTreeWidget,
-                               QTreeWidgetItem, QVBoxLayout, QWidget)
+                               QLineEdit, QListWidget, QListWidgetItem, QMenu, QProgressBar,
+                               QPushButton, QRadioButton, QScrollArea, QSplitter, QTabWidget,
+                               QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from mse_studio.gui import icons
 from mse_studio.gui.common import Job, error, forget, start
@@ -179,14 +179,20 @@ class LayoutView(QGraphicsView):
 
 # ------------------------------------------------------------------ a new frame
 class NewFrameDialog(QDialog):
-    """Pictures in, a colour for each (guessed from their names), a name."""
+    """Pictures in (and Photoshop files, put together colour by colour), a
+    colour for each (guessed from their names), the fonts that came with
+    them, a name."""
 
     def __init__(self, parent, files: Optional[list] = None, name: str = ""):
         super().__init__(parent)
         self.setWindowTitle("A new frame from pictures")
-        self.resize(760, 620)
-        self.rows: list = []           # (label, source: Path or (Path, layer index))
-        self._layers: dict = {}        # psd path → [(name, image)]
+        self.resize(820, 700)
+        self.rows: list = []           # (label, source, combo): a path, or (psd key, PsdPick)
+        self._psds: dict = {}          # psd key → the file read (up to PSD_W wide)
+        self._jobs: list = []
+        self._ready: Optional[dict] = None
+        self._queue: list = []         # Photoshop files still to read
+        self.fonts: list = []          # font files found
         lay = QVBoxLayout(self)
         f = QFormLayout()
         self.name = QLineEdit(name)
@@ -195,76 +201,241 @@ class NewFrameDialog(QDialog):
         lay.addLayout(f)
         hint = QLabel("The blank frames: one picture per colour (White, Blue, Black, Red, Green, "
                       "Gold, Artifact, Colourless, and Land if there is one). Their names "
-                      "usually say which is which – check the guesses below. Photoshop files "
-                      "are opened layer by layer.")
+                      "usually say which is which – check the guesses below. A Photoshop file's "
+                      "colours are put together from its layers (each colour's own layers, "
+                      "without the sample text and art); its groups and single layers are "
+                      "there too.")
         hint.setWordWrap(True)
         hint.setObjectName("Hint")
         lay.addWidget(hint)
         self.tree = QTreeWidget()
         self.tree.setHeaderLabels(["Picture", "It's the frame for"])
         self.tree.setIconSize(QSize(42, 58))
-        self.tree.setRootIsDecorated(False)
-        self.tree.setColumnWidth(0, 420)
-        lay.addWidget(self.tree, 1)
+        self.tree.setColumnWidth(0, 470)
+        lay.addWidget(self.tree, 3)
         row = QHBoxLayout()
-        for label, fn, icon in (("Add pictures…", self.add_files, "add_photo_alternate"),
-                                ("Add a folder…", self.add_folder, "folder_open"),
-                                ("Add a Photoshop file…", self.add_psd, "layers")):
+        self.add_btns = []
+        for label, fn, icon, tip in (
+                ("Add pictures…", self.add_files, "add_photo_alternate",
+                 "Picture files, Photoshop files or fonts"),
+                ("Add a folder…", self.add_folder, "folder_open",
+                 "Everything in a folder and the folders in it: pictures, Photoshop files and "
+                 "a Fonts folder"),
+                ("Add a Photoshop file…", self.add_psd, "layers", ""),
+                ("Add fonts…", self.add_fonts, "font_download",
+                 "Font files (.ttf, .otf) or a .zip of them that came with the frame")):
             b = QPushButton(label)
             icons.set_icon(b, icon)
+            b.setToolTip(tip)
             b.clicked.connect(fn)
             row.addWidget(b)
+            self.add_btns.append(b)
         row.addStretch(1)
         lay.addLayout(row)
+        # fonts that came with the frame
+        self.font_box = QWidget()
+        fl = QVBoxLayout(self.font_box)
+        fl.setContentsMargins(0, 0, 0, 0)
+        fl.addWidget(QLabel("<b>Fonts that came with it</b> – kept with the frame, and installed "
+                            "for MSE when you add the frame to MSE (ticked ones)"))
+        self.font_list = QListWidget()
+        self.font_list.setMaximumHeight(110)
+        fl.addWidget(self.font_list)
+        ff = QFormLayout()
+        self.title_font = QComboBox()
+        self.text_font = QComboBox()
+        ff.addRow("Name and type line in", self.title_font)
+        ff.addRow("Rules text in", self.text_font)
+        fl.addLayout(ff)
+        self.font_box.setVisible(False)
+        lay.addWidget(self.font_box)
+        prog = QHBoxLayout()
+        self.progress = QProgressBar()
+        self.progress.setVisible(False)
+        self.progress.setTextVisible(True)
+        prog.addWidget(self.progress, 1)
+        self.stop_btn = QPushButton("Stop")
+        icons.set_icon(self.stop_btn, "stop")
+        self.stop_btn.setVisible(False)
+        self.stop_btn.clicked.connect(self._stop)
+        prog.addWidget(self.stop_btn)
+        lay.addLayout(prog)
         self.status = QLabel()
         self.status.setObjectName("Hint")
+        self.status.setWordWrap(True)
         lay.addWidget(self.status)
-        bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        bb.button(QDialogButtonBox.Ok).setText("Make the frame")
-        bb.accepted.connect(self._ok)
-        bb.rejected.connect(self.reject)
-        lay.addWidget(bb)
+        self.bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.bb.button(QDialogButtonBox.Ok).setText("Make the frame")
+        self.bb.accepted.connect(self._ok)
+        self.bb.rejected.connect(self.reject)
+        lay.addWidget(self.bb)
         self.add_paths([Path(p) for p in files or []])
 
-    # pictures in
+    def done(self, r):
+        forget(self._jobs)
+        super().done(r)
+
+    # ------------------------------------------------------------ pictures in
     def add_files(self):
         paths, _ = QFileDialog.getOpenFileNames(
-            self, "Frame pictures", "", "Pictures (*.png *.jpg *.jpeg *.webp *.bmp *.tif *.tiff "
-                                        "*.psd);;All files (*)")
+            self, "Frame pictures", "", "Pictures and fonts (*.png *.jpg *.jpeg *.webp *.bmp "
+                                        "*.tif *.tiff *.psd *.psb *.ttf *.otf *.ttc *.zip);;"
+                                        "All files (*)")
         self.add_paths([Path(p) for p in paths])
 
     def add_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "A folder of frame pictures")
         if folder:
-            self.add_paths(fg.pictures_in(Path(folder)))
             if not self.name.text().strip():
                 self.name.setText(Path(folder).name)
+            self.add_paths([Path(folder)])
 
     def add_psd(self):
         path, _ = QFileDialog.getOpenFileName(self, "A Photoshop file", "",
-                                              "Photoshop files (*.psd)")
+                                              "Photoshop files (*.psd *.psb)")
         if path:
             self.add_paths([Path(path)])
 
-    def add_paths(self, paths: list):
-        for p in paths:
-            if p.suffix.lower() == ".psd":
-                try:
-                    layers = fg.psd_layers(p)
-                except Exception as e:  # noqa: BLE001
-                    self.status.setText(f"Couldn't read {p.name}: {e}")
-                    continue
-                self._layers[str(p)] = layers
-                for i, (lname, img) in enumerate(layers):
-                    self._add_row(f"{p.name} › {lname}", (p, i), lname, img)
-            elif p.is_file():
-                self._add_row(p.name, p, p.name, None)
-        self._count()
+    def add_fonts(self):
+        paths, _ = QFileDialog.getOpenFileNames(self, "Fonts that came with the frame", "",
+                                                "Fonts (*.ttf *.otf *.ttc *.zip)")
+        self.add_paths([Path(p) for p in paths])
 
-    def _add_row(self, label: str, source, guess_from: str, img):
-        it = QTreeWidgetItem(self.tree, [label, ""])
+    def add_paths(self, paths: list):
+        found_fonts = fg.fonts_in(paths)
+        for p in paths:
+            p = Path(p)
+            files = fg.pictures_in(p) if p.is_dir() else [p]
+            for f in files:
+                low = f.suffix.lower()
+                if low in (".psd", ".psb"):
+                    self._queue.append(f)
+                elif low in fg.PICTURES and f.is_file():
+                    self._add_row(None, f.name, f, f.name, None)
+        self._add_fonts(found_fonts)
+        self._count()
+        self._next_psd()
+
+    # ------------------------------------------------------------ Photoshop files, one by one
+    def _next_psd(self):
+        if not self._queue or any(not j.cancel.cancelled for j in self._jobs):
+            return
+        path = self._queue.pop(0)
+
+        def work(progress=None, cancel=None):
+            from mse_studio.pipeline.common import Cancelled
+            from . import psdread
+            try:
+                psd = fg.read_psd(path, progress, cancel)
+                picks = fg.psd_picks(psd)
+                small = psd.scaled(160)
+                thumbs = []
+                for k, pk in enumerate(picks):
+                    progress(k, len(picks), f"Putting {path.name} together: {pk.label}")
+                    try:
+                        thumbs.append(fg.psd_picture(small, pk, cancel))
+                    except psdread.Stopped:
+                        raise
+                    except Exception:  # noqa: BLE001 - no small picture for this one
+                        thumbs.append(None)
+            except psdread.Stopped:
+                raise Cancelled() from None
+            return path, psd, picks, thumbs
+
+        self._busy(True, f"Reading {path.name}…")
+        job = Job(work, label=f"Reading {path.name}")
+        job.signals.progress.connect(self._progress)
+        job.signals.finished.connect(self._psd_read)
+        job.signals.failed.connect(lambda msg, p=path.name: self._psd_failed(p, msg))
+        job.signals.cancelled.connect(self._psd_stopped)
+        self._jobs = [j for j in self._jobs if not j.cancel.cancelled]
+        self._jobs.append(start(job))
+
+    def _progress(self, done: int, total: int, text: str):
         try:
-            pm = QPixmap.fromImage(_qimage(img)) if img is not None else _pixmap(source)
+            self.progress.setRange(0, max(1, total))
+            self.progress.setValue(done)
+            self.progress.setFormat(text[:90])
+        except RuntimeError:
+            return
+
+    def _psd_read(self, result):
+        try:
+            path, psd, picks, thumbs = result
+        except (TypeError, ValueError):
+            return
+        try:
+            self._jobs.clear()
+            key = str(path)
+            self._psds[key] = psd
+            top = QTreeWidgetItem(self.tree, [path.name, ""])
+            top.setFirstColumnSpanned(True)
+            top.setExpanded(True)
+            single = None
+            put_together = any(pk.guess and "put together" in pk.label for pk in picks)
+            for pk, th in zip(picks, thumbs):
+                guess = pk.guess
+                if pk.label.startswith("The whole frame") and not put_together:
+                    guess = fg.guess_slot(path.name) or ""   # one file per colour
+                if pk.label.startswith(("Group:", "Layer:")):
+                    guess = ""                               # chosen by hand
+                parent = top
+                if pk.label.startswith("Layer:"):
+                    if single is None:
+                        single = QTreeWidgetItem(top, ["Single layers"])
+                        single.setFirstColumnSpanned(True)
+                    parent = single
+                self._add_row(parent, pk.label, (key, pk), "", th, guess)
+            if single is not None:
+                single.setText(0, f"Single layers ({single.childCount()})")
+            n = sum(1 for pk in picks if "put together" in pk.label)
+            self.status.setText(f"{path.name}: " + (f"{n} picture(s) put together from its "
+                                                    "colour layers – check them below." if n else
+                                                    "pick the picture for each colour below."))
+        except RuntimeError:
+            return
+        self._busy(False)
+        self._count()
+        self._next_psd()
+
+    def _psd_failed(self, name: str, msg: str):
+        try:
+            self._jobs.clear()
+            self._busy(False)
+            self.status.setText(f"Couldn't read {name}: {msg.splitlines()[0] if msg else ''}")
+        except RuntimeError:
+            return
+        self._next_psd()
+
+    def _psd_stopped(self):
+        try:
+            self._jobs.clear()
+            self._queue.clear()
+            self._busy(False)
+            self.status.setText("Stopped.")
+        except RuntimeError:
+            return
+
+    def _stop(self):
+        for j in self._jobs:
+            j.cancel.cancel()
+
+    def _busy(self, on: bool, text: str = ""):
+        self.progress.setVisible(on)
+        self.stop_btn.setVisible(on)
+        if on:
+            self.progress.setRange(0, 0)
+            self.progress.setFormat(text)
+        for b in self.add_btns:
+            b.setEnabled(not on)
+        self.bb.button(QDialogButtonBox.Ok).setEnabled(not on)
+
+    # ------------------------------------------------------------ rows
+    def _add_row(self, parent, label: str, source, guess_from: str, img, guess: str = None):
+        it = QTreeWidgetItem(parent if parent is not None else self.tree, [label, ""])
+        try:
+            pm = QPixmap.fromImage(_qimage(img)) if img is not None else (
+                _pixmap(source) if isinstance(source, Path) else QPixmap())
             if not pm.isNull():
                 it.setIcon(0, QIcon(pm.scaledToHeight(58, Qt.SmoothTransformation)))
                 if not fg.is_card_shaped((pm.width(), pm.height())):
@@ -277,7 +448,8 @@ class NewFrameDialog(QDialog):
             combo.addItem(v, k)
         for k, v in fg.PT_SLOTS:
             combo.addItem(f"P/T box – {v}", k)
-        guess = fg.guess_slot(guess_from) or ""
+        if guess is None:
+            guess = fg.guess_slot(guess_from) or ""
         if guess and any(r[2].currentData() == guess for r in self.rows):
             guess = ""                         # one picture per colour
         combo.setCurrentIndex(max(0, combo.findData(guess)))
@@ -287,32 +459,111 @@ class NewFrameDialog(QDialog):
 
     def _count(self, *_):
         n = sum(1 for r in self.rows if r[2].currentData())
-        self.status.setText(f"{len(self.rows)} picture(s), {n} used" if self.rows else
-                            "Add the frame pictures.")
+        if not self._jobs:
+            self.status.setText(f"{len(self.rows)} picture(s), {n} used" if self.rows else
+                                "Add the frame pictures (or a Photoshop file).")
 
-    def chosen(self) -> dict:
-        """{slot: path or PIL image}"""
+    # ------------------------------------------------------------ fonts
+    def _add_fonts(self, files: list):
+        have = {Path(f).name.lower() for f in self.fonts}
+        for f in files:
+            if Path(f).name.lower() in have:
+                continue
+            self.fonts.append(Path(f))
+            it = QListWidgetItem(f"{fg.font_name(f)}  ({Path(f).name})")
+            it.setFlags(it.flags() | Qt.ItemIsUserCheckable)
+            it.setCheckState(Qt.Checked)
+            it.setData(Qt.UserRole, str(f))
+            self.font_list.addItem(it)
+        if not self.fonts:
+            return
+        self.font_box.setVisible(True)
+        names = sorted({fg.font_name(f) for f in self.fonts}, key=str.lower)
+        guess = fg.guess_fonts(self.fonts)
+        for combo, key, usual in ((self.title_font, "title", "Beleren Bold"),
+                                  (self.text_font, "text", "MPlantin")):
+            keep = combo.currentData()
+            combo.clear()
+            combo.addItem(f"MSE's usual font ({usual})", "")
+            for n in names:
+                combo.addItem(n, n)
+            pick = keep if keep is not None and combo.findData(keep) >= 0 else guess.get(key, "")
+            combo.setCurrentIndex(max(0, combo.findData(pick)))
+
+    def chosen_fonts(self) -> list:
+        return [Path(self.font_list.item(i).data(Qt.UserRole))
+                for i in range(self.font_list.count())
+                if self.font_list.item(i).checkState() == Qt.Checked]
+
+    def font_names(self) -> dict:
+        out = {}
+        if self.title_font.currentData():
+            out["title"] = self.title_font.currentData()
+        if self.text_font.currentData():
+            out["text"] = self.text_font.currentData()
+        return out
+
+    # ------------------------------------------------------------ done
+    def _wanted(self) -> dict:
         out = {}
         for _label, src, combo in self.rows:
             slot = combo.currentData()
-            if not slot or slot in out:
-                continue
-            if isinstance(src, tuple):
-                path, i = src
-                out[slot] = self._layers[str(path)][i][1]
-            else:
+            if slot and slot not in out:
                 out[slot] = src
         return out
 
+    def chosen(self) -> dict:
+        """{slot: path or PIL image} (Photoshop pictures already put together)."""
+        if self._ready is not None:
+            return dict(self._ready)
+        return {k: v for k, v in self._wanted().items() if isinstance(v, Path)}
+
     def _ok(self):
-        ch = self.chosen()
-        if not any(k in ch for k in fg.BASE + ["l"]):
+        want = self._wanted()
+        if not any(k in want for k in fg.BASE + ["l"]) and self.windowTitle() != "Pick the layer":
             error(self, "Frame studio", "Pick which picture is which colour (at least one).")
+            return
+        if not want:
+            error(self, "Frame studio", "Pick a picture.")
             return
         if not self.name.text().strip():
             error(self, "Frame studio", "Give the frame a name.")
             return
-        self.accept()
+        psds = dict(self._psds)
+
+        def work(progress=None, cancel=None):
+            from mse_studio.pipeline.common import Cancelled
+            from . import psdread
+            out = {}
+            todo = list(want.items())
+            for k, (slot, src) in enumerate(todo):
+                if isinstance(src, tuple):
+                    key, pick = src
+                    progress(k, len(todo), f"Putting together: {pick.label}")
+                    try:
+                        out[slot] = fg.psd_picture(psds[key], pick, cancel)
+                    except psdread.Stopped:
+                        raise Cancelled() from None
+                else:
+                    out[slot] = src
+            return out
+
+        self._busy(True, "Putting the pictures together…")
+        job = Job(work, label="Putting the frame pictures together")
+        job.signals.progress.connect(self._progress)
+        job.signals.finished.connect(self._made)
+        job.signals.failed.connect(lambda msg: self._psd_failed("the pictures", msg))
+        job.signals.cancelled.connect(self._psd_stopped)
+        self._jobs.append(start(job))
+
+    def _made(self, result: dict):
+        try:
+            self._jobs.clear()
+            self._busy(False)
+            self._ready = result
+            self.accept()
+        except RuntimeError:
+            return
 
 
 # ------------------------------------------------------------------ the page
@@ -521,10 +772,29 @@ class FrameStudioPage(QWidget):
             f.addRow(f"{label} font", fb)
             self.font_boxes[key] = fb
         hint = QLabel("MSE's own Magic fonts (Beleren, MPlantin) come with the Full Magic Pack "
-                      "– Advanced → Fonts shows which are installed.")
+                      "– Advanced → Fonts shows which are installed. MSE only draws fonts "
+                      "installed in Windows.")
         hint.setWordWrap(True)
         hint.setObjectName("Hint")
         f.addRow(hint)
+        f.addRow(QLabel("<b>Fonts that came with this frame</b>"))
+        self.frame_fonts = QListWidget()
+        self.frame_fonts.setMaximumHeight(120)
+        f.addRow(self.frame_fonts)
+        row = QHBoxLayout()
+        self.install_fonts_btn = QPushButton("Install them for MSE")
+        icons.set_icon(self.install_fonts_btn, "download")
+        self.install_fonts_btn.setToolTip("Installs the fonts for your Windows user (no "
+                                          "administrator needed), so MSE can draw them")
+        self.install_fonts_btn.clicked.connect(lambda: self.install_fonts(ask=False))
+        row.addWidget(self.install_fonts_btn)
+        b = QPushButton("Add fonts…")
+        icons.set_icon(b, "add")
+        b.setToolTip("Font files (.ttf, .otf) or a .zip of them that came with the frame")
+        b.clicked.connect(self.add_fonts)
+        row.addWidget(b)
+        row.addStretch(1)
+        f.addRow(row)
         return w
 
     # ------------------------------------------------------------ the list
@@ -587,9 +857,84 @@ class FrameStudioPage(QWidget):
                             f"{'#000' if QColor(col).lightness() > 128 else '#fff'}; }}")
         for k, fb in self.font_boxes.items():
             fb.setCurrentText(fr.font(k) if fr else fg.DEFAULT_FONTS[k])
+        self._show_fonts()
         self._loading = False
         self._draw_layout()
         self._buttons()
+
+    def _missing_fonts(self) -> list:
+        """The frame's font files whose fonts Windows hasn't got."""
+        fr = self.frame
+        if fr is None or not fr.font_files:
+            return []
+        try:
+            from mse_studio.core import fonts as fonts_mod
+            from mse_studio.gui.advanced import qt_installed_fonts
+            have = qt_installed_fonts()
+            return [f for f in fg.frame_fonts(fr)
+                    if not fonts_mod.is_installed(fg.font_name(f), have)]
+        except Exception:  # noqa: BLE001 - can't tell: offer them all
+            return fg.frame_fonts(fr)
+
+    def _show_fonts(self):
+        self.frame_fonts.clear()
+        fr = self.frame
+        files = fg.frame_fonts(fr) if fr else []
+        missing = {str(f) for f in self._missing_fonts()}
+        for f in files:
+            ok = str(f) not in missing
+            it = QListWidgetItem(f"{fg.font_name(f)}  –  " + ("installed" if ok else
+                                                             "not installed yet"))
+            it.setIcon(icons.icon("check_circle" if ok else "error"))
+            it.setToolTip(f.name)
+            self.frame_fonts.addItem(it)
+        if not files:
+            self.frame_fonts.addItem("None – add the maker's font files if the frame came "
+                                     "with some")
+        self.install_fonts_btn.setEnabled(bool(missing))
+
+    def add_fonts(self):
+        if self.frame is None:
+            return
+        paths, _ = QFileDialog.getOpenFileNames(self, "Fonts that came with the frame", "",
+                                                "Fonts (*.ttf *.otf *.ttc *.zip)")
+        files = fg.fonts_in([Path(p) for p in paths])
+        if not files:
+            return
+        fg.keep_fonts(self.frame, files)
+        self._changed()
+        self._show_frame()
+
+    def install_fonts(self, ask: bool = True) -> bool:
+        """Install the frame's fonts that Windows hasn't got (MSE Studio's own
+        font installer, for your Windows user). Returns False if you said no."""
+        missing = self._missing_fonts()
+        if not missing:
+            return True
+        if ask:
+            from PySide6.QtWidgets import QMessageBox
+            names = "\n".join(f"• {fg.font_name(f)}" for f in missing[:12])
+            r = QMessageBox.question(
+                self, "Frame studio", f"The frame uses fonts that aren't installed:\n{names}\n\n"
+                "Install them for your Windows user so MSE can draw them?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel, QMessageBox.Yes)
+            if r == QMessageBox.Cancel:
+                return False
+            if r == QMessageBox.No:
+                return True
+        try:
+            from mse_studio.gui.advanced import install_font_files
+            done = install_font_files(self, missing)
+        except Exception as e:  # noqa: BLE001
+            error(self, "Frame studio", f"Couldn't install the fonts: {e}")
+            return True
+        self._show_fonts()
+        if done:                 # MSE Studio 0.18 starts MSE again for the next preview
+            self.status.setText(f"Installed {len(done)} font(s) – MSE uses them from the next "
+                                "card it draws." if hasattr(self.main, "fonts_changed") else
+                                f"Installed {len(done)} font(s) – restart MSE Studio so MSE "
+                                "draws them.")
+        return True
 
     def _draw_layout(self):
         fr = self.frame
@@ -691,11 +1036,11 @@ class FrameStudioPage(QWidget):
             return
         path, _ = QFileDialog.getOpenFileName(
             self, f"The frame for {dict(fg.SLOTS + fg.PT_SLOTS).get(slot, slot)}", "",
-            "Pictures (*.png *.jpg *.jpeg *.webp *.bmp *.tif *.tiff *.psd)")
+            "Pictures (*.png *.jpg *.jpeg *.webp *.bmp *.tif *.tiff *.psd *.psb)")
         if not path:
             return
         src = Path(path)
-        if src.suffix.lower() == ".psd":
+        if src.suffix.lower() in (".psd", ".psb"):
             dlg = NewFrameDialog(self, [src], self.frame.name)
             dlg.setWindowTitle("Pick the layer")
             if not dlg.exec():
@@ -718,21 +1063,42 @@ class FrameStudioPage(QWidget):
 
     # ------------------------------------------------------------ new and removing
     def start_from(self, files: Optional[list] = None, name: str = "",
-                   proxy_deck: str = "") -> Optional[fg.Frame]:
-        """A new frame from pictures (Proxy decks sends a deck's templates
-        here). Returns it, or None if you cancelled."""
+                   proxy_deck: str = "", done=None) -> None:
+        """A new frame from pictures, Photoshop files and fonts (Proxy decks
+        sends a deck's templates here). ``done(frame)`` is called once it's
+        made (in the background – big pictures take a moment)."""
         dlg = NewFrameDialog(self, files, name)
         if not dlg.exec():
             return None
-        frame = fg.new_frame(dlg.name.text(), dlg.chosen(),
-                             made_from=str(Path(files[0]).parent) if files else "")
-        frame.proxy_deck = proxy_deck
-        fg.save_frame(frame)
-        self.fill(frame.slug)
-        self.tabs.setCurrentIndex(1)
-        self.status.setText("Check where the name, art and text go (drag the boxes), then "
-                            "Save and add to MSE.")
-        return frame
+        chosen, fonts, names = dlg.chosen(), dlg.chosen_fonts(), dlg.font_names()
+        title = dlg.name.text()
+        made_from = str(Path(files[0]).parent) if files else ""
+
+        def work(progress=None, cancel=None):
+            progress(0, 0, f"Making {title}…")
+            frame = fg.new_frame(title, chosen, made_from=made_from, fonts=fonts,
+                                 font_names=names)
+            frame.proxy_deck = proxy_deck
+            fg.save_frame(frame)
+            return frame
+
+        def made(frame):
+            try:
+                self.fill(frame.slug)
+                self.tabs.setCurrentIndex(1)
+                self.status.setText("Check where the name, art and text go (drag the boxes), "
+                                    "then Save and add to MSE.")
+            except RuntimeError:
+                return
+            if callable(done):
+                done(frame)
+
+        self.status.setText(f"Making {title}…")
+        job = Job(work, label=f"Making the frame {title}")
+        job.signals.finished.connect(made)
+        job.signals.failed.connect(self._failed)
+        self._jobs.append(start(job))
+        return None
 
     def _list_menu(self, pos):
         it = self.list.itemAt(pos)
@@ -789,6 +1155,8 @@ class FrameStudioPage(QWidget):
             return
         if data is None:
             error(self, "Frame studio", "MSE wasn't found – set where it is in Settings first.")
+            return
+        if not self.install_fonts(ask=True):
             return
         fg.save_frame(fr)
         frame = fg.Frame(**{**fr.__dict__})
