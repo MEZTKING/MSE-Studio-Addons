@@ -399,17 +399,25 @@ class ProxiesPage(QWidget):
         if hasattr(thumbs, "large"):
             thumbs.large().ready.connect(self._thumb_ready)
         px.clear_scratch()
-        self.fill_list()
+        # nothing is read (your proxy folders, the last deck's pictures) until the
+        # page is opened – not when MSE Studio starts or a deck opens
+        self._listed = False
         if px.pref("big_view"):
             self.big_btn.setChecked(True)
 
     # ------------------------------------------------------------ MSE Studio calls these
     def load(self):
+        if not self._listed:
+            return
         self._buttons()
         if self.tabs.currentIndex() == 1:
             self.fill_mine()
 
     def refresh(self):
+        if not self._listed:
+            self.fill_list()
+            if self.tabs.currentIndex() == 1:
+                self.fill_mine()
         self._buttons()
 
     def shutdown(self):
@@ -417,6 +425,7 @@ class ProxiesPage(QWidget):
 
     # ------------------------------------------------------------ the list of decks
     def fill_list(self, keep: str = ""):
+        self._listed = True
         keep = keep or (self.deck.id if self.deck else "") or px.last_deck()
         self._decks = {d.id: d for d in px.decks()}
         self.list.blockSignals(True)

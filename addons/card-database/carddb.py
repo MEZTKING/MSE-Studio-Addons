@@ -847,6 +847,9 @@ def find_for(conn: sqlite3.Connection, q) -> list[dict]:
                 commander_legal=False, can_lead=bool(getattr(q, "commander", False)),
                 fmt=fmt)
     rows = search(conn, f, sort="popular", limit=20000)
+    at_least = set(getattr(q, "at_least", "") or "")    # can lead these colours (0.24.0)
+    if at_least:
+        rows = [r for r in rows if at_least <= set(r["identity"] or "")]
     want_roles = set(getattr(q, "roles", []) or [])
     types = [t.lower() for t in getattr(q, "types", []) or [] if t]
     words = [w.lower() for w in list(getattr(q, "keywords", []) or []) +

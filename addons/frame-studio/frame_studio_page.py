@@ -320,8 +320,9 @@ class NewFrameDialog(QDialog):
         self.ai_match_btn = QPushButton("Ask AI to match them")
         icons.set_icon(self.ai_match_btn, "auto_fix_high")
         self.ai_match_btn.clicked.connect(self.ai_match)
-        from .designer_dialog import ai_module
+        from .designer_dialog import ai_module, ai_on
         ai = ai_module()
+        self.ai_match_btn.setVisible(hasattr(parent, "main") and ai_on(parent.main.settings))
         why = "Needs MSE Studio 0.20.0 or newer." if ai is None else \
             ai.not_ready(parent.main.settings) if hasattr(parent, "main") else "No AI."
         self.ai_match_btn.setEnabled(not why)
@@ -893,7 +894,8 @@ class FrameStudioPage(QWidget):
         b = QPushButton("Design a frame…")
         icons.set_icon(b, "palette")
         b.setToolTip("The Frame designer: a whole frame drawn for you – every colour, P/T boxes "
-                     "and mana symbols – from lots of settings, or from a description with AI")
+                     "and mana symbols – from lots of settings (or a description, when AI is "
+                     "switched on)")
         b.clicked.connect(lambda: self.design_frame())
         row.addWidget(b)
         self.remove_btn = QPushButton("Remove")

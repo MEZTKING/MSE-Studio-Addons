@@ -110,6 +110,10 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `mse_studio.core.card_finder`: `add_finder(fn, name)`, `remove_finder(fn)`, `find(Query(...))`, `deck_query(project)` | Answer MSE Studio's real-card searches (commander ideas, real cards for a deck) offline: `fn(query)` returns card dicts or None (0.22.0; see card-database) |
 | Planeswalkers | Write the rules text like the real card ("+1: …", one ability a line): MSE Studio fills the walker frame's boxes (`mse_studio.core.walkers`) (0.18.0) |
 | `mse_studio.ai.for_addons`: `not_ready(s)`, `service(s)`, `ask_json(s, system, prompt, images=, schema=)`, `picture_not_ready(s)`, `make_picture(s, prompt, size=)` | AI with the service set in Settings → AI (`s` = `main.settings`; the add-on never reads keys). Only from a button, in a `Job`, saying which service (0.20.0; see frame-studio's designer). Guard with `try: import` for older MSE Studio |
+| `for_addons.enabled(s)` | AI is off unless the user ticks Settings → AI → Use AI: when False show **no** AI buttons or options at all. Older MSE Studio: `getattr(ai, "enabled", lambda s: True)(s)` (0.24.0; see art-only, frame-studio) |
+| `for_addons.picture_edit_not_ready(s)`, `edit_picture(s, png, mask_png, prompt)` | AI repaints the white part of the mask, the rest stays (OpenAI gpt-image-1); one paid request, from a button (0.24.0; see art-only) |
+| `card_finder.Query.at_least` | A finder's query: only cards whose identity has all these colours (commanders for the deck's cards) (0.24.0) |
+| Pages scroll | Every page sits in a scroll area, so a tall page scrolls instead of stretching the window (0.24.0) |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 
 Keep a deck's add-on data in a file in `main.project.folder` (like Deck notes'

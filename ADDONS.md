@@ -216,6 +216,8 @@ class HelloPage(QWidget):
   every card offline answers first: `add_finder(fn, "the card database")` in
   the page's `__init__`/`load()`, `remove_finder(fn)` in `shutdown()`; `fn(query)`
   returns Scryfall-like card dicts or None (the Card database add-on).
+  `query.at_least` (0.24.0): only cards whose colour identity has all of these
+  colours (a commander for the cards already in the deck).
 - **Automate everything** (MSE Studio 0.21.0): `main.run_everything(ask=False,
   then=fn)` draws, upscales and makes print files without the run summary and
   calls `fn()` when it's done (not when it fails or is stopped).
@@ -235,6 +237,19 @@ class HelloPage(QWidget):
   model is Settings → AI → *Picture model*). They go over the internet: call
   them only from a button the user pressed, in a `Job`, and say on the page
   which service is used (Frame studio's designer and *Ask AI to match them*).
+- **AI switched off** (MSE Studio 0.24.0): AI is off unless the user ticks
+  Settings → AI → *Use AI*. Then `for_addons.enabled(settings)` is False and
+  the add-on shows **no AI buttons or options at all** (`not_ready` also says
+  it's off). For older MSE Studio: `getattr(ai, "enabled", lambda s: True)(s)`.
+- **AI repaints part of a picture** (MSE Studio 0.24.0):
+  `picture_edit_not_ready(settings)` / `edit_picture(settings, png, mask_png,
+  prompt)` – the mask is white where the picture is repainted, the rest comes
+  back as it was, at the picture's size (OpenAI's gpt-image-1). One paid
+  request: from a button only (Art only's *Fill with AI*).
+- **Pages scroll** (MSE Studio 0.24.0): every page sits in a scroll area, so a
+  page that needs more room than the window has scrolls instead of making the
+  window taller than the screen – no need for a scroll area of your own just
+  for that.
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight

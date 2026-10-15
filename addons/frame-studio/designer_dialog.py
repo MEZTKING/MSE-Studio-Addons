@@ -49,6 +49,13 @@ def ai_module():
         return None
 
 
+def ai_on(settings) -> bool:
+    """AI switched on (Settings → AI → Use AI, MSE Studio 0.24.0 – off unless
+    the user turns it on)? Off: no AI buttons at all."""
+    ai = ai_module()
+    return ai is not None and getattr(ai, "enabled", lambda s: True)(settings)
+
+
 class DesignerDialog(QDialog):
     """Design a frame; ``design`` and ``name`` are what's made (after exec)."""
 
@@ -115,7 +122,9 @@ class DesignerDialog(QDialog):
         self.preset.currentIndexChanged.connect(self._preset)
         top.addRow("Start from", self.preset)
         v.addLayout(top)
-        v.addWidget(self._ai_box())
+        box = self._ai_box()
+        box.setVisible(ai_on(self.main.settings))
+        v.addWidget(box)
 
         def group(title: str) -> QFormLayout:
             g = QGroupBox(title)
@@ -140,6 +149,7 @@ class DesignerDialog(QDialog):
         self.ai_texture_btn.setToolTip("An AI picture service paints a texture from the "
                                        "description above (Settings → AI)")
         self.ai_texture_btn.clicked.connect(self._ai_texture)
+        self.ai_texture_btn.setVisible(ai_on(self.main.settings))
         row.addWidget(self.ai_texture_btn)
         f.addRow("Texture picture", row)
         seed = QHBoxLayout()

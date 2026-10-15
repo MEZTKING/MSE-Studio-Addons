@@ -3,8 +3,10 @@ and text painted over (full-art cards) – for your own cards. The Decklists
 page and Proxy decks send cards here: right-click a card → Keep only the art.
 
 Network: none of its own (Scryfall's cut-out art of a real card is downloaded
-by MSE Studio when you ask for it). Files: the picture you open (read) and the
-deck's art folder (the result)."""
+by MSE Studio when you ask for it; AI fill – only when AI is switched on in
+Settings → AI and you press Fill with AI – is sent by MSE Studio to the AI
+service set there). Files: the picture you open (read) and the deck's art
+folder (the result)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -186,9 +188,16 @@ class ArtOnlyPage(QWidget):
         self.fill = QComboBox()
         for k, label in ao.FILLS.items():
             self.fill.addItem(label, k)
-        self.fill.currentIndexChanged.connect(lambda *_: self.make())
+        self.fill.setToolTip("Content-aware: rebuilt from the art around it, textures and lines "
+                             "carry on (a few seconds). Quick: smoothed over at once.")
+        self.fill.currentIndexChanged.connect(self._fill_changed)
         row.addWidget(self.fill, 1)
         pv.addLayout(row)
+        self.ai_fill_btn = QPushButton("Fill with AI")
+        icons.set_icon(self.ai_fill_btn, "auto_fix_high")
+        self.ai_fill_btn.clicked.connect(self.ai_fill)
+        pv.addWidget(self.ai_fill_btn)
+        self._gen = 0                  # the newest fill; older ones are stopped
         sv.addWidget(self.parts_box)
         self.scry_btn = QPushButton("Use Scryfall's cut-out art (sharpest)")
         self.scry_btn.setToolTip("A real card: Scryfall's own picture of just the art")
@@ -285,6 +294,10 @@ class ArtOnlyPage(QWidget):
         self.view.enabled = self.full_rb.isChecked()
         self._buttons()
 
+    def _fill_changed(self, *_):
+        self._buttons()
+        self.make()
+
     def _mode_changed(self, *_):
         self._show_card()
         self.make()
@@ -312,16 +325,90 @@ class ArtOnlyPage(QWidget):
         if mask is None or mask.getbbox() is None:
             mask = ao.default_mask(img.size)
         fill = self.fill.currentData()
+        if fill == "ai":
+            self.status.setText("Press Fill with AI when the painted parts are right.")
+            return
+        self._run(fill, lambda progress=None, cancel=None:
+                  ao.erase(img, mask.resize(img.size), fill, progress=progress, cancel=cancel))
+
+    def _run(self, fill: str, fn):
+        """One fill in the background; a newer one stops it."""
+        for j in self._jobs:
+            j.cancel.cancel()
+        self._gen += 1
+        gen = self._gen
 
         def work(progress=None, cancel=None):
             progress(0, 0, "Painting over the frame and text…")
-            return ao.erase(img, mask.resize(img.size), fill)
+            try:
+                return gen, fn(progress=progress, cancel=cancel)
+            except ao.Stopped:
+                return gen, None
 
-        self.status.setText("Painting over the frame and text…")
-        job = Job(work)
-        job.signals.finished.connect(self._made)
-        job.signals.failed.connect(lambda m: self.status.setText(m.splitlines()[0]))
-        self._jobs.append(start(job))
+        self.status.setText("Asking the AI to paint over the frame and text…" if fill == "ai"
+                            else "Painting over the frame and text…")
+        job = Job(work, label="Art only: painting over the frame and text")
+        job.signals.finished.connect(self._done)
+        job.signals.failed.connect(self._failed)
+        job.signals.cancelled.connect(self._stopped)
+        self._jobs = [j for j in self._jobs if not j.cancel.cancelled] + [start(job)]
+
+    def _done(self, result):
+        try:
+            gen, art = result
+            if gen == self._gen and art is not None:
+                self._made(art)
+        except RuntimeError:
+            return
+
+    def _failed(self, msg: str):
+        try:
+            self.status.setText(msg.splitlines()[0] if msg else "")
+        except RuntimeError:
+            return
+
+    def _stopped(self):
+        return
+
+    # ------------------------------------------------------------ AI (only when switched on)
+    def _ai(self):
+        """MSE Studio's AI for add-ons, when it can repaint pictures and AI is
+        switched on (Settings → AI → Use AI) – else None."""
+        try:
+            from mse_studio.ai import for_addons as ai
+        except ImportError:
+            return None
+        if not hasattr(ai, "edit_picture") or not ai.enabled(self.main.settings):
+            return None
+        return ai
+
+    def ai_fill(self):
+        ai = self._ai()
+        if ai is None or self.card_img is None or not self.full_rb.isChecked():
+            return
+        why = ai.picture_edit_not_ready(self.main.settings)
+        if why:
+            error(self, "AI fill", why)
+            return
+        import io
+        img = self.card_img
+        mask = self._mask()
+        if mask is None or mask.getbbox() is None:
+            mask = ao.default_mask(img.size)
+        mask = mask.resize(img.size)
+        settings = self.main.settings
+
+        def png(im) -> bytes:
+            buf = io.BytesIO()
+            im.save(buf, format="PNG")
+            return buf.getvalue()
+
+        def fill(progress=None, cancel=None):
+            from PIL import Image
+            data = ai.edit_picture(settings, png(img), png(mask), ao.AI_PROMPT)
+            with Image.open(io.BytesIO(data)) as im:
+                return im.convert("RGB")
+        self._run("ai", fill)
 
     def _made(self, art):
         try:
@@ -329,9 +416,10 @@ class ArtOnlyPage(QWidget):
             pm = QPixmap.fromImage(_qimage(art))
             self.preview.setPixmap(pm.scaled(300, 300, Qt.KeepAspectRatio,
                                              Qt.SmoothTransformation))
+            soft = self.fill.currentData() in ("smart", "blur")
             self.status.setText(f"{art.width} × {art.height} pixels" +
-                                (" – painted-over parts are soft; a new frame's text box covers "
-                                 "most of them" if self.full_rb.isChecked() else ""))
+                                (" – painted-over parts are soft (Content-aware fill keeps "
+                                 "them sharp)" if self.full_rb.isChecked() and soft else ""))
             self._buttons()
         except RuntimeError:
             return
@@ -373,6 +461,16 @@ class ArtOnlyPage(QWidget):
         self.parts_box.setVisible(self.full_rb.isChecked())
         for w in (self.window_rb, self.full_rb, self.fill):
             w.setEnabled(has)
+        ai = self._ai()
+        if ai is not None and self.fill.findData("ai") < 0:
+            self.fill.addItem(ao.AI_FILL[1], ao.AI_FILL[0])
+        elif ai is None and self.fill.findData("ai") >= 0:
+            self.fill.removeItem(self.fill.findData("ai"))
+        self.ai_fill_btn.setVisible(ai is not None and self.fill.currentData() == "ai")
+        self.ai_fill_btn.setEnabled(has and self.full_rb.isChecked())
+        if ai is not None:
+            self.ai_fill_btn.setToolTip(f"{ai.service(self.main.settings)} repaints the "
+                                        "painted parts (one paid request)")
         ok = self.result is not None and p is not None
         self.save_btn.setEnabled(ok)
         self.new_card_btn.setEnabled(ok)

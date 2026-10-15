@@ -9,14 +9,16 @@ card on the **Decklists** page or in **Proxy decks**.
   picture of just the art (the sharpest there is).
 - **Paint over the frame and text** – a full-art or borderless card, where
   the art goes on under everything: the name bar, type line, text box, P/T,
-  the bottom lines and the border are painted over from the art around them.
-  The parts are where a modern frame has them – untick any, or paint more
-  (drag on the card) or less (right-drag). Fill with *Smart fill*, *Mirror
-  the art above it* or *Soft blur*.
-
-Big parts painted over come out soft. Under your own frame's text box that
-hardly shows; for a perfect result, touch it up in the art editor (Paint) or
-an image editor.
+  the bottom lines and the border are painted over. The parts are where a
+  modern frame has them – untick any, or paint more (drag on the card) or
+  less (right-drag). Fill with:
+  - **Content-aware fill** (the default, a few seconds) – rebuilt from
+    patches of the art around them, the way photo editors do it, so
+    textures, lines and edges carry on and stay sharp. Works offline.
+  - *Quick smooth fill*, *Mirror the art above it* or *Soft blur*.
+  - **AI fill** – only when AI is switched on (Settings → AI → Use AI) with
+    a service that can repaint pictures (OpenAI's gpt-image-1): press **Fill
+    with AI**; one paid request. Needs MSE Studio 0.24.0.
 
 Then **Save in my art folder** (with the card's credit), **Use it on the card
 I'm editing** or **on a new card of mine** – the art editor opens with all
@@ -27,5 +29,6 @@ Needs MSE Studio 0.17.0.
 ## Network and files
 
 None of its own (Scryfall's cut-out art and the Decklists page's pictures
-are downloaded by MSE Studio). It reads the picture you open or send it, and
+are downloaded by MSE Studio; AI fill is sent by MSE Studio to the AI service
+in Settings → AI, only when AI is switched on and you press Fill with AI). It reads the picture you open or send it, and
 saves the art in the deck's art folder.
