@@ -57,9 +57,9 @@
     {
       "id": "art-only",
       "name": "Art only",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "kind": "page",
-      "description": "Just the art of a card, for your own cards: cut out of its window (Scryfall's own cut-out for real cards), or – for full-art and borderless cards – with the name bar, type line, text box, P/T and border painted over from the art around them. Adds Keep only the art to the Decklists page and to Proxy decks.",
+      "description": "Just the art of a card, for your own cards: cut out of its window (Scryfall's own cut-out for real cards), or – for full-art and borderless cards – with the name bar, type line, text box, P/T and border painted over by a content-aware fill that rebuilds them from the art around them (offline; AI fill too when AI is switched on). Adds Keep only the art to the Decklists page and to Proxy decks.",
       "author": "MEZTKING",
       "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/art-only",
       "license": "MIT",
@@ -79,9 +79,14 @@
         "order": 45,
         "tooltip": "The art of a card without its frame and text"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.0.0/art-only-1.0.0.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.0/art-only-1.1.0.zip",
       "downloads": 1,
       "versions": [
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.0/art-only-1.1.0.zip",
+          "date": "2026-10-15"
+        },
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.0.0/art-only-1.0.0.zip",
@@ -92,7 +97,7 @@
     {
       "id": "card-database",
       "name": "Card database",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "kind": "page",
       "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters (legal in Commander, Standard, Modern…), pick random cards, build a whole deck for your format – around a commander, or around a key card in fours for 60-card formats – in a play style and themes you pick, see the cards, pick the ones you want or start a new deck with all of them, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
       "author": "MEZTKING",
@@ -118,9 +123,14 @@
         "order": 40,
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.0/card-database-1.4.0.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.1/card-database-1.4.1.zip",
       "downloads": 7,
       "versions": [
+        {
+          "version": "1.4.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.1/card-database-1.4.1.zip",
+          "date": "2026-10-15"
+        },
         {
           "version": "1.4.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.0/card-database-1.4.0.zip",
@@ -327,7 +337,7 @@
     {
       "id": "frame-studio",
       "name": "Frame studio",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "kind": "page",
       "description": "Make a Magic Set Editor frame from a proxy maker's frame template (one picture per colour, or a Photoshop file – each colour put together from its layers, the text placed from its text layers, its own mana symbols), or design one from scratch with the Frame designer (lots of settings, a live preview, and AI that designs from a description or paints textures). Fonts that come with it are installed for MSE; your cards can use it like any other frame.",
       "author": "MEZTKING",
@@ -349,9 +359,14 @@
         "order": 40,
         "tooltip": "Make an MSE frame from a proxy maker's blank frames or your own pictures"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.4.0/frame-studio-1.4.0.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.4.1/frame-studio-1.4.1.zip",
       "downloads": 6,
       "versions": [
+        {
+          "version": "1.4.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.4.1/frame-studio-1.4.1.zip",
+          "date": "2026-10-15"
+        },
         {
           "version": "1.4.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.4.0/frame-studio-1.4.0.zip",
@@ -541,7 +556,7 @@
     {
       "id": "mpc-proxies",
       "name": "Proxy decks",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "kind": "page",
       "description": "Proxy decks people share on r/mpcproxies, Ko-fi and Discord – real Magic cards with new art and frames – from their Google Drive, and proxy folders or zips on your PC. Import a deck, tick cards with a click (big tick boxes, drag or Shift+click for many), filter by type or full art, and add them to your order – printed as they are with the maker's credit – or to your deck to edit, in the deck's own frame (made with Frame studio from the maker's templates). See which cards of your deck came from which proxy deck.",
       "author": "MEZTKING",
@@ -565,9 +580,14 @@
         "order": 31,
         "tooltip": "Proxy decks shared on r/mpcproxies and Ko-fi"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.0/mpc-proxies-1.4.0.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.1/mpc-proxies-1.4.1.zip",
       "downloads": 6,
       "versions": [
+        {
+          "version": "1.4.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.1/mpc-proxies-1.4.1.zip",
+          "date": "2026-10-15"
+        },
         {
           "version": "1.4.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.0/mpc-proxies-1.4.0.zip",
