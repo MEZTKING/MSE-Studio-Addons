@@ -240,8 +240,8 @@ class HelloPage(QWidget):
   model is the AI settings' *Picture model*). They go over the internet: call
   them only from a button the user pressed, in a `Job`, and say on the page
   which service is used (Frame studio's designer and *Ask AI to match them*).
-- **AI switched off** (MSE Studio 0.25.0): AI is an experiment people can turn
-  off (Settings → Advanced → Experimental → AI, on unless they do). Off, MSE
+- **AI switched off** (MSE Studio 0.25.0): AI is an experiment people switch
+  on (Settings → Advanced → Experimental → AI – off until they do). Off, MSE
   Studio shows no AI option or wording at all, and add-ons do the same:
   `for_addons.enabled(settings)` is False – hide your AI buttons and text
   (`not_ready` says it's switched off). For older MSE Studio:
