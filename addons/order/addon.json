@@ -1,0 +1,28 @@
+{
+  "id": "order",
+  "name": "Order",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "The Order page: every card's front and back as they'll be printed, what's still missing before ordering, copies, card stock and foil, a proof sheet – and Send to MPC, which fills your whole MakePlayingCards order with mpc-autofill (it offers to get the mpc-autofill add-on the first time). Real cards get MPCFill's print-ready pictures once you set up an MPCFill server (MPCFill… on the page), Scryfall's otherwise. Until MSE Studio 0.25 this page came with the app.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/order",
+  "license": "MIT",
+  "min_app_version": "0.25.0",
+  "tags": [
+    "order",
+    "makeplayingcards",
+    "mpc",
+    "mpcfill",
+    "real cards",
+    "proxies"
+  ],
+  "page": {
+    "module": "order_page",
+    "class": "OrderPage",
+    "title": "Order",
+    "icon": "shopping_cart",
+    "section": "Produce",
+    "order": 20,
+    "tooltip": "Step 4 · Fronts and backs, checks, send to MPC"
+  }
+}

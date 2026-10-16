@@ -18,6 +18,9 @@ them that add-ons in this store are checked. So before merging a **page** or
       through MSE Studio's font installer
       (`mse_studio.gui.advanced.install_font_files`), after asking.
 - [ ] It doesn't run other programs, download code, or use `eval` / `exec`.
+      (One exception: the Order add-on starts mpc-autofill – the store's
+      mpc-autofill add-on, or a copy the user picked – only through MSE
+      Studio's `order.launch_autofill`, when the user presses Send to MPC.)
 - [ ] It doesn't touch MSE Studio's settings (API keys and tokens live there).
       AI only through MSE Studio's `mse_studio.ai.for_addons` (it passes
       `main.settings` along and never reads a key), from a button the user

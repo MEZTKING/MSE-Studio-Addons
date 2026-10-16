@@ -35,6 +35,13 @@ RULES = [("Within these colours", "within"), ("Exactly these colours", "exactly"
          ("Including these colours", "including")]
 
 
+def _real_pictures(main, entries):
+    """The real cards' pictures (MSE Studio 0.25: main.real_pictures; before,
+    the Order page did it)."""
+    fn = getattr(main, "real_pictures", None) or main.order_tab.real_pictures
+    fn(entries)
+
+
 def deck_format(main) -> str:
     """The open deck's format (MSE Studio 0.21.0), else Commander."""
     try:
@@ -412,8 +419,8 @@ class CardDatabasePage(QWidget):
         rv.addWidget(self.details, 1)
         b = QPushButton("Add to my order (real cards)")
         icons.set_icon(b, "shopping_cart")
-        b.setToolTip("The selected cards, printed with their real picture – straight to the "
-                     "Order page")
+        b.setToolTip("The selected cards, printed with their real picture – straight into "
+                     "your deck")
         b.clicked.connect(lambda: self.add_real(self.selected()))
         rv.addWidget(b)
         b = QToolButton()
@@ -797,9 +804,8 @@ class CardDatabasePage(QWidget):
         n = dl.add_to_project(p, entries)
         self.main.record(f"Card database · {n} real card(s)")
         self.main.update_title()
-        self.main.statusBar().showMessage(f"Added {n} real card(s) – they're on the Order page",
-                                          8000)
-        self.main.order_tab.real_pictures(entries)
+        self.main.statusBar().showMessage(f"Added {n} real card(s) to your deck", 8000)
+        _real_pictures(self.main, entries)
 
     def add_custom(self, rows: list[dict], frame: str = "mine", with_art: bool = True):
         if self.main.project is None or not rows:
@@ -970,8 +976,8 @@ class CardDatabasePage(QWidget):
         rv.addWidget(self.built_info, 1)
         for label, icon, tip, fn in (
                 ("Add the picked to my order (real cards)", "shopping_cart",
-                 "The cards you picked, printed with their real picture – straight to the "
-                 "Order page", lambda: self.add_real(self.built_rows())),
+                 "The cards you picked, printed with their real picture – straight into "
+                 "your deck", lambda: self.add_real(self.built_rows())),
                 ("Add the picked to my deck to edit", "edit",
                  "New cards of your own with the picked cards' text and artwork, in your frame",
                  lambda: self.add_custom(self.built_rows())),
@@ -1231,9 +1237,9 @@ class CardDatabasePage(QWidget):
         p.save_config()
         self.main.record(f"Card database · new deck around {d.commander} · {n} real card(s)")
         self.main.update_title()
-        self.main.statusBar().showMessage(f"{p.name}: {n} real cards with {d.commander} – "
-                                          "they're on the Order page", 10000)
-        self.main.order_tab.real_pictures(entries)
+        self.main.statusBar().showMessage(f"{p.name}: {n} real cards with {d.commander}",
+                                          10000)
+        _real_pictures(self.main, entries)
 
     def add_built(self):
         """Every card of the build into the open deck (as before 1.1)."""
@@ -1245,4 +1251,4 @@ class CardDatabasePage(QWidget):
         n = dl.add_to_project(p, entries)
         self.main.record(f"Card database · built deck · {n} real card(s)")
         self.main.update_title()
-        self.main.order_tab.real_pictures(entries)
+        _real_pictures(self.main, entries)

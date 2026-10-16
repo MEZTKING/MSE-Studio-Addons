@@ -1,0 +1,26 @@
+{
+  "id": "playtest",
+  "name": "Playtest",
+  "version": "1.0.0",
+  "kind": "page",
+  "description": "Goldfish your deck: deal opening hands (with the free mulligan of multiplayer Commander), keep or mulligan, play turns – draw, play cards, tap them, life and poison counters – and see the odds of having the cards you need by a given turn. Plays your own cards as MSE draws them, real cards with their real pictures, or any decklist (Decklists → Playtest). Until MSE Studio 0.25 this page came with the app.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/playtest",
+  "license": "MIT",
+  "min_app_version": "0.25.0",
+  "tags": [
+    "playtest",
+    "goldfish",
+    "odds",
+    "decklists"
+  ],
+  "page": {
+    "module": "playtest_page",
+    "class": "PlaytestPage",
+    "title": "Playtest",
+    "icon": "playing_cards",
+    "section": "Review",
+    "order": 10,
+    "tooltip": "Playtest · opening hands, turns and odds"
+  }
+}

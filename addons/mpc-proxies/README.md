@@ -48,7 +48,7 @@ Then:
   found too. Untick it for custom cards Scryfall doesn't know – nothing is
   looked up then. (With the Card database add-on installed, cards are looked
   up there first.)
-- **Add the ticked to my order** – real cards, straight to the Order page:
+- **Add the ticked to my order** – real cards, straight into your deck:
   printed with these pictures as they are (and in Print at home). Pictures
   without MPC's bleed get it added; double-faced cards get their back face,
   even when it's a separate picture.
@@ -84,7 +84,7 @@ them again. Decks on this PC can also be taken off a whole folder at a time.
 ### In my deck
 
 The **In my deck** tab lists the cards of your open deck that came from proxy
-decks, by deck – real cards (Order page) and cards to edit (Cards page).
+decks, by deck – real cards and cards to edit (both on the Cards page).
 Double-click one to go to it; Delete takes it out of your deck (Undo brings it
 back).
 
@@ -101,7 +101,7 @@ Copy a post there (its text, links and decklist) and paste the whole thing into
 
 Every deck belongs to the person who made it. Its credit – the deck, who made
 it and where it's from (the Ko-fi page or Reddit post) – is shown with the
-deck, kept with every card printed from it (the Order page shows it) and can
+deck, kept with every card printed from it (the Order add-on's page shows it) and can
 be copied. Please support the makers on their Ko-fi pages, and keep their
 pictures for your own printing.
 

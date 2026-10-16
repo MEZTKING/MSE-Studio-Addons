@@ -44,10 +44,26 @@ SORTS = [("deck", "Deck order"), ("name", "Name"), ("folder", "Folder (card type
 
 NO_TEXT = "__no_text__"            # the type filter's "no text at all on the picture"
 NO_RULES = "__no_rules__"          # "no rules text on the picture"
-REAL_HINT = ("<b>Add to my order</b>: real cards, straight to the Order page – printed as they "
+REAL_HINT = ("<b>Add to my order</b>: real cards, straight into your deck – printed as they "
              "are, with the maker's credit. <b>Add to my deck to edit</b>: your own cards on the "
              "Cards page, with the card's text and its art – in this deck's own frame when it has "
              "one (right-click the deck → This deck's frame).")
+
+
+def _real_pictures(main, entries):
+    """The real cards' pictures (MSE Studio 0.25: main.real_pictures; before,
+    the Order page did it)."""
+    fn = getattr(main, "real_pictures", None) or main.order_tab.real_pictures
+    fn(entries)
+
+
+def _pages_changed(main):
+    """The page that's open shows the change (the Order page before 0.25)."""
+    fn = getattr(main, "refresh_shown_page", None)
+    if fn is not None:
+        fn()
+    elif getattr(main, "order_tab", None) is not None:
+        main.order_tab.refresh()
 
 
 def _ask_delete(parent, text: str) -> bool:
@@ -531,7 +547,7 @@ class ProxiesPage(QWidget):
                              "Add the ticked to my order")
         self.add_btn.setToolTip(
             "Open a deck first" if p is None else
-            "Real cards, straight to the Order page: printed with these pictures as they are "
+            "Real cards, straight into your deck: printed with these pictures as they are "
             "(and in Print at home); the maker's credit stays with each")
         self.edit_btn.setEnabled(n > 0 and p is not None)
         self.edit_btn.setText(f"Add the {n} ticked to my deck to edit" if n else
@@ -889,7 +905,7 @@ class ProxiesPage(QWidget):
                              "Add it to my order (printed as it is)" if n == 1 else
                              f"Add the {n} ticked to my order (printed as they are)",
                              lambda: self.add_to_deck(keys))
-        add.setToolTip("Real cards, straight to the Order page, printed with this picture")
+        add.setToolTip("Real cards, straight into your deck, printed with this picture")
         add.setEnabled(p is not None)
         edit = menu.addMenu(icons.icon("edit"), "Add it to my deck to edit" if n == 1 else
                             f"Add the {n} ticked to my deck to edit")
@@ -1288,12 +1304,10 @@ class ProxiesPage(QWidget):
                 px.log_added(p.folder, self.deck, [e.display_name for e in ok], "real")
             self.main.record(f"Proxy decks · {n} real card(s) from {title}")
             self.main.update_title()
-            self.status.setText(f"Added {n} real card(s) – they're on the Order page, printed as "
-                                "they are.")
+            self.status.setText(f"Added {n} real card(s) to your deck, printed as they are.")
             self.main.statusBar().showMessage(
-                f"Added {n} card(s) from {title} – making their print files; they're on the "
-                "Order page", 10000)
-            self.main.order_tab.real_pictures(ok)
+                f"Added {n} card(s) from {title} – making their print files", 10000)
+            _real_pictures(self.main, ok)
             self.fill_mine()
             unknown = [e.name for e in ok if not e.found] if lookup else []
             if unknown:
@@ -1378,7 +1392,7 @@ class ProxiesPage(QWidget):
             if p is None or str(p.folder) != folder:
                 return
             card_backs.use_for_deck(p, Path(path))          # copied into the deck
-            self.main.order_tab.refresh()
+            _pages_changed(self.main)
             self.main.statusBar().showMessage(f"{Path(path).name} is your deck's card back now",
                                               8000)
         except RuntimeError:
@@ -1557,7 +1571,7 @@ class ProxiesPage(QWidget):
         v = QVBoxLayout(w)
         v.setContentsMargins(0, 4, 0, 0)
         hint = QLabel("The cards of your open deck that came from proxy decks, by deck: real "
-                      "cards are on the Order page, cards to edit on the Cards page. "
+                      "cards and cards to edit are on the Cards page. "
                       "Double-click one to go to it; Delete takes it out of your deck.")
         hint.setWordWrap(True)
         hint.setObjectName("Hint")
@@ -1621,7 +1635,7 @@ class ProxiesPage(QWidget):
                 continue
             title = decks[did].title if did in decks else (hit or {}).get("title") or credit
             it = QTreeWidgetItem(group(did or credit, title),
-                                 [e.display_name, "Real card (Order page)", str(e.count)])
+                                 [e.display_name, "Real card", str(e.count)])
             it.setData(0, Qt.UserRole, ("real", e.name, e.section))
             it.setToolTip(0, credit)
             n += 1
@@ -1655,7 +1669,12 @@ class ProxiesPage(QWidget):
             return
         kind, name, _section = data
         if kind == "real":
-            self.main.tabs.setCurrentWidget(self.main.order_tab)
+            show = getattr(self.main.cards_tab, "show_real", None)
+            if show is not None:                     # MSE Studio 0.25: on the Cards page
+                self.main.tabs.setCurrentWidget(self.main.cards_tab)
+                show(name)
+            elif getattr(self.main, "order_tab", None) is not None:
+                self.main.tabs.setCurrentWidget(self.main.order_tab)
             return
         rows = [i for i, c in enumerate(p.set.cards) if c.name == name]
         if rows:

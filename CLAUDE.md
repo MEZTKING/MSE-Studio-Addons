@@ -48,9 +48,17 @@ two the same).
 | Program | `game-engine`, `tool`, `exporter`, `art`, `other` | A separate program MSE Studio starts with the chosen decks' `.deck.json` files | `templates/program-addon` |
 | Upscaling models | `models` | `.param` + `.bin` model pairs for Upscayl in a `models` folder, offered on the Upscale page (needs MSE Studio 0.12.1) | `addons/anime-upscaling-models` |
 
-Big files (models) aren't committed: list them in `fetch` (`path`, `url`
-pinned to a commit, `sha256`) and `tools/build_index.py` downloads and checks
-them when it builds the zip. Credit model authors in the add-on's README.
+Big files (models, programs) aren't committed: list them in `fetch` (`path`,
+`url` pinned to a commit or release tag, `sha256`) and `tools/build_index.py`
+downloads and checks them when it builds the zip (mpc-autofill fetches its
+program from chilli-axe's v4.7 release). Credit model authors in the add-on's
+README.
+
+**Order** and **Playtest** were MSE Studio's own pages until 0.25: MSE Studio's
+tests install them from this repository (its build checks out `main`), so a
+change to them must keep MSE Studio's tests passing – run them with the app's
+source next to this repository (`python -m pytest` there finds it, or set
+`MSE_STUDIO_ADDONS`).
 
 The folder name under `addons/` is the add-on's `id`.
 
@@ -88,21 +96,21 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `main.project.set.cards` | The cards. `card.name`, `card.text("rule_text")` (plain), `card.raw(field)` (MSE markup), `card.set_text(field, text)`, `card.image`, `card.stylesheet` (its frame). Fields use MSE's names: `name`, `casting_cost`, `super_type`, `sub_type`, `rule_text`, `flavor_text`, `power`, `toughness`, `loyalty`, `rarity`, `illustrator`, `secondary_copyright` |
 | `main.project.set.add_card()` / `.remove_card(card)` | Add / remove cards; then `main.cards_tab.reload(row)` |
 | `main.record("What changed")` | After changing cards: a step in the deck's history (undo) |
-| `decklists.add_to_project(p, entries)` + `real_cards.use_picture(p, entry, picture, side, credit)` + `main.order_tab.real_pictures(entries)` | Real cards printed with a picture file, the maker's credit kept with the card (0.15.0; see the mpc-proxies add-on) |
+| `decklists.add_to_project(p, entries)` + `real_cards.use_picture(p, entry, picture, side, credit)` + `main.real_pictures(entries)` | Real cards printed with a picture file, the maker's credit kept with the card (0.15.0; `main.real_pictures` is 0.25.0 – before it, `main.order_tab.real_pictures`: use `getattr(main, "real_pictures", None) or main.order_tab.real_pictures`; see the mpc-proxies add-on) |
 | `main.tabs.setCurrentWidget(main.cards_tab)` + `main.cards_tab.select_row(i)` | Open a card |
 | `main.settings` | Read only: `mse_path`, `upscayl_path`, theme… Never write it, never read keys or tokens from it |
 | `main.known_frames()`, `mse_studio.core.styles` | The frames MSE has |
 | `mse_studio.gui.nav.page_header(title, text)` | The title every page has – use it so the page looks like the others |
 | `mse_studio.gui.common`: `Job`, `start`, `forget`, `error`, `info`, `confirm`, `PathEdit` | `Job(fn, label="What it does")` runs `fn(progress=…, cancel=…)` on a worker thread (with a label, Stop cancels it); `job.signals.progress(done, total, text)`, `.finished(result)`, `.failed(text)`; `start(job)`; keep jobs in a list and call `forget(jobs)` in `shutdown()` (0.13.0) |
 | `mse_studio.gui.icons`: `icon(name)`, `set_icon(button, name)` | Icons that follow the theme |
-| `mse_studio.gui.web_window`: `open_web(parent, url, title, on_picture=, on_download=)`, `WebPanel(parent, url, …)`, `available()` | A browser inside MSE Studio (0.16.0): right-click a picture → your `on_picture(url, page, title)`; files the site downloads → `on_download(path, page)`. Make a `WebPanel` when the page is first opened and `close_browser()` it in `shutdown()` (see the mpcfill add-on) |
+| `mse_studio.gui.web_window`: `open_web(parent, url, title, on_picture=, on_download=)`, `WebPanel(parent, url, …)`, `available()` | A browser inside MSE Studio (0.16.0): right-click a picture → your `on_picture(url, page, title)`; files the site downloads → `on_download(path, page)`. Make a `WebPanel` when the page is first opened and `close_browser()` it in `shutdown()` |
 | `mse_studio.pipeline.print_prep.make_print(img, spec, margin="auto")`, `has_mpc_margin(img)` | A print file; MPC's margin added only when the picture hasn't got it (0.16.0) |
 | `mse_studio.gui.thumbs.cache()` / `.large()` | Picture caches at 300 px / 1400 px (`large` is 0.16.0) |
 | `mse_studio.core.picture_tools.register(id, label, run, owner=self)` | A tool for card pictures, offered on the Decklists page (and by Proxy decks) – `run(parent, picture, info)` (0.17.0; see the art-only add-on) |
 | `main.decklists_tab.add_custom(entries, source, frame=, pictures=, keep_unknown=True)` | Your own cards to edit with the text, a frame and their own art, fitted like Force to fit (0.17.0; see mpc-proxies) |
 | `mse_packages.install_zip(zip, styles.data_dir(main.settings.mse_path))`, `remove_package(…)`, `main.frames_changed()` | Add or take out an MSE frame – the only way to change MSE's data folder (0.17.0; see frame-studio) |
 | `mse_studio.gui.common.delete_key(widget, fn)`, `ask_delete(parent, text)` | The Delete key on a list, and Settings' *Ask before deleting* (0.17.0) |
-| `WebPanel(…, stay_on=("site.com",))` | A browser that doesn't leave the site (its downloads still come through) (0.18.0; see mpcfill) |
+| `WebPanel(…, stay_on=("site.com",))` | A browser that doesn't leave the site (its downloads still come through) (0.18.0) |
 | `mse_studio.gui.advanced.install_font_files(parent, files)`, `qt_installed_fonts()` | Install fonts that came with something, after asking – MSE is restarted for previews (`main.fonts_changed()`) (0.18.0; see frame-studio) |
 | `main.new_deck(name=…)` | The New deck window with a name; returns the new deck or None (0.18.0; see card-database) |
 | `main.new_deck(name=…, format=…)`, `mse_studio.core.formats.of(main.project)` | The deck's format: `.key` ("commander", "standard"…), `.size`, `.copies`, `.has_commander`; `formats.legal_state(fmt, card)` (0.21.0; see card-database) |
@@ -110,10 +118,12 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `mse_studio.core.card_finder`: `add_finder(fn, name)`, `remove_finder(fn)`, `find(Query(...))`, `deck_query(project)` | Answer MSE Studio's real-card searches (commander ideas, real cards for a deck) offline: `fn(query)` returns card dicts or None (0.22.0; see card-database) |
 | Planeswalkers | Write the rules text like the real card ("+1: …", one ability a line): MSE Studio fills the walker frame's boxes (`mse_studio.core.walkers`) (0.18.0) |
 | `mse_studio.ai.for_addons`: `not_ready(s)`, `service(s)`, `ask_json(s, system, prompt, images=, schema=)`, `picture_not_ready(s)`, `make_picture(s, prompt, size=)` | AI with the service set in Settings → AI (`s` = `main.settings`; the add-on never reads keys). Only from a button, in a `Job`, saying which service (0.20.0; see frame-studio's designer). Guard with `try: import` for older MSE Studio |
-| `for_addons.enabled(s)` | AI is off unless the user ticks Settings → AI → Use AI: when False show **no** AI buttons or options at all. Older MSE Studio: `getattr(ai, "enabled", lambda s: True)(s)` (0.24.0; see art-only, frame-studio) |
-| `for_addons.picture_edit_not_ready(s)`, `edit_picture(s, png, mask_png, prompt)` | AI repaints the white part of the mask, the rest stays (OpenAI gpt-image-1); one paid request, from a button (0.24.0; see art-only) |
-| `card_finder.Query.at_least` | A finder's query: only cards whose identity has all these colours (commanders for the deck's cards) (0.24.0) |
-| Pages scroll | Every page sits in a scroll area, so a tall page scrolls instead of stretching the window (0.24.0) |
+| Planned, **not in MSE Studio yet** (made for 0.24.0, which wasn't released) | `for_addons.enabled(s)` (AI off unless Settings → AI → Use AI; fallback `getattr(ai, "enabled", lambda s: True)(s)`), `edit_picture` / `picture_edit_not_ready`, `card_finder.Query.at_least`, pages in a scroll area. Use them only behind a fallback, as art-only and frame-studio do |
+| `main.real_pictures(entries=None)`, `mse_studio.gui.real_card_actions` (`make_own`, `set_copies`, `picture_from_file`, `again`, `set_source`, `choose_picture`, `set_margin`, `remove`, `drop`, `fill_menu`), `main.real_cards_changed()` | The deck's real cards without the Order page: their pictures, and everything the Cards page does with them – each a step in the history (0.25.0; see the order add-on) |
+| `real_cards.add_source(PictureSource(key, label, find, fetch, ready))`, `remove_source(key)`, `picture_sources()`, `source_label(key)` | Print-ready pictures for real cards, asked before Scryfall. `find`/`fetch` run on a worker thread (no widgets). Add in `__init__`, remove in `shutdown()` (0.25.0; see the order add-on's MPCFill) |
+| `main.choose_card_back()`, `main.print_home(rows)`, `main.proof_sheet()`, `main.make_backs(rows)`, `main.cards_tab.set_copies(rows)`, `main.cards_tab.show_real(name)`; `mse_studio.pipeline.order` (`slots`, `readiness`, `order_xml`, `autofill_path`, `launch_autofill`) | Printing and the order (0.25.0; see the order add-on). `order.launch_autofill` is the only way an add-on starts mpc-autofill |
+| `main.addon_page(id)`, `main.open_addon_page(id, why)`, `main.offer_addon(id, why, then=fn)` | Another add-on's page; offer to install a store add-on (0.25.0). `main.order_tab` is the Order add-on's page (a stand-in with `real_pictures()`/`refresh()` without it), `main.playtest_tab` the Playtest add-on's or None |
+| Taken out of MSE Studio in 0.25.0 | `gui.order_tab`, `gui.playtest_tab`, `gui.mpcfill_dialog`, `core.playtest`, `core.mpcfill`, real_cards' MPCFill functions – now in the order and playtest add-ons. `core.addons.RETIRED`: add-ons the store dropped (mpcfill), not loaded |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 
 Keep a deck's add-on data in a file in `main.project.folder` (like Deck notes'

@@ -136,7 +136,8 @@ class HelloPage(QWidget):
   `mse_studio.pipeline.real_cards.use_picture(project, entry, picture, side,
   credit)` prints each with a picture file (MPC's bleed is added when it
   hasn't got it; `credit` – who made it, where from – stays with the card),
-  then `main.order_tab.real_pictures(entries)` makes the print files.
+  then `main.real_pictures(entries)` makes the print files (MSE Studio 0.25.0;
+  before, `main.order_tab.real_pictures(entries)` – the Order page did it).
 - **Web pages** (MSE Studio 0.16.0): `mse_studio.gui.web_window` is a browser
   inside MSE Studio (Qt WebEngine) for sites that need a real browser.
   `open_web(parent, url, title, on_picture=fn, picture_label=…,
@@ -147,7 +148,7 @@ class HelloPage(QWidget):
   menu; `on_download(path, page_url)` gets the files the site downloads.
   `web_window.available()` is False in older builds – `open_web` then opens
   your usual browser. Logins and cookies are kept, apart from the user's own
-  browser. The MPCFill add-on is an example.
+  browser.
 - **Print files** (MSE Studio 0.16.0): `mse_studio.pipeline.print_prep.make_print(img,
   spec, margin="auto")` makes a picture print-ready – `"auto"` adds MPC's
   margin unless the picture already has it (`has_mpc_margin(img)`), `"has"`
@@ -216,8 +217,9 @@ class HelloPage(QWidget):
   every card offline answers first: `add_finder(fn, "the card database")` in
   the page's `__init__`/`load()`, `remove_finder(fn)` in `shutdown()`; `fn(query)`
   returns Scryfall-like card dicts or None (the Card database add-on).
-  `query.at_least` (0.24.0): only cards whose colour identity has all of these
-  colours (a commander for the cards already in the deck).
+  (`query.at_least` – only cards whose colour identity has all of these
+  colours – was planned for 0.24.0, which wasn't released: not in MSE Studio
+  yet.)
 - **Automate everything** (MSE Studio 0.21.0): `main.run_everything(ask=False,
   then=fn)` draws, upscales and makes print files without the run summary and
   calls `fn()` when it's done (not when it fails or is stopped).
@@ -237,19 +239,53 @@ class HelloPage(QWidget):
   model is Settings → AI → *Picture model*). They go over the internet: call
   them only from a button the user pressed, in a `Job`, and say on the page
   which service is used (Frame studio's designer and *Ask AI to match them*).
-- **AI switched off** (MSE Studio 0.24.0): AI is off unless the user ticks
-  Settings → AI → *Use AI*. Then `for_addons.enabled(settings)` is False and
-  the add-on shows **no AI buttons or options at all** (`not_ready` also says
-  it's off). For older MSE Studio: `getattr(ai, "enabled", lambda s: True)(s)`.
-- **AI repaints part of a picture** (MSE Studio 0.24.0):
-  `picture_edit_not_ready(settings)` / `edit_picture(settings, png, mask_png,
-  prompt)` – the mask is white where the picture is repainted, the rest comes
-  back as it was, at the picture's size (OpenAI's gpt-image-1). One paid
-  request: from a button only (Art only's *Fill with AI*).
-- **Pages scroll** (MSE Studio 0.24.0): every page sits in a scroll area, so a
-  page that needs more room than the window has scrolls instead of making the
-  window taller than the screen – no need for a scroll area of your own just
-  for that.
+- **Planned, not in MSE Studio yet**: these were made for 0.24.0, which wasn't
+  released – use them only behind a fallback, as Art only and Frame studio do:
+  `for_addons.enabled(settings)` (AI switched off unless Settings → AI → *Use
+  AI*; fallback `getattr(ai, "enabled", lambda s: True)(s)`), `edit_picture` /
+  `picture_edit_not_ready` (AI repaints the white part of a mask), and every
+  page in a scroll area.
+- **Real cards' actions** (MSE Studio 0.25.0): `mse_studio.gui.real_card_actions`
+  does what the Cards page does with a deck's real cards, each taking `main` and
+  the cards (`decklists.Entry`): `make_own`, `set_copies`, `picture_from_file`,
+  `again` (download again), `set_source(main, entries, key)`, `choose_picture`,
+  `set_margin`, `remove` (after asking) / `drop`, and `fill_menu(menu, main,
+  entries, parent, then=fn, own_then=fn)` for a right-click menu with all of
+  them. Every change is a step in the deck's history. `main.real_pictures(entries
+  =None)` gets their pictures and makes their print files (a job of the main
+  window, stopped when the deck closes); `main.real_cards_changed()` shows a
+  change on the Cards page and the open add-on page. `main.cards_tab.show_real(name)`
+  opens a real card on the Cards page.
+- **Print-ready pictures for real cards** (MSE Studio 0.25.0):
+  `mse_studio.pipeline.real_cards.add_source(PictureSource(key, label, find,
+  fetch, ready))` – asked before Scryfall when real cards get their pictures.
+  `find(names, cancel)` returns {card name: [choice, …] best first} (a choice is
+  `{"id", "name", "dpi", "source", "thumb", "extension"}`), `fetch(pick,
+  timeout)` the chosen picture's bytes with MPC's margin, `ready()` "" or what
+  to set up first. Both run on a worker thread: no widgets, a plain copy of
+  your settings. Add it in the page's `__init__`, `remove_source(key)` in
+  `shutdown()` (pages being rebuilt clear them all first). `picture_sources()`,
+  `source_label(key)`. The Order add-on's MPCFill is one (key `"mpcfill"`).
+- **Printing** (MSE Studio 0.25.0): `main.choose_card_back()` (the deck's card
+  back from the gallery), `main.print_home(rows)`, `main.proof_sheet()`,
+  `main.make_backs(rows)`, `main.cards_tab.set_copies(rows)`;
+  `mse_studio.pipeline.order` has the order itself – `slots(project)`,
+  `readiness(project)`, `order_xml(project, folder)`, `autofill_path(settings,
+  own)` and `launch_autofill(exe, folder, how)` (the only way an add-on starts
+  mpc-autofill). The Order add-on is built on these.
+- **Other add-ons' pages** (MSE Studio 0.25.0): `main.addon_page(id)` is an
+  installed add-on's page (or None); `main.open_addon_page(id, why)` shows it,
+  or offers to get it; `main.offer_addon(id, why, then=fn)` installs one from
+  the store after asking (`fn(page)` once it's there). `main.order_tab` is the
+  Order add-on's page – or, without it, a stand-in with `real_pictures()` and
+  `refresh()` for add-ons made before 0.25 – and `main.playtest_tab` the
+  Playtest add-on's page or None.
+- **Taken out of MSE Studio in 0.25.0** (now in the Order and Playtest
+  add-ons): `mse_studio.gui.order_tab`, `gui.playtest_tab`, `core.playtest`,
+  `core.mpcfill`, `gui.mpcfill_dialog`, and the MPCFill part of `real_cards`
+  (`query`, `server_url`, `search`, `details`, `matching_entry`,
+  `use_mpcfill`). An add-on that needs one of them is out of date: MSE Studio
+  says so on the Add-ons page.
 - **A page add-on runs its code inside MSE Studio**, so MSE Studio warns before
   installing one. Only add-ons that were checked are listed in the store.
 - Installing, switching off or removing a page add-on rebuilds the pages straight
@@ -325,7 +361,7 @@ MSE Studio's `docs/MTG_ENGINE_BRIEF.md` (section 5, the hand-off from MSE Studio
 Anyone can also make one by hand: **File → Export → Deck data → MSE Studio deck file**.
 
 Installed add-ons live in `%APPDATA%\MSE Studio\addons\<id>`. Add-ons that
-come with MSE Studio (such as mpc-autofill) are in the app's
+come with MSE Studio (the Card ideas lists) are in the app's
 `resources\addons` folder; an installed copy with the same id replaces the
 bundled one.
 
@@ -397,10 +433,20 @@ Other lists (a friend's, or a private test list) can be added with
 **Lists…** on the Add-ons page (one `index.json` address per line); add-ons from every list are shown together,
 and the newest version of each id wins.
 
-## Bundled: mpc-autofill
+## mpc-autofill
 
-MSE Studio comes with a copy of the
-[mpc-autofill](https://github.com/chilli-axe/mpc-autofill) desktop tool
-(GPL-3.0) for the Order page's **Send to MPC**. Another copy or version can
-be chosen on the Order page; installing an add-on with the id
-`mpc-autofill` replaces the bundled one too.
+[mpc-autofill](https://github.com/chilli-axe/mpc-autofill)'s desktop tool
+(GPL-3.0, by chilli-axe and contributors) fills a MakePlayingCards order for
+you. Until 0.25 MSE Studio came with a copy; now it's the store's
+**mpc-autofill** add-on (a program add-on: the unmodified v4.7
+`autofill-windows.exe`, downloaded from chilli-axe's release and checked when
+the store builds the zip). The Order add-on's **Send to MPC** offers to
+install it, and starts it through `mse_studio.pipeline.order.launch_autofill`;
+another copy can be chosen on the Order page.
+
+## Retired add-ons
+
+`mse_studio.core.addons.RETIRED` lists add-ons the store doesn't have any more:
+an installed copy isn't loaded, and the Add-ons page says what took its place.
+**MPCFill** (the mpcfill.com page) was retired in 0.25: real cards' MPCFill
+pictures are part of the Order add-on.

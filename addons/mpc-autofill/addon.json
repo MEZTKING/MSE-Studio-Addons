@@ -1,0 +1,27 @@
+{
+  "id": "mpc-autofill",
+  "name": "mpc-autofill",
+  "version": "4.7.0",
+  "kind": "tool",
+  "description": "Fills a MakePlayingCards order for you: uploads every card front and back into the right slots in your browser. The Order add-on's Send to MPC starts it. The unmodified Windows program from chilli-axe's mpc-autofill v4.7 release.",
+  "author": "chilli-axe and contributors",
+  "homepage": "https://github.com/chilli-axe/mpc-autofill",
+  "license": "GPL-3.0",
+  "min_app_version": "0.25.0",
+  "tags": [
+    "makeplayingcards",
+    "mpc",
+    "order"
+  ],
+  "run": {
+    "windows": "autofill-windows.exe",
+    "args": []
+  },
+  "fetch": [
+    {
+      "path": "autofill-windows.exe",
+      "url": "https://github.com/chilli-axe/mpc-autofill/releases/download/v4.7/autofill-windows.exe",
+      "sha256": "2f7c224e7ea5d52459a53bb04ef823c0e39e909e7b34f71ad94d0c2df009f5a3"
+    }
+  ]
+}

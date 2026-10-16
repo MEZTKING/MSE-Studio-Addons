@@ -17,7 +17,9 @@ get an **Update** button when a newer version is listed here.
 | Add-on | Kind | What it does |
 |---|---|---|
 | [Deck notes](addons/deck-notes) | Page | A notes page for each deck, saved as `notes.md` in the deck's folder, with a checklist of the deck's cards. |
-| [MPCFill](addons/mpcfill) | Page | mpcfill.com right inside MSE Studio (opens on Explore, stays on MPCFill): pictures you download show up as cards – add them to your order or to your deck to edit – and an order (Download → XML) becomes real cards printed with the pictures you picked. |
+| [Order](addons/order) | Page | Step 4: every card's front and back as they'll be printed, what's still missing, copies, stock and foil, proof sheet, Print at home – and **Send to MPC**, which fills your MakePlayingCards order with mpc-autofill. Real cards get MPCFill's print-ready pictures. Came with MSE Studio until 0.25 (needs 0.25.0). |
+| [mpc-autofill](addons/mpc-autofill) | Tool | chilli-axe's mpc-autofill (v4.7, GPL-3.0), the program the Order page's Send to MPC starts. Came with MSE Studio until 0.25. |
+| [Playtest](addons/playtest) | Page | Goldfish a deck or a decklist: opening hands, mulligans, turns, counters, and the odds of drawing what you need. Came with MSE Studio until 0.25 (needs 0.25.0). |
 | [Card database](addons/card-database) | Page | Every Magic card on your PC from Scryfall's bulk data: search, random cards, build a Commander deck around a commander in a play style and themes you pick (see the cards, pick some, or start a new deck with all of it), add cards as real or your own. |
 | [Card prices](addons/card-prices) | Page | What a deck's real cards cost at TCGplayer and Cardmarket: cheapest printings, totals per store, the cheapest mix, in your currency. |
 | [Proxy decks](addons/mpc-proxies) | Page | Proxy decks from r/mpcproxies, Ko-fi and Discord (their Google Drive) or your own PC: tick cards with a click, filter by type or by what's written on the picture (no text, no rules text), add them to your order (printed as they are, with the maker's credit) or to your deck to edit in the deck's own frame; see which cards came from which deck. |
@@ -36,6 +38,10 @@ get an **Update** button when a newer version is listed here.
 
 Card lists show up in MSE Studio's **Card ideas → Example cards**; upscaling
 models in the **Upscale** page's model list (Upscayl's own stays the default).
+
+The **MPCFill** page (mpcfill.com inside MSE Studio) was retired in 0.25:
+MPCFill's pictures for real cards are part of the Order add-on now, and MSE
+Studio 0.25 doesn't load an installed MPCFill page.
 
 ## Three sorts of add-on
 
