@@ -20,8 +20,9 @@
   "fetch": [
     {
       "path": "autofill-windows.exe",
-      "url": "https://github.com/chilli-axe/mpc-autofill/releases/download/v4.7/autofill-windows.exe",
-      "sha256": "2f7c224e7ea5d52459a53bb04ef823c0e39e909e7b34f71ad94d0c2df009f5a3"
+      "url": "https://github.com/chilli-axe/mpc-autofill/releases/download/v4.7/autofill-windows.zip",
+      "sha256": "6f16edd0961e1ee0e2008509ec3fb6919ba00f16892f147ae0462335f1f879b7",
+      "extract": "autofill-windows.exe"
     }
   ]
 }

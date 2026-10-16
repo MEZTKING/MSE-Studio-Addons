@@ -10,9 +10,10 @@ The **Order** add-on's **Send to MPC** writes the order file and starts it
 and asks its own questions there (site, browser…).
 
 This is the unmodified `autofill-windows.exe` from mpc-autofill's
-[v4.7 release](https://github.com/chilli-axe/mpc-autofill/releases/tag/v4.7)
-(the store downloads it from there and checks its sha256). Until MSE Studio
-0.25 the same file came with the app.
+[v4.7 release](https://github.com/chilli-axe/mpc-autofill/releases/tag/v4.7):
+the store downloads that release's `autofill-windows.zip`, checks its sha256
+and takes the program out of it. Until MSE Studio 0.25 the same version came
+with the app.
 
 Windows only.
 

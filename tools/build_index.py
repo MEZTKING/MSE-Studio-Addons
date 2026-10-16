@@ -102,6 +102,8 @@ def check(addon: dict, folder: Path | None) -> list[str]:
             out.append(f"fetch {path or '?'}: needs the file's sha256")
         if not path or path.startswith(("/", "\\")) or ".." in Path(path).parts:
             out.append(f"fetch {path or '?'}: path must be inside the add-on")
+        if "extract" in f and not str(f.get("extract") or "").strip():
+            out.append(f"fetch {path or '?'}: extract names the file to take out of the zip")
     if kind == "models":
         files = {str(f.get("path", "")) for f in fetch}
         if folder is not None:
@@ -117,7 +119,10 @@ def check(addon: dict, folder: Path | None) -> list[str]:
 
 def fetched(f: dict) -> bytes:
     """A file named in "fetch": downloaded once (kept in dist/.fetch) and
-    checked against its sha256, so a changed file is never published."""
+    checked against its sha256, so a changed file is never published. With
+    "extract", the download is a zip (its sha256 is checked) and the file of
+    that name in it is what goes into the add-on (a program released only as
+    a zip, like mpc-autofill)."""
     cache = ROOT / "dist" / ".fetch" / f["sha256"]
     if cache.exists():
         data = cache.read_bytes()
@@ -125,11 +130,22 @@ def fetched(f: dict) -> bytes:
         req = urllib.request.Request(f["url"], headers={"User-Agent": "MSE-Studio-Addons"})
         with urllib.request.urlopen(req, timeout=600) as r:
             data = r.read()
-    if hashlib.sha256(data).hexdigest() != f["sha256"]:
-        raise Problem(f"{f['url']} isn't the file it should be (sha256 differs)")
+    got = hashlib.sha256(data).hexdigest()
+    if got != f["sha256"]:
+        raise Problem(f"{f['url']} isn't the file it should be (sha256 differs: it's {got})")
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_bytes(data)
-    return data
+    member = str(f.get("extract") or "").strip()
+    if not member:
+        return data
+    import io
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        names = [n for n in z.namelist() if not n.endswith("/")]
+        found = [n for n in names if n == member] or \
+            [n for n in names if n.rsplit("/", 1)[-1] == member.rsplit("/", 1)[-1]]
+        if len(found) != 1:
+            raise Problem(f"{f['url']}: {member} isn't in the zip (it has {', '.join(names[:10])})")
+        return z.read(found[0])
 
 
 def zip_addon(folder: Path, out: Path, addon: dict | None = None) -> Path:

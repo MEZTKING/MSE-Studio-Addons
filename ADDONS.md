@@ -356,6 +356,10 @@ when it builds the add-on's zip:
 
 Credit the models' authors in the add-on's README.
 
+A program released only inside a zip (like mpc-autofill's
+`autofill-windows.zip`) is fetched with `"extract": "<file name>"`: the zip's
+sha256 is checked and only that file goes into the add-on.
+
 The deck file (`.deck.json`) is described in
 MSE Studio's `docs/MTG_ENGINE_BRIEF.md` (section 5, the hand-off from MSE Studio).
 Anyone can also make one by hand: **File → Export → Deck data → MSE Studio deck file**.

@@ -50,8 +50,10 @@ two the same).
 
 Big files (models, programs) aren't committed: list them in `fetch` (`path`,
 `url` pinned to a commit or release tag, `sha256`) and `tools/build_index.py`
-downloads and checks them when it builds the zip (mpc-autofill fetches its
-program from chilli-axe's v4.7 release). Credit model authors in the add-on's
+downloads and checks them when it builds the zip. A file released only inside
+a zip: `"extract": "<file name>"` (the zip's sha256 is checked, that file goes
+into the add-on) – mpc-autofill takes `autofill-windows.exe` out of
+chilli-axe's v4.7 `autofill-windows.zip`. Credit model authors in the add-on's
 README.
 
 **Order** and **Playtest** were MSE Studio's own pages until 0.25: MSE Studio's
