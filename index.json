@@ -80,7 +80,7 @@
         "tooltip": "The art of a card without its frame and text"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.0/art-only-1.1.0.zip",
-      "downloads": 2,
+      "downloads": 3,
       "versions": [
         {
           "version": "1.1.0",
@@ -97,7 +97,7 @@
     {
       "id": "card-database",
       "name": "Card database",
-      "version": "1.4.1",
+      "version": "1.4.2",
       "kind": "page",
       "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters (legal in Commander, Standard, Modern…), pick random cards, build a whole deck for your format – around a commander, or around a key card in fours for 60-card formats – in a play style and themes you pick, see the cards, pick the ones you want or start a new deck with all of them, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
       "author": "MEZTKING",
@@ -123,9 +123,14 @@
         "order": 40,
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.1/card-database-1.4.1.zip",
-      "downloads": 7,
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.2/card-database-1.4.2.zip",
+      "downloads": 8,
       "versions": [
+        {
+          "version": "1.4.2",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.2/card-database-1.4.2.zip",
+          "date": "2026-10-16"
+        },
         {
           "version": "1.4.1",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.1/card-database-1.4.1.zip",
@@ -360,7 +365,7 @@
         "tooltip": "Make an MSE frame from a proxy maker's blank frames or your own pictures"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.4.1/frame-studio-1.4.1.zip",
-      "downloads": 6,
+      "downloads": 7,
       "versions": [
         {
           "version": "1.4.1",
@@ -423,52 +428,30 @@
       ]
     },
     {
-      "id": "mpcfill",
-      "name": "MPCFill",
-      "version": "2.2.0",
-      "kind": "page",
-      "description": "mpcfill.com right inside MSE Studio (it opens on Explore and stays on MPCFill). Pictures you download there show up as cards: add them to your order printed with that picture, or to your deck to edit with the card's text and that art. An order (Download → XML) comes straight to the page too, its cards become real cards printed with those pictures, and its card back can be your deck's back.",
-      "author": "MEZTKING",
-      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/mpcfill",
-      "license": "MIT",
-      "min_app_version": "0.17.0",
+      "id": "mpc-autofill",
+      "name": "mpc-autofill",
+      "version": "4.7.0",
+      "kind": "tool",
+      "description": "Fills a MakePlayingCards order for you: uploads every card front and back into the right slots in your browser. The Order add-on's Send to MPC starts it. The unmodified Windows program from chilli-axe's mpc-autofill v4.7 release.",
+      "author": "chilli-axe and contributors",
+      "homepage": "https://github.com/chilli-axe/mpc-autofill",
+      "license": "GPL-3.0",
+      "min_app_version": "0.25.0",
       "tags": [
-        "mpcfill",
-        "proxies",
-        "real cards",
-        "card backs"
+        "makeplayingcards",
+        "mpc",
+        "order"
       ],
-      "page": {
-        "module": "mpcfill_page",
-        "class": "MpcfillPage",
-        "title": "MPCFill",
-        "icon": "cloud_download",
-        "section": "Produce",
-        "order": 30,
-        "tooltip": "mpcfill.com in MSE Studio – your MPCFill order as real cards"
+      "run": {
+        "windows": "autofill-windows.exe",
+        "args": []
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.2.0/mpcfill-2.2.0.zip",
-      "downloads": 6,
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-autofill-v4.7.0/mpc-autofill-4.7.0.zip",
       "versions": [
         {
-          "version": "2.2.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.2.0/mpcfill-2.2.0.zip",
-          "date": "2026-10-14"
-        },
-        {
-          "version": "2.1.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.1.0/mpcfill-2.1.0.zip",
-          "date": "2026-10-14"
-        },
-        {
-          "version": "2.0.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v2.0.0/mpcfill-2.0.0.zip",
-          "date": "2026-10-13"
-        },
-        {
-          "version": "1.0.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpcfill-v1.0.0/mpcfill-1.0.0.zip",
-          "date": "2026-10-13"
+          "version": "4.7.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-autofill-v4.7.0/mpc-autofill-4.7.0.zip",
+          "date": "2026-10-16"
         }
       ]
     },
@@ -492,6 +475,42 @@
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip",
           "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "order",
+      "name": "Order",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "The Order page: every card's front and back as they'll be printed, what's still missing before ordering, copies, card stock and foil, a proof sheet – and Send to MPC, which fills your whole MakePlayingCards order with mpc-autofill (it offers to get the mpc-autofill add-on the first time). Real cards get MPCFill's print-ready pictures once you set up an MPCFill server (MPCFill… on the page), Scryfall's otherwise. Until MSE Studio 0.25 this page came with the app.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/order",
+      "license": "MIT",
+      "min_app_version": "0.25.0",
+      "tags": [
+        "order",
+        "makeplayingcards",
+        "mpc",
+        "mpcfill",
+        "real cards",
+        "proxies"
+      ],
+      "page": {
+        "module": "order_page",
+        "class": "OrderPage",
+        "title": "Order",
+        "icon": "shopping_cart",
+        "section": "Produce",
+        "order": 20,
+        "tooltip": "Step 4 · Fronts and backs, checks, send to MPC"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/order-v1.0.0/order-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/order-v1.0.0/order-1.0.0.zip",
+          "date": "2026-10-16"
         }
       ]
     },
@@ -554,9 +573,43 @@
       ]
     },
     {
+      "id": "playtest",
+      "name": "Playtest",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Goldfish your deck: deal opening hands (with the free mulligan of multiplayer Commander), keep or mulligan, play turns – draw, play cards, tap them, life and poison counters – and see the odds of having the cards you need by a given turn. Plays your own cards as MSE draws them, real cards with their real pictures, or any decklist (Decklists → Playtest). Until MSE Studio 0.25 this page came with the app.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/playtest",
+      "license": "MIT",
+      "min_app_version": "0.25.0",
+      "tags": [
+        "playtest",
+        "goldfish",
+        "odds",
+        "decklists"
+      ],
+      "page": {
+        "module": "playtest_page",
+        "class": "PlaytestPage",
+        "title": "Playtest",
+        "icon": "playing_cards",
+        "section": "Review",
+        "order": 10,
+        "tooltip": "Playtest · opening hands, turns and odds"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/playtest-v1.0.0/playtest-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/playtest-v1.0.0/playtest-1.0.0.zip",
+          "date": "2026-10-16"
+        }
+      ]
+    },
+    {
       "id": "mpc-proxies",
       "name": "Proxy decks",
-      "version": "1.4.1",
+      "version": "1.4.2",
       "kind": "page",
       "description": "Proxy decks people share on r/mpcproxies, Ko-fi and Discord – real Magic cards with new art and frames – from their Google Drive, and proxy folders or zips on your PC. Import a deck, tick cards with a click (big tick boxes, drag or Shift+click for many), filter by type or full art, and add them to your order – printed as they are with the maker's credit – or to your deck to edit, in the deck's own frame (made with Frame studio from the maker's templates). See which cards of your deck came from which proxy deck.",
       "author": "MEZTKING",
@@ -580,9 +633,14 @@
         "order": 31,
         "tooltip": "Proxy decks shared on r/mpcproxies and Ko-fi"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.1/mpc-proxies-1.4.1.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.2/mpc-proxies-1.4.2.zip",
       "downloads": 6,
       "versions": [
+        {
+          "version": "1.4.2",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.2/mpc-proxies-1.4.2.zip",
+          "date": "2026-10-16"
+        },
         {
           "version": "1.4.1",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.1/mpc-proxies-1.4.1.zip",
