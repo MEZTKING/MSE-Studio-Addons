@@ -34,7 +34,7 @@ FILLS = {"content": "Content-aware fill (best – a few seconds)",
          "smart": "Quick smooth fill",
          "mirror": "Mirror the art above it",
          "blur": "Soft blur"}
-AI_FILL = ("ai", "AI fill (Settings → AI)")
+AI_FILL = ("ai", "AI fill")
 AI_PROMPT = ("Repaint only the masked areas so the artwork carries on naturally where a card's "
              "name bar, type line, text box and border were. Match the painting's style, "
              "colours, lighting and detail. No text, letters, symbols, frames or borders – just "

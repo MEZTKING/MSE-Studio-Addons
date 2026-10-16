@@ -133,11 +133,10 @@ class Design:
 
 PRESETS = {
     "Modern stone": {},
-    "Gothic (like Death Note)": dict(layout="modern", material="grunge", palette="gothic",
-                                     border="black", bars="torn", textbox="parchment",
-                                     textbox_shape="torn", pinline_colour="colour",
-                                     pinlines=0.004, bevel=0.2, wear=0.55, grain=0.25,
-                                     vignette=0.45, mana="brush", mana_column=True),
+    "Gothic": dict(layout="modern", material="grunge", palette="gothic", border="black",
+                   bars="torn", textbox="parchment", textbox_shape="torn",
+                   pinline_colour="colour", pinlines=0.004, bevel=0.2, wear=0.55, grain=0.25,
+                   vignette=0.45, mana="brush", mana_column=True),
     "Neon": dict(layout="modern", material="carbon", palette="vivid", border="black",
                  bars="angled", textbox="glass", pinline_colour="colour", pinlines=0.005,
                  glow=0.8, bevel=0.3, grain=0.05, mana="diamonds"),

@@ -4,8 +4,8 @@ page and Proxy decks send cards here: right-click a card → Keep only the art.
 
 Network: none of its own (Scryfall's cut-out art of a real card is downloaded
 by MSE Studio when you ask for it; AI fill – only when AI is switched on in
-Settings → AI and you press Fill with AI – is sent by MSE Studio to the AI
-service set there). Files: the picture you open (read) and the deck's art
+MSE Studio's settings and you press Fill with AI – is sent by MSE Studio to
+the AI service set there). Files: the picture you open (read) and the deck's art
 folder (the result)."""
 from __future__ import annotations
 
@@ -373,7 +373,7 @@ class ArtOnlyPage(QWidget):
     # ------------------------------------------------------------ AI (only when switched on)
     def _ai(self):
         """MSE Studio's AI for add-ons, when it can repaint pictures and AI is
-        switched on (Settings → AI → Use AI) – else None."""
+        switched on (MSE Studio's Settings) – else None."""
         try:
             from mse_studio.ai import for_addons as ai
         except ImportError:

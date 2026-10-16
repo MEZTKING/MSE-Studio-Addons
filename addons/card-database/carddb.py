@@ -860,7 +860,10 @@ def find_for(conn: sqlite3.Connection, q) -> list[dict]:
         n = 0
         if want_roles:
             n += len(want_roles & set(roles.detect(r["ltext"] or "")))
-        n += sum(1 for t in types if t in (r["ltype"] or ""))
+        # a creature type weighs most: a Vampire deck wants Vampires (or cards
+        # about them) before other cards that do the job
+        n += sum(3 if t in (r["ltype"] or "") else 1 if t in (r["ltext"] or "") else 0
+                 for t in types)
         n += sum(1 for w in words if w in (r["ltext"] or ""))
         return n
     if want_roles or types or words:

@@ -13,7 +13,7 @@ deck's cards can be edited in their maker's own frame.
    each row only offers what fits it (a colour's frame, a P/T box or a mana
    symbol). **Match automatically** fills the ones not chosen yet; **Ask AI
    to match them** sends one sheet of small numbered pictures (and their
-   names) to the AI set in MSE Studio's Settings → AI (MSE Studio 0.20.0),
+   names) to the AI service set up in MSE Studio's Settings (MSE Studio 0.20.0),
    which says what each is for. Pictures with MPC's 1/8 in margin ("bleed") are
    trimmed for you.
    - **Photoshop files** are read in the background (a progress bar, and
@@ -126,7 +126,9 @@ the mana symbols.
   parchment text box, mana down the side") – and show an example card if you
   like – and the AI picks the settings. **Make one with AI** paints a texture
   picture for the material (a picture service: OpenAI or xAI – Claude doesn't
-  make pictures). Both use MSE Studio's Settings → AI (MSE Studio 0.20.0); the
+  make pictures). Both use the AI service set up in MSE Studio's Settings
+  (MSE Studio 0.20.0; from 0.25.0 under Advanced → Experimental, where AI can
+  be switched off – then these buttons aren't shown); the
   window says which service, and each press is one request on your account.
 
 **Make the frame** draws it (about half a minute); then check it on *Where

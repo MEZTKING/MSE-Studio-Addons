@@ -276,7 +276,7 @@ class NewFrameDialog(QDialog):
         lay = QVBoxLayout(self)
         f = QFormLayout()
         self.name = QLineEdit(name)
-        self.name.setPlaceholderText("e.g. Death Note – Vibrant")
+        self.name.setPlaceholderText("e.g. Sky Pirates – Vibrant")
         f.addRow("Name of the frame", self.name)
         lay.addLayout(f)
         hint = QLabel("Add the frame template – a Photoshop file, or the blank frames as "

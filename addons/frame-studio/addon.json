@@ -1,7 +1,7 @@
 {
   "id": "frame-studio",
   "name": "Frame studio",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "kind": "page",
   "description": "Make a Magic Set Editor frame from a proxy maker's frame template (one picture per colour, or a Photoshop file – each colour put together from its layers, the text placed from its text layers, its own mana symbols), or design one from scratch with the Frame designer (lots of settings, a live preview, and AI that designs from a description or paints textures). Fonts that come with it are installed for MSE; your cards can use it like any other frame.",
   "author": "MEZTKING",

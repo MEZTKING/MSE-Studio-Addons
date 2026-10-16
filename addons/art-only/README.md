@@ -16,9 +16,10 @@ card on the **Decklists** page or in **Proxy decks**.
     patches of the art around them, the way photo editors do it, so
     textures, lines and edges carry on and stay sharp. Works offline.
   - *Quick smooth fill*, *Mirror the art above it* or *Soft blur*.
-  - **AI fill** – only when AI is switched on (Settings → AI → Use AI) with
-    a service that can repaint pictures (OpenAI's gpt-image-1): press **Fill
-    with AI**; one paid request. Needs MSE Studio 0.24.0.
+  - **AI fill** – only when AI is switched on in MSE Studio's settings and
+    MSE Studio can have pictures repainted by AI (a later version, with a
+    service such as OpenAI's gpt-image-1): press **Fill with AI**; one paid
+    request. Without that the choice isn't shown.
 
 Then **Save in my art folder** (with the card's credit), **Use it on the card
 I'm editing** or **on a new card of mine** – the art editor opens with all
@@ -30,5 +31,6 @@ Needs MSE Studio 0.17.0.
 
 None of its own (Scryfall's cut-out art and the Decklists page's pictures
 are downloaded by MSE Studio; AI fill is sent by MSE Studio to the AI service
-in Settings → AI, only when AI is switched on and you press Fill with AI). It reads the picture you open or send it, and
+set up in MSE Studio's settings, only when AI is switched on and you press
+Fill with AI). It reads the picture you open or send it, and
 saves the art in the deck's art folder.

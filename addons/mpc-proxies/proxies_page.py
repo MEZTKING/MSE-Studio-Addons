@@ -1478,7 +1478,7 @@ class ProxiesPage(QWidget):
         dlg.setWindowTitle("Who made it")
         f = QFormLayout(dlg)
         name = QLineEdit(d.creator)
-        name.setPlaceholderText("Their name, e.g. White Rabbit MTG")
+        name.setPlaceholderText("Their name or shop name")
         f.addRow("Made by", name)
         link = QLineEdit(d.creator_link)
         link.setPlaceholderText("Their Ko-fi, Reddit or website (optional)")

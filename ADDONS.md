@@ -229,22 +229,27 @@ class HelloPage(QWidget):
   when the card is drawn or the deck is saved – cards added with
   `add_custom` get it straight away.
 - **AI** (MSE Studio 0.20.0): `mse_studio.ai.for_addons` asks the AI service
-  set in Settings → AI – the add-on passes `main.settings` and never reads the
-  key itself. `not_ready(settings)` says why it can't be used yet ("" when it
-  can), `service(settings)` names it for the page,
+  set in Settings → AI (0.25.0: Settings → Advanced → Experimental → AI) – the
+  add-on passes `main.settings` and never reads the key itself.
+  `not_ready(settings)` says why it can't be used yet ("" when it can),
+  `service(settings)` names it for the page,
   `ask_json(settings, system, prompt, images=[png bytes], schema=…)` returns
   one JSON object (Claude, ChatGPT, Gemini… – pictures for the ones that see),
   `picture_not_ready(settings)` / `make_picture(settings, prompt, size=…)` make
   a picture (PNG bytes) with services that do (OpenAI gpt-image-1, xAI…; the
-  model is Settings → AI → *Picture model*). They go over the internet: call
+  model is the AI settings' *Picture model*). They go over the internet: call
   them only from a button the user pressed, in a `Job`, and say on the page
   which service is used (Frame studio's designer and *Ask AI to match them*).
-- **Planned, not in MSE Studio yet**: these were made for 0.24.0, which wasn't
-  released – use them only behind a fallback, as Art only and Frame studio do:
-  `for_addons.enabled(settings)` (AI switched off unless Settings → AI → *Use
-  AI*; fallback `getattr(ai, "enabled", lambda s: True)(s)`), `edit_picture` /
-  `picture_edit_not_ready` (AI repaints the white part of a mask), and every
-  page in a scroll area.
+- **AI switched off** (MSE Studio 0.25.0): AI is an experiment people can turn
+  off (Settings → Advanced → Experimental → AI, on unless they do). Off, MSE
+  Studio shows no AI option or wording at all, and add-ons do the same:
+  `for_addons.enabled(settings)` is False – hide your AI buttons and text
+  (`not_ready` says it's switched off). For older MSE Studio:
+  `getattr(ai, "enabled", lambda s: True)(settings)`.
+- **Planned, not in MSE Studio yet**: `edit_picture` / `picture_edit_not_ready`
+  (AI repaints the white part of a mask) and every page in a scroll area – made
+  for 0.24.0, which wasn't released. Use them only behind a fallback, as Art
+  only does.
 - **Real cards' actions** (MSE Studio 0.25.0): `mse_studio.gui.real_card_actions`
   does what the Cards page does with a deck's real cards, each taking `main` and
   the cards (`decklists.Entry`): `make_own`, `set_copies`, `picture_from_file`,

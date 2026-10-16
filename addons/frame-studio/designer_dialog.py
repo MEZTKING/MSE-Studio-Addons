@@ -50,8 +50,8 @@ def ai_module():
 
 
 def ai_on(settings) -> bool:
-    """AI switched on (Settings → AI → Use AI, MSE Studio 0.24.0 – off unless
-    the user turns it on)? Off: no AI buttons at all."""
+    """AI switched on (MSE Studio 0.25.0: Settings → Advanced → Experimental →
+    AI; older versions have no switch)? Off: no AI buttons at all."""
     ai = ai_module()
     return ai is not None and getattr(ai, "enabled", lambda s: True)(settings)
 
@@ -147,7 +147,8 @@ class DesignerDialog(QDialog):
         self.ai_texture_btn = QPushButton("Make one with AI")
         icons.set_icon(self.ai_texture_btn, "auto_fix_high")
         self.ai_texture_btn.setToolTip("An AI picture service paints a texture from the "
-                                       "description above (Settings → AI)")
+                                       "description above (the AI service set up in MSE "
+                                       "Studio's Settings)")
         self.ai_texture_btn.clicked.connect(self._ai_texture)
         self.ai_texture_btn.setVisible(ai_on(self.main.settings))
         row.addWidget(self.ai_texture_btn)
@@ -228,9 +229,9 @@ class DesignerDialog(QDialog):
         g = QGroupBox("Design it with AI")
         v = QVBoxLayout(g)
         self.describe = QPlainTextEdit()
-        self.describe.setPlaceholderText("Describe the look: e.g. \"dark gothic like Death Note – "
-                                         "black torn paper, blood-red trim, a parchment text box, "
-                                         "mana down the side\"")
+        self.describe.setPlaceholderText("Describe the look: e.g. \"dark gothic – black torn "
+                                         "paper, blood-red trim, a parchment text box, mana "
+                                         "down the side\"")
         self.describe.setMaximumHeight(80)
         v.addWidget(self.describe)
         row = QHBoxLayout()

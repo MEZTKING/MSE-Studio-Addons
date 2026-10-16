@@ -88,7 +88,7 @@ class FrameError(RuntimeError):
 
 @dataclass
 class Frame:
-    name: str                                   # "Death Note – Vibrant"
+    name: str                                   # "Sky Pirates – Vibrant"
     slug: str = ""                              # death-note-vibrant
     pictures: dict = field(default_factory=dict)   # slot → file in the frame's folder
     boxes: dict = field(default_factory=dict)   # box → [x, y, w, h] parts of the card
