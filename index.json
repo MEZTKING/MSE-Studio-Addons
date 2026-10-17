@@ -80,7 +80,7 @@
         "tooltip": "The art of a card without its frame and text"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.1/art-only-1.1.1.zip",
-      "downloads": 3,
+      "downloads": 4,
       "versions": [
         {
           "version": "1.1.1",
@@ -129,7 +129,7 @@
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.3/card-database-1.4.3.zip",
-      "downloads": 10,
+      "downloads": 11,
       "versions": [
         {
           "version": "1.4.3",
@@ -375,7 +375,7 @@
         "tooltip": "Make an MSE frame from a proxy maker's blank frames or your own pictures"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/frame-studio-v1.4.2/frame-studio-1.4.2.zip",
-      "downloads": 7,
+      "downloads": 8,
       "versions": [
         {
           "version": "1.4.2",
@@ -652,7 +652,7 @@
         "tooltip": "Proxy decks shared on r/mpcproxies and Ko-fi"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/mpc-proxies-v1.4.3/mpc-proxies-1.4.3.zip",
-      "downloads": 9,
+      "downloads": 10,
       "versions": [
         {
           "version": "1.4.3",
