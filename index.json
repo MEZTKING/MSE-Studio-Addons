@@ -78,6 +78,7 @@
         "tooltip": "The art of a card without its frame and text"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.2/art-only-1.1.2.zip",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.1.2",
@@ -405,9 +406,9 @@
     {
       "id": "paint-studio",
       "name": "Paint studio",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "kind": "page",
-      "description": "Paint card art like in a real painting app: layers with blend modes, clipping and locks; 34 brushes (pencils, inks, oils, gouache, watercolour with wet edges, airbrushes, chalk, charcoal, sprays, glows, sparkles) and your own in Brush studio; pen pressure, smudging and blending, symmetry, straight lines and neat ellipses by holding the pen still, selections and the magic wand, fill, gradients, liquify, shapes, moving and resizing, 14 adjustments (colour, levels, blur, sharpen, glow, gradient map…), a colour wheel with harmonies and palettes, touch gestures, and the card's frame over the painting while you paint. Paintings are .ora files Krita and GIMP open; Photoshop layers can be brought in.",
+      "description": "Paint card art like in a real painting app: layers with blend modes, clipping and locks; 34 brushes (pencils, inks, oils, gouache, watercolour with wet edges, airbrushes, chalk, charcoal, sprays, glows, sparkles) and your own in Brush studio; pen pressure, smudging and blending, symmetry, straight lines and neat ellipses by holding the pen still, selections and the magic wand, fill, gradients, liquify, shapes, moving and resizing, 14 adjustments (colour, levels, blur, sharpen, glow, gradient map…), a tracer that splits any picture into ink lines, flat colours and shading to paint your own version over, a colour wheel with harmonies and palettes, touch gestures, and the card's frame over the painting while you paint. Paintings are .ora files Krita and GIMP open; Photoshop layers can be brought in.",
       "author": "MEZTKING",
       "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/paint-studio",
       "license": "MIT",
@@ -417,7 +418,8 @@
         "painting",
         "drawing",
         "brushes",
-        "layers"
+        "layers",
+        "tracing"
       ],
       "page": {
         "module": "studio_page",
@@ -428,8 +430,13 @@
         "order": 30,
         "tooltip": "Paint your cards' art with layers and real-feeling brushes"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.0.0/paint-studio-1.0.0.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.1.0/paint-studio-1.1.0.zip",
       "versions": [
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.1.0/paint-studio-1.1.0.zip",
+          "date": "2026-10-20"
+        },
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.0.0/paint-studio-1.0.0.zip",
