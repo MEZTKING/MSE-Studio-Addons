@@ -45,7 +45,8 @@ def _get(url: str, data: Optional[dict] = None, timeout: float = 30) -> dict:
 
 def database() -> Optional[Path]:
     """The Card database add-on's file, if there is one (read only)."""
-    p = addons.config_dir() / "addon-data" / "card-database" / "cards.sqlite"
+    root = getattr(addons, "files_dir", addons.config_dir)()    # files_dir: 0.25.0
+    p = root / "addon-data" / "card-database" / "cards.sqlite"
     return p if p.is_file() and p.stat().st_size > 0 else None
 
 

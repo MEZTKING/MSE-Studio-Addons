@@ -420,7 +420,11 @@ The deck file (`.deck.json`) is described in
 MSE Studio's `docs/MTG_ENGINE_BRIEF.md` (section 5, the hand-off from MSE Studio).
 Anyone can also make one by hand: **File → Export → Deck data → MSE Studio deck file**.
 
-Installed add-ons live in `%APPDATA%\MSE Studio\addons\<id>`. Add-ons that
+Installed add-ons live in `%APPDATA%\MSE Studio\addons\<id>` – or, once someone
+has used Settings → Tools → *Move to another folder…* (0.25.0), in the
+`MSE Studio files` folder they chose. So never build these paths yourself: use
+`addons.data_dir("<id>")`, and `addons.files_dir()` for the folder they're in
+(0.25.0; before it, `addons.config_dir()`). Add-ons that
 come with MSE Studio (the Card ideas lists) are in the app's
 `resources\addons` folder; an installed copy with the same id replaces the
 bundled one.
