@@ -1,0 +1,212 @@
+{
+ "name": "Anime archetypes",
+ "description": "The hero, the rival, the mentor and everyone else.",
+ "cards": [
+  {
+   "name": "The Hero Who Never Gives Up",
+   "casting_cost": "1RW",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Warrior",
+   "rule_text": "Haste\nWhenever CARDNAME attacks, it gets +1/+1 until end of turn for each creature you control that's attacking.\nWhen CARDNAME dies, return it to its owner's hand at the beginning of the next end step.",
+   "rarity": "mythic rare",
+   "tags": [
+    "hero",
+    "human",
+    "commander",
+    "recursion"
+   ],
+   "power": "3",
+   "toughness": "2"
+  },
+  {
+   "name": "Eternal Rival",
+   "casting_cost": "2BR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Rogue",
+   "rule_text": "Menace\nWhenever a creature an opponent controls with greater power than CARDNAME dies, put two +1/+1 counters on CARDNAME.",
+   "rarity": "rare",
+   "tags": [
+    "rival",
+    "human",
+    "counters"
+   ],
+   "power": "3",
+   "toughness": "3"
+  },
+  {
+   "name": "Wise Old Mentor",
+   "casting_cost": "2W",
+   "super_type": "Creature",
+   "sub_type": "Human Monk",
+   "rule_text": "When CARDNAME enters, put a +1/+1 counter on each other creature you control.\nWhen CARDNAME dies, draw a card.",
+   "rarity": "uncommon",
+   "tags": [
+    "mentor",
+    "human",
+    "counters",
+    "draw"
+   ],
+   "power": "1",
+   "toughness": "3"
+  },
+  {
+   "name": "Comic Relief Sidekick",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Human Peasant",
+   "rule_text": "Whenever another creature you control dies, you gain 2 life and scry 1.",
+   "rarity": "common",
+   "tags": [
+    "sidekick",
+    "lifegain"
+   ],
+   "power": "1",
+   "toughness": "1"
+  },
+  {
+   "name": "Childhood Friend",
+   "casting_cost": "1W",
+   "super_type": "Creature",
+   "sub_type": "Human Citizen",
+   "rule_text": "When CARDNAME enters, target legendary creature you control gains indestructible until end of turn.\n{1}{W}, Sacrifice CARDNAME: Return target creature you control to its owner's hand.",
+   "rarity": "uncommon",
+   "tags": [
+    "friend",
+    "human",
+    "protection"
+   ],
+   "power": "2",
+   "toughness": "2"
+  },
+  {
+   "name": "Mysterious Mascot",
+   "casting_cost": "1U",
+   "super_type": "Creature",
+   "sub_type": "Fox Spirit",
+   "rule_text": "Flying\nCARDNAME can't block.\nWhenever you cast your first instant or sorcery spell each turn, draw a card.",
+   "rarity": "uncommon",
+   "tags": [
+    "mascot",
+    "spirit",
+    "draw"
+   ],
+   "power": "1",
+   "toughness": "1"
+  },
+  {
+   "name": "The Villain's Grand Plan",
+   "casting_cost": "3BB",
+   "super_type": "Enchantment",
+   "sub_type": "",
+   "rule_text": "At the beginning of your end step, each opponent loses 1 life for each creature card in your graveyard.\nWhen a legendary creature you control dies, draw two cards.",
+   "rarity": "rare",
+   "tags": [
+    "villain",
+    "drain",
+    "draw"
+   ]
+  },
+  {
+   "name": "Unrivaled Genius",
+   "casting_cost": "3U",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "When CARDNAME enters, look at the top five cards of your library. Put two of them into your hand and the rest on the bottom of your library in any order.",
+   "rarity": "rare",
+   "tags": [
+    "genius",
+    "human",
+    "draw"
+   ],
+   "power": "2",
+   "toughness": "3"
+  },
+  {
+   "name": "Gentle Giant",
+   "casting_cost": "4G",
+   "super_type": "Creature",
+   "sub_type": "Giant",
+   "rule_text": "Reach\nPrevent all damage that would be dealt to other creatures you control by sources your opponents control.",
+   "rarity": "uncommon",
+   "tags": [
+    "giant",
+    "protection"
+   ],
+   "power": "4",
+   "toughness": "6"
+  },
+  {
+   "name": "Cold-Eyed Assassin",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Human Assassin",
+   "rule_text": "Flash\nDeathtouch\nWhen CARDNAME enters, target creature an opponent controls gets -1/-1 until end of turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "assassin",
+    "human",
+    "removal"
+   ],
+   "power": "2",
+   "toughness": "1"
+  },
+  {
+   "name": "Hot-Blooded Delinquent",
+   "casting_cost": "R",
+   "super_type": "Creature",
+   "sub_type": "Human Rogue",
+   "rule_text": "Haste\nCARDNAME attacks each combat if able.\nWhenever CARDNAME attacks, it deals 1 damage to defending player.",
+   "rarity": "common",
+   "tags": [
+    "delinquent",
+    "human",
+    "burn"
+   ],
+   "power": "2",
+   "toughness": "1"
+  },
+  {
+   "name": "Mysterious Masked Ally",
+   "casting_cost": "2WU",
+   "super_type": "Creature",
+   "sub_type": "Human Ninja",
+   "rule_text": "Ninjutsu {1}{U}\nWhenever CARDNAME deals combat damage to a player, exile up to one target nonland permanent that player controls until CARDNAME leaves the battlefield.",
+   "rarity": "rare",
+   "tags": [
+    "masked",
+    "ninja",
+    "removal"
+   ],
+   "power": "3",
+   "toughness": "2"
+  },
+  {
+   "name": "Ancient Sealed Evil",
+   "casting_cost": "6BB",
+   "super_type": "Legendary Creature",
+   "sub_type": "Demon",
+   "rule_text": "Flying, trample\nCARDNAME enters with four oblivion counters on it. It can't attack or block while it has an oblivion counter on it.\nAt the beginning of your upkeep, remove an oblivion counter from CARDNAME.",
+   "rarity": "mythic rare",
+   "tags": [
+    "villain",
+    "demon",
+    "finisher"
+   ],
+   "power": "9",
+   "toughness": "9"
+  },
+  {
+   "name": "Power Unleashed",
+   "casting_cost": "XRR",
+   "super_type": "Instant",
+   "sub_type": "",
+   "rule_text": "Target creature you control gets +X/+0 and gains trample until end of turn. If X is 5 or more, untap it.",
+   "rarity": "uncommon",
+   "tags": [
+    "transformation",
+    "trick",
+    "finisher"
+   ]
+  }
+ ]
+}

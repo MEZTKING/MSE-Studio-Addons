@@ -1,0 +1,19 @@
+{
+  "id": "more-formats",
+  "name": "More formats",
+  "version": "1.0.0",
+  "kind": "formats",
+  "description": "Six more deck formats to choose on the Deck page and in the New deck window: Duel Commander, PreDH, Premodern, Penny Dreadful, Historic and Timeless – their deck size, copies, life and which real cards are allowed (Scryfall's lists). Make your own under My formats.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/more-formats",
+  "license": "CC0-1.0",
+  "min_app_version": "0.25.0",
+  "tags": [
+    "formats",
+    "commander",
+    "constructed"
+  ],
+  "formats": [
+    "formats/more-formats.json"
+  ]
+}

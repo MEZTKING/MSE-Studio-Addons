@@ -1,0 +1,41 @@
+{
+  "id": "more-example-cards",
+  "name": "More example cards",
+  "version": "1.0.0",
+  "kind": "cards",
+  "description": "21 more lists for Card ideas – 407 cards of our own: decks of a creature type (Vampires, Zombies, Elves, Goblins, Angels, Merfolk, Knights, Beasts), play styles (spells, +1/+1 counters, artifacts, enchantments, graveyard, life gain, tokens, poison, lands, control), two-colour pairs, planeswalkers and tokens to print. Each has commanders and the cards a deck of its kind needs.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/more-example-cards",
+  "license": "CC0-1.0",
+  "min_app_version": "0.11.0",
+  "tags": [
+    "commander",
+    "typal",
+    "archetypes",
+    "tokens",
+    "planeswalkers"
+  ],
+  "cards": [
+    "lists/vampire_court.json",
+    "lists/zombie_horde.json",
+    "lists/elf_grove.json",
+    "lists/goblin_warband.json",
+    "lists/angels_and_spirits.json",
+    "lists/merfolk_and_wizards.json",
+    "lists/knights_and_soldiers.json",
+    "lists/beasts_and_dinosaurs.json",
+    "lists/spellslinger.json",
+    "lists/plus_one_counters.json",
+    "lists/artifacts_and_treasure.json",
+    "lists/enchantments_and_auras.json",
+    "lists/graveyard_and_reanimation.json",
+    "lists/lifegain_and_drain.json",
+    "lists/tokens_go_wide.json",
+    "lists/poison_and_proliferate.json",
+    "lists/lands_and_landfall.json",
+    "lists/control_toolbox.json",
+    "lists/two_colour_pairs.json",
+    "lists/planeswalkers.json",
+    "lists/token_cards.json"
+  ]
+}

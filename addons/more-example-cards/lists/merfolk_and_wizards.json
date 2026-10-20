@@ -1,0 +1,302 @@
+{
+ "name": "Merfolk and wizards",
+ "description": "Merfolk and Wizards in blue, green and red: card draw, counterspells, creatures that are hard to block and spells that reward casting instants.",
+ "group": "Creature types",
+ "cards": [
+  {
+   "name": "Maerith, Current-Speaker",
+   "casting_cost": "1GU",
+   "super_type": "Legendary Creature",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "Whenever you cast an instant or sorcery spell, put a +1/+1 counter on target Merfolk or Wizard you control.\nCreatures you control with +1/+1 counters on them can't be blocked by creatures with power 2 or less.",
+   "flavor_text": "\"Listen to the water. It always knows the way through.\"",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "merfolk",
+    "blue",
+    "green",
+    "commander",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Calder Vash, Storm-Lettered",
+   "casting_cost": "2UR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "Whenever you cast an instant or sorcery spell, CARDNAME deals 1 damage to each opponent.\nAt the beginning of your end step, if you've cast two or more instant and/or sorcery spells this turn, draw a card.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "wizard",
+    "blue",
+    "red",
+    "commander",
+    "draw"
+   ]
+  },
+  {
+   "name": "Reefcaller Hierophant",
+   "casting_cost": "1UU",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "Other Merfolk and Wizards you control get +1/+1.\nWhenever you cast an instant spell, scry 1.",
+   "flavor_text": "Her call carries from the deepest trench to the highest tower.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "merfolk",
+    "wizard",
+    "blue",
+    "anthem",
+    "typal"
+   ]
+  },
+  {
+   "name": "Shoalborn Apprentice",
+   "casting_cost": "U",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "Whenever you cast an instant or sorcery spell, CARDNAME can't be blocked this turn.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "merfolk",
+    "wizard",
+    "blue",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Kelpbed Forager",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Druid",
+   "rule_text": "When CARDNAME enters, scry 1.\n{T}: Add {G} or {U}.",
+   "flavor_text": "The tide brings gifts to those who wait at the shore.",
+   "power": "1",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "merfolk",
+    "green",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Cinderscript Novice",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "Prowess\nWhen CARDNAME enters, you may discard a card. If you do, draw a card.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "wizard",
+    "red",
+    "draw"
+   ]
+  },
+  {
+   "name": "Riptide Interrupter",
+   "casting_cost": "1UU",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "Flash\nWhen CARDNAME enters, counter up to one target spell unless its controller pays {2}.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "merfolk",
+    "wizard",
+    "blue",
+    "counter"
+   ]
+  },
+  {
+   "name": "Brinedeep Pathfinder",
+   "casting_cost": "1GU",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Scout",
+   "rule_text": "Ward {1}\nWhenever you cast an instant spell, put a +1/+1 counter on CARDNAME.\nCARDNAME can't be blocked as long as it has two or more +1/+1 counters on it.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "merfolk",
+    "blue",
+    "green",
+    "evasion",
+    "counters"
+   ]
+  },
+  {
+   "name": "Emberquill Scholar",
+   "casting_cost": "2R",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "When CARDNAME enters, it deals damage equal to the number of Wizards you control to target creature or planeswalker an opponent controls.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "wizard",
+    "red",
+    "removal",
+    "burn",
+    "typal"
+   ]
+  },
+  {
+   "name": "Deepwater Lorekeeper",
+   "casting_cost": "3U",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "When CARDNAME enters, draw two cards, then discard a card.",
+   "flavor_text": "What sinks is never lost. It is only waiting to be read.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "common",
+   "tags": [
+    "merfolk",
+    "wizard",
+    "blue",
+    "draw"
+   ]
+  },
+  {
+   "name": "Reedmarsh Wayfinder",
+   "casting_cost": "3G",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Shaman",
+   "rule_text": "When CARDNAME enters, search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "merfolk",
+    "green",
+    "ramp",
+    "landsearch"
+   ]
+  },
+  {
+   "name": "Glyphstorm Archmage",
+   "casting_cost": "3UR",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "Ward {2}\nWhenever you cast your first instant or sorcery spell each turn, copy that spell. You may choose new targets for the copy.",
+   "flavor_text": "Every word she speaks, the storm repeats.",
+   "power": "3",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "wizard",
+    "blue",
+    "red",
+    "copy"
+   ]
+  },
+  {
+   "name": "Tidebreaker Matriarch",
+   "casting_cost": "4GU",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Shaman",
+   "rule_text": "Trample\nWhen CARDNAME enters, put a +1/+1 counter on each other Merfolk you control. Merfolk you control can't be blocked this turn.",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "rare",
+   "tags": [
+    "merfolk",
+    "green",
+    "blue",
+    "counters",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Refusal of the Shoals",
+   "casting_cost": "1U",
+   "super_type": "Kindred Instant",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "Counter target spell unless its controller pays {X}, where X is the number of Merfolk and/or Wizards you control.",
+   "rarity": "uncommon",
+   "tags": [
+    "merfolk",
+    "wizard",
+    "blue",
+    "counter",
+    "typal"
+   ]
+  },
+  {
+   "name": "Lessons of the Undertow",
+   "casting_cost": "2U",
+   "super_type": "Instant",
+   "rule_text": "Draw two cards. If you've cast another instant or sorcery spell this turn, draw three cards instead.",
+   "flavor_text": "The deep teaches patience first, and everything else after.",
+   "rarity": "common",
+   "tags": [
+    "blue",
+    "draw"
+   ]
+  },
+  {
+   "name": "Arcing Glyphfire",
+   "casting_cost": "1R",
+   "super_type": "Instant",
+   "rule_text": "CARDNAME deals 2 damage to any target. If you control a Wizard, CARDNAME deals 3 damage instead.",
+   "rarity": "common",
+   "tags": [
+    "wizard",
+    "red",
+    "burn",
+    "removal"
+   ]
+  },
+  {
+   "name": "Swell of the Shallows",
+   "casting_cost": "2G",
+   "super_type": "Instant",
+   "rule_text": "Put a +1/+1 counter on each Merfolk and each Wizard you control. Those creatures gain hexproof until end of turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "merfolk",
+    "green",
+    "counters",
+    "protection",
+    "trick"
+   ]
+  },
+  {
+   "name": "Codex of the Drowned Spires",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "rule_text": "Instant and sorcery spells you cast cost {1} less to cast as long as you control a Wizard.\n{2}, {T}: Draw a card, then discard a card.",
+   "rarity": "rare",
+   "tags": [
+    "wizard",
+    "draw",
+    "ramp",
+    "typal"
+   ]
+  },
+  {
+   "name": "Hidden Reef Passage",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{2}{U}, {T}: Target Merfolk or Wizard you control can't be blocked this turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "merfolk",
+    "wizard",
+    "evasion"
+   ]
+  }
+ ]
+}

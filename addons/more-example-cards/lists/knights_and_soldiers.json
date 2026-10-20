@@ -1,0 +1,294 @@
+{
+ "name": "Knights and soldiers",
+ "description": "Knights and Soldiers in white, red and black: first strike, equipment, anthems and plenty of Soldier tokens.",
+ "group": "Creature types",
+ "cards": [
+  {
+   "name": "Dame Kerrowyn of the Burning Lance",
+   "casting_cost": "2RW",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "First strike\nEquip abilities you activate cost {1} less to activate.\nWhenever one or more equipped creatures you control attack, create a 1/1 white Soldier creature token.",
+   "flavor_text": "\"Ride with me, and bring every blade you own.\"",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "mythic rare",
+   "tags": [
+    "knight",
+    "white",
+    "red",
+    "commander",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Brisca Grimwarden, Iron Muster",
+   "casting_cost": "2WB",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "Vigilance\nAt the beginning of combat on your turn, create a 1/1 white Soldier creature token.\nWhenever another Knight or Soldier you control dies, each opponent loses 1 life and you gain 1 life.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "soldier",
+    "white",
+    "black",
+    "commander",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Lord-Marshal of the Twin Keeps",
+   "casting_cost": "2WW",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "First strike\nOther Knights and Soldiers you control get +1/+1.",
+   "flavor_text": "Two castles, one banner, no retreat.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "knight",
+    "soldier",
+    "white",
+    "anthem",
+    "typal"
+   ]
+  },
+  {
+   "name": "Squire of the Ashen Road",
+   "casting_cost": "W",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "As long as CARDNAME is equipped, it has first strike.",
+   "flavor_text": "He polishes another's armour today and dreams of his own.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "knight",
+    "white"
+   ]
+  },
+  {
+   "name": "Gloomhelm Errant",
+   "casting_cost": "1B",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "Menace\nWhen CARDNAME dies, each opponent loses 1 life and you gain 1 life.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "knight",
+    "black",
+    "drain"
+   ]
+  },
+  {
+   "name": "Muster-Horn Recruiter",
+   "casting_cost": "1W",
+   "super_type": "Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "When CARDNAME enters, create a 1/1 white Soldier creature token.",
+   "flavor_text": "One blast of the horn, and the whole village marches.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "soldier",
+    "white",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Ironcinder Lancer",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "First strike\nWhenever CARDNAME attacks, if it's equipped, it gets +2/+0 until end of turn.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "knight",
+    "red"
+   ]
+  },
+  {
+   "name": "Rampart Sergeant",
+   "casting_cost": "2W",
+   "super_type": "Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "When CARDNAME enters, create a 1/1 white Soldier creature token.\nSoldier tokens you control have vigilance.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "soldier",
+    "white",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Blackforge Reaver",
+   "casting_cost": "1BR",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "First strike, menace\nWhen CARDNAME enters, attach up to one target Equipment you control to it.",
+   "flavor_text": "Its blade was forged in a fire that never goes out.",
+   "power": "3",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "knight",
+    "black",
+    "red"
+   ]
+  },
+  {
+   "name": "Dawnmarch Cavalier",
+   "casting_cost": "3W",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "Vigilance\nWhenever CARDNAME attacks, other attacking Knights and Soldiers you control get +1/+0 until end of turn.",
+   "power": "3",
+   "toughness": "4",
+   "rarity": "uncommon",
+   "tags": [
+    "knight",
+    "white",
+    "anthem"
+   ]
+  },
+  {
+   "name": "Headsman of the Hollow Keep",
+   "casting_cost": "2BB",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "Menace\nWhen CARDNAME enters, each opponent sacrifices a creature of their choice.",
+   "power": "3",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "knight",
+    "black",
+    "removal",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Warhorn Battlemaster",
+   "casting_cost": "4R",
+   "super_type": "Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "Haste\nWhen CARDNAME enters, create two 1/1 red Soldier creature tokens with haste.",
+   "flavor_text": "\"Charge now. Count the bruises later.\"",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "soldier",
+    "red",
+    "tokens"
+   ]
+  },
+  {
+   "name": "High Paladin of the Seventh Gate",
+   "casting_cost": "5WW",
+   "super_type": "Creature",
+   "sub_type": "Human Knight",
+   "rule_text": "First strike, vigilance, lifelink\nOther Knights and Soldiers you control have first strike.",
+   "power": "6",
+   "toughness": "6",
+   "rarity": "mythic rare",
+   "tags": [
+    "knight",
+    "white",
+    "finisher",
+    "typal"
+   ]
+  },
+  {
+   "name": "Sound the Iron Horn",
+   "casting_cost": "2W",
+   "super_type": "Instant",
+   "rule_text": "Create two 1/1 white Soldier creature tokens. Creatures you control get +1/+0 until end of turn.",
+   "rarity": "common",
+   "tags": [
+    "soldier",
+    "white",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Volley of the Hundred Spears",
+   "casting_cost": "2R",
+   "super_type": "Instant",
+   "rule_text": "CARDNAME deals X damage to target creature or planeswalker, where X is the number of Knights and Soldiers you control.",
+   "rarity": "uncommon",
+   "tags": [
+    "knight",
+    "soldier",
+    "red",
+    "removal",
+    "burn"
+   ]
+  },
+  {
+   "name": "Sever the Oath",
+   "casting_cost": "1B",
+   "super_type": "Instant",
+   "rule_text": "Target creature gets -2/-2 until end of turn. If you control an equipped creature, it gets -4/-4 until end of turn instead.",
+   "flavor_text": "A broken promise cuts deeper than any sword.",
+   "rarity": "common",
+   "tags": [
+    "black",
+    "removal"
+   ]
+  },
+  {
+   "name": "Unbroken Shieldwall",
+   "casting_cost": "2W",
+   "super_type": "Instant",
+   "rule_text": "Knights and Soldiers you control gain first strike and indestructible until end of turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "knight",
+    "soldier",
+    "white",
+    "protection",
+    "trick"
+   ]
+  },
+  {
+   "name": "Pledged Greatblade",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature gets +2/+0 and has first strike.\nWhenever a Knight or Soldier you control enters, you may attach CARDNAME to it.\nEquip {2}",
+   "rarity": "uncommon",
+   "tags": [
+    "knight",
+    "soldier",
+    "typal"
+   ]
+  },
+  {
+   "name": "Standard of the Iron Pact",
+   "casting_cost": "2W",
+   "super_type": "Enchantment",
+   "rule_text": "Knights and Soldiers you control get +1/+1.\nAt the beginning of your end step, if you attacked with three or more creatures this turn, create a 1/1 white Soldier creature token.",
+   "flavor_text": "Where it flies, no line breaks.",
+   "rarity": "rare",
+   "tags": [
+    "knight",
+    "soldier",
+    "white",
+    "anthem",
+    "tokens"
+   ]
+  }
+ ]
+}

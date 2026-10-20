@@ -1,0 +1,19 @@
+{
+  "id": "dragon-cards",
+  "name": "Dragon cards",
+  "version": "1.0.0",
+  "kind": "cards",
+  "description": "Twelve dragon ideas in every colour, with a legendary dragon commander, ramp for dragon decks and dragon tokens.",
+  "author": "MEZTKING",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/dragon-cards",
+  "license": "CC0-1.0",
+  "min_app_version": "0.11.0",
+  "tags": [
+    "dragons",
+    "tribal",
+    "commander"
+  ],
+  "cards": [
+    "lists/dragon-cards.json"
+  ]
+}

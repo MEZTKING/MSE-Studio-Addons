@@ -1,0 +1,68 @@
+[
+  {
+    "key": "duel-commander",
+    "name": "Duel Commander",
+    "size": 100,
+    "exact": true,
+    "copies": 1,
+    "commander": "commander",
+    "life": 20,
+    "legality": "duel",
+    "about": "Commander for two players at 20 life, with its own ban list."
+  },
+  {
+    "key": "predh",
+    "name": "PreDH",
+    "size": 100,
+    "exact": true,
+    "copies": 1,
+    "commander": "commander",
+    "life": 40,
+    "legality": "predh",
+    "about": "Commander with older cards only – games like Commander used to play."
+  },
+  {
+    "key": "premodern",
+    "name": "Premodern",
+    "size": 60,
+    "exact": false,
+    "copies": 4,
+    "sideboard": 15,
+    "life": 20,
+    "legality": "premodern",
+    "about": "Cards from the years before Modern's sets, up to four of each."
+  },
+  {
+    "key": "penny-dreadful",
+    "name": "Penny Dreadful",
+    "size": 60,
+    "exact": false,
+    "copies": 4,
+    "sideboard": 15,
+    "life": 20,
+    "legality": "penny",
+    "about": "Only the cheapest cards online, up to four of each – the list changes each season."
+  },
+  {
+    "key": "historic",
+    "name": "Historic",
+    "size": 60,
+    "exact": false,
+    "copies": 4,
+    "sideboard": 15,
+    "life": 20,
+    "legality": "historic",
+    "about": "Arena's format with every card added to Arena, up to four of each."
+  },
+  {
+    "key": "timeless",
+    "name": "Timeless",
+    "size": 60,
+    "exact": false,
+    "copies": 4,
+    "sideboard": 15,
+    "life": 20,
+    "legality": "timeless",
+    "about": "Arena's format with every card ever on Arena, a short ban list and restricted cards."
+  }
+]

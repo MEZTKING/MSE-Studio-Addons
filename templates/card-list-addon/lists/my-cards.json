@@ -1,0 +1,26 @@
+{
+  "name": "My cards",
+  "description": "Shown above the list in Card ideas → Example cards.",
+  "cards": [
+    {
+      "name": "Example Knight",
+      "casting_cost": "1W",
+      "super_type": "Creature",
+      "sub_type": "Human Knight",
+      "rule_text": "Vigilance\nWhen CARDNAME enters, you gain 2 life.",
+      "flavor_text": "\"For the realm.\"",
+      "power": "2",
+      "toughness": "2",
+      "rarity": "common",
+      "tags": ["knight", "lifegain"]
+    },
+    {
+      "name": "Example Insight",
+      "casting_cost": "2U",
+      "super_type": "Instant",
+      "rule_text": "Draw two cards.",
+      "rarity": "common",
+      "tags": ["draw"]
+    }
+  ]
+}

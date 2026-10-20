@@ -1,0 +1,285 @@
+{
+ "name": "Artifacts and treasure",
+ "description": "Colourless, blue and red cards that make Treasure and Clues, mana rocks, constructs that grow with every artifact you have, and ways to spend it all.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Pell Brassgrin, Harbour Captain",
+   "casting_cost": "2UR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Goblin Pirate",
+   "rule_text": "At the beginning of combat on your turn, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nWhenever you sacrifice an artifact, CARDNAME deals 1 damage to each opponent.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "commander",
+    "treasure",
+    "artifacts",
+    "goblin",
+    "pirate"
+   ]
+  },
+  {
+   "name": "Iselde, Coil Artificer",
+   "casting_cost": "2UR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Artificer",
+   "rule_text": "Artifact spells you cast cost {1} less to cast.\nAt the beginning of your end step, if you've cast an artifact spell this turn, create a 0/0 colorless Construct artifact creature token with \"This token gets +1/+1 for each artifact you control.\"",
+   "flavor_text": "\"Give me a box of scraps and an evening.\"",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "commander",
+    "artifacts",
+    "construct",
+    "tokens",
+    "artificer"
+   ]
+  },
+  {
+   "name": "Coin-Pocket Goblin",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Goblin Rogue",
+   "rule_text": "Haste\nWhenever CARDNAME deals combat damage to a player, create a Treasure token.",
+   "flavor_text": "Finders keepers. Losers, also keepers.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "treasure",
+    "red",
+    "goblin",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Wreck-Diver Salvager",
+   "casting_cost": "2U",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Pirate",
+   "rule_text": "When CARDNAME enters, create a Treasure token.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "treasure",
+    "blue",
+    "merfolk",
+    "pirate",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Lamplit Inquirer",
+   "casting_cost": "1U",
+   "super_type": "Creature",
+   "sub_type": "Human Detective",
+   "rule_text": "When CARDNAME enters, investigate. (Create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+   "flavor_text": "Every mystery starts with a small light.",
+   "power": "1",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "clues",
+    "blue",
+    "detective",
+    "draw"
+   ]
+  },
+  {
+   "name": "Archive of Small Secrets",
+   "casting_cost": "1U",
+   "super_type": "Artifact",
+   "rule_text": "When CARDNAME enters, investigate.\nActivated abilities of Clues you control cost {1} less to activate.",
+   "rarity": "uncommon",
+   "tags": [
+    "clues",
+    "artifacts",
+    "blue",
+    "draw"
+   ]
+  },
+  {
+   "name": "Coppercoil Dynamo",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add {C}.\n{T}: Add {C}{C}. Spend this mana only to cast artifact spells or activate abilities of artifacts.",
+   "rarity": "common",
+   "tags": [
+    "artifacts",
+    "manarock",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Moneylender's Scale",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add one mana of any color.\n{2}, {T}: Create a Treasure token.",
+   "flavor_text": "It always tips a little in the lender's favour.",
+   "rarity": "uncommon",
+   "tags": [
+    "treasure",
+    "manarock",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Pickpocket's Gauntlet",
+   "casting_cost": "1",
+   "super_type": "Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature gets +2/+0.\nWhenever equipped creature deals combat damage to a player, create a Treasure token.\nEquip {2}",
+   "rarity": "uncommon",
+   "tags": [
+    "treasure",
+    "artifacts",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Rivet-Stack Construct",
+   "casting_cost": "4",
+   "super_type": "Artifact Creature",
+   "sub_type": "Construct",
+   "rule_text": "Trample\nCARDNAME gets +1/+1 for each other artifact you control.",
+   "flavor_text": "Built from whatever was lying about.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "artifacts",
+    "construct",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Clockwork Nursery",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "rule_text": "{2}, {T}: Create a 1/1 colorless Thopter artifact creature token with flying.",
+   "rarity": "uncommon",
+   "tags": [
+    "artifacts",
+    "tokens",
+    "thopter"
+   ]
+  },
+  {
+   "name": "Slag-Pit Slinger",
+   "casting_cost": "2R",
+   "super_type": "Creature",
+   "sub_type": "Goblin Artificer",
+   "rule_text": "{1}, Sacrifice an artifact: CARDNAME deals 2 damage to any target. Activate only once each turn.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "artifacts",
+    "red",
+    "goblin",
+    "removal",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Spent Fuse",
+   "casting_cost": "R",
+   "super_type": "Instant",
+   "rule_text": "As an additional cost to cast this spell, you may sacrifice an artifact.\nCARDNAME deals 2 damage to target creature or planeswalker. If you sacrificed an artifact this way, it deals 4 damage instead.",
+   "rarity": "common",
+   "tags": [
+    "artifacts",
+    "red",
+    "removal",
+    "burn"
+   ]
+  },
+  {
+   "name": "Gearlock Denial",
+   "casting_cost": "1U",
+   "super_type": "Instant",
+   "rule_text": "Counter target spell unless its controller pays {X}, where X is the number of artifacts you control.",
+   "rarity": "uncommon",
+   "tags": [
+    "artifacts",
+    "blue",
+    "counter"
+   ]
+  },
+  {
+   "name": "Sift the Workbench",
+   "casting_cost": "2U",
+   "super_type": "Instant",
+   "rule_text": "Draw two cards. If you control three or more artifacts, draw three cards instead.",
+   "rarity": "uncommon",
+   "tags": [
+    "artifacts",
+    "blue",
+    "draw"
+   ]
+  },
+  {
+   "name": "Raid the Counting House",
+   "casting_cost": "2R",
+   "super_type": "Sorcery",
+   "rule_text": "Create three Treasure tokens. Then draw a card if you control five or more artifacts.",
+   "rarity": "uncommon",
+   "tags": [
+    "treasure",
+    "red",
+    "ramp",
+    "draw"
+   ]
+  },
+  {
+   "name": "Gildspark Wyrm",
+   "casting_cost": "4RR",
+   "super_type": "Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying\nWhen CARDNAME enters, create two Treasure tokens.\nWhenever you sacrifice a Treasure, CARDNAME deals 1 damage to any target.",
+   "power": "4",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "treasure",
+    "red",
+    "dragon",
+    "finisher",
+    "burn"
+   ]
+  },
+  {
+   "name": "Hoardbound Colossus",
+   "casting_cost": "8",
+   "super_type": "Artifact Creature",
+   "sub_type": "Construct",
+   "rule_text": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nTrample\nWhenever CARDNAME attacks, create a Treasure token.",
+   "power": "7",
+   "toughness": "7",
+   "rarity": "mythic rare",
+   "tags": [
+    "artifacts",
+    "construct",
+    "finisher",
+    "treasure"
+   ]
+  },
+  {
+   "name": "Brine-Rust Wharf",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped.\nWhen CARDNAME enters, create a Treasure token.\n{T}: Add {U} or {R}.",
+   "flavor_text": "Half the cargo sank. The other half is ours.",
+   "rarity": "rare",
+   "tags": [
+    "treasure",
+    "ramp",
+    "blue",
+    "red"
+   ]
+  }
+ ]
+}

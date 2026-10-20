@@ -1,0 +1,276 @@
+{
+ "name": "Tokens: go wide",
+ "description": "Lots of small creatures at once. White, green and red cards that make tokens, pump the whole team, help pay for big spells and keep your board safe from wipes.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Aldine, Keeper of the Commons",
+   "casting_cost": "2GW",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Druid",
+   "rule_text": "At the beginning of combat on your turn, create a 1/1 green and white Citizen creature token.\n{1}, Tap three untapped creature tokens you control: Put a +1/+1 counter on each creature you control. Activate only once each turn.",
+   "flavor_text": "Her door is never shut, and her table is never empty.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "tokens",
+    "counters",
+    "human",
+    "commander"
+   ]
+  },
+  {
+   "name": "Rovanna, Drum of the Long March",
+   "casting_cost": "RGW",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Warrior",
+   "rule_text": "Vigilance, haste\nWhenever you attack with three or more creatures, create a 1/1 red Warrior creature token that's tapped and attacking. Then creatures you control get +1/+0 until end of turn.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "mythic rare",
+   "tags": [
+    "tokens",
+    "anthem",
+    "warrior",
+    "commander"
+   ]
+  },
+  {
+   "name": "Hearthguard Sergeant",
+   "casting_cost": "2W",
+   "super_type": "Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "Whenever you attack with two or more creatures, create a 1/1 white Soldier creature token.",
+   "flavor_text": "\"Two of us went out. Three of us came back. That's how it works here.\"",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "tokens",
+    "soldier",
+    "white"
+   ]
+  },
+  {
+   "name": "Hedgerow Sproutcaller",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "When CARDNAME enters, create two 1/1 green Saproling creature tokens.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "tokens",
+    "elf",
+    "green"
+   ]
+  },
+  {
+   "name": "Harvest-Day Foreman",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Human Peasant",
+   "rule_text": "{T}: Add {G}.\nTap two untapped creature tokens you control: Add one mana of any color.",
+   "power": "1",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "ramp",
+    "tokens",
+    "human",
+    "green"
+   ]
+  },
+  {
+   "name": "Bonfire Instigator",
+   "casting_cost": "2R",
+   "super_type": "Creature",
+   "sub_type": "Goblin Shaman",
+   "rule_text": "Whenever a creature token you control dies, CARDNAME deals 1 damage to any target.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "burn",
+    "sacrifice",
+    "goblin",
+    "red"
+   ]
+  },
+  {
+   "name": "Many-Rooted Guardian",
+   "casting_cost": "5GG",
+   "super_type": "Creature",
+   "sub_type": "Treefolk",
+   "rule_text": "Convoke\nTrample\nOther creatures you control get +1/+1.",
+   "flavor_text": "Every sapling in the village calls it grandmother.",
+   "power": "6",
+   "toughness": "6",
+   "rarity": "rare",
+   "tags": [
+    "anthem",
+    "finisher",
+    "treefolk",
+    "green"
+   ]
+  },
+  {
+   "name": "Hearthguard Muster",
+   "casting_cost": "3WW",
+   "super_type": "Sorcery",
+   "rule_text": "Convoke\nCreate four 1/1 white Soldier creature tokens with vigilance.",
+   "rarity": "uncommon",
+   "tags": [
+    "tokens",
+    "soldier",
+    "white"
+   ]
+  },
+  {
+   "name": "Stir the Tavern Crowd",
+   "casting_cost": "2R",
+   "super_type": "Sorcery",
+   "rule_text": "Create X 1/1 red Goblin creature tokens, where X is 1 plus the number of opponents you have. They gain haste until end of turn.",
+   "flavor_text": "One shout, one spilt drink, and the whole room is on its feet.",
+   "rarity": "common",
+   "tags": [
+    "tokens",
+    "goblin",
+    "red"
+   ]
+  },
+  {
+   "name": "Stampede at the Gates",
+   "casting_cost": "3GG",
+   "super_type": "Sorcery",
+   "rule_text": "Convoke\nCreatures you control get +2/+2 and gain trample until end of turn.",
+   "rarity": "rare",
+   "tags": [
+    "finisher",
+    "anthem",
+    "green"
+   ]
+  },
+  {
+   "name": "Chorus of the Crowded Field",
+   "casting_cost": "2WW",
+   "super_type": "Enchantment",
+   "rule_text": "Creatures you control get +1/+1.\nAs long as you control ten or more creatures, creatures you control have vigilance and trample.",
+   "rarity": "rare",
+   "tags": [
+    "anthem",
+    "tokens",
+    "white"
+   ]
+  },
+  {
+   "name": "Festival of Open Doors",
+   "casting_cost": "2GW",
+   "super_type": "Enchantment",
+   "rule_text": "If one or more creature tokens would be created under your control, those tokens plus an additional 1/1 green and white Citizen creature token are created instead.",
+   "rarity": "rare",
+   "tags": [
+    "tokens",
+    "green",
+    "white"
+   ]
+  },
+  {
+   "name": "Welcome at Every Hearth",
+   "casting_cost": "2W",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever one or more creature tokens you control enter, draw a card. This ability triggers only once each turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "draw",
+    "tokens",
+    "white"
+   ]
+  },
+  {
+   "name": "Hammering War-Drums",
+   "casting_cost": "2R",
+   "super_type": "Enchantment",
+   "rule_text": "Creatures you control have haste.\nWhenever a creature token you control attacks, it gets +1/+0 until end of turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "anthem",
+    "tokens",
+    "red"
+   ]
+  },
+  {
+   "name": "Shieldwall of the Many",
+   "casting_cost": "2W",
+   "super_type": "Instant",
+   "rule_text": "Creatures you control gain indestructible until end of turn. If you control five or more creatures, draw a card.",
+   "flavor_text": "Alone, a shield. Together, a wall.",
+   "rarity": "uncommon",
+   "tags": [
+    "protection",
+    "draw",
+    "white"
+   ]
+  },
+  {
+   "name": "Hail of Thrown Stones",
+   "casting_cost": "1R",
+   "super_type": "Instant",
+   "rule_text": "CARDNAME deals damage to target creature or planeswalker equal to the number of creatures you control.",
+   "rarity": "uncommon",
+   "tags": [
+    "removal",
+    "burn",
+    "red"
+   ]
+  },
+  {
+   "name": "Encircled by the Crowd",
+   "casting_cost": "3W",
+   "super_type": "Instant",
+   "rule_text": "Convoke\nExile target creature or enchantment.",
+   "rarity": "uncommon",
+   "tags": [
+    "removal",
+    "white"
+   ]
+  },
+  {
+   "name": "Liora, Voice of the Gathered",
+   "casting_cost": "2GW",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Liora",
+   "rule_text": "+1: Create a 1/1 green and white Citizen creature token.\n−2: Creatures you control get +2/+2 until end of turn.\n−6: You get an emblem with \"Creature tokens you control get +2/+2 and have trample.\"",
+   "loyalty": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "tokens",
+    "anthem",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Gathering-Call Horn",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add {C}.\n{4}, {T}: Create a 1/1 white Soldier creature token.",
+   "rarity": "common",
+   "tags": [
+    "manarock",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Market Square of Many Roads",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{3}{G}{W}, {T}: Create two 1/1 green and white Citizen creature tokens. Activate only as a sorcery.",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "tokens"
+   ]
+  }
+ ]
+}

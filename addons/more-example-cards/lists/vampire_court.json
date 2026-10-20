@@ -1,0 +1,323 @@
+{
+ "name": "Vampire court",
+ "description": "Black, red and white Vampires that drain life, grow with +1/+1 counters and sacrifice their own for gain – with two commanders, a lord and the spells to back them up.",
+ "group": "Creature types",
+ "cards": [
+  {
+   "name": "Odrava, Matriarch of the Crimson Court",
+   "casting_cost": "1RWB",
+   "super_type": "Legendary Creature",
+   "sub_type": "Vampire Noble",
+   "rule_text": "Flying\nAt the beginning of your end step, if you gained life this turn, put a +1/+1 counter on each Vampire you control.\nWhenever another Vampire you control dies, each opponent loses 1 life.",
+   "flavor_text": "Her court never sleeps, and it is never hungry for long.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "mythic rare",
+   "tags": [
+    "vampire",
+    "black",
+    "commander",
+    "counters",
+    "drain"
+   ]
+  },
+  {
+   "name": "Vask, Heir of Embers",
+   "casting_cost": "2BR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Vampire Noble",
+   "rule_text": "Menace\nAt the beginning of combat on your turn, you may sacrifice another creature. If you do, put a +1/+1 counter on each Vampire you control.\nWhenever you sacrifice another Vampire, you draw a card and you lose 1 life.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "vampire",
+    "commander",
+    "sacrifice",
+    "counters",
+    "draw"
+   ]
+  },
+  {
+   "name": "Herald of the Scarlet Banquet",
+   "casting_cost": "1BB",
+   "super_type": "Creature",
+   "sub_type": "Vampire Cleric",
+   "rule_text": "Other Vampires you control get +1/+1.\n{1}{B}, Sacrifice another Vampire: Each opponent loses 2 life and you gain 2 life.",
+   "flavor_text": "Every guest is welcome. Few of them leave.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "vampire",
+    "black",
+    "anthem",
+    "typal",
+    "drain"
+   ]
+  },
+  {
+   "name": "Candle-Lit Fledgling",
+   "casting_cost": "B",
+   "super_type": "Creature",
+   "sub_type": "Vampire",
+   "rule_text": "Lifelink\nWhenever you gain life, put a +1/+1 counter on CARDNAME. This ability triggers only once each turn.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "vampire",
+    "black",
+    "lifegain",
+    "counters"
+   ]
+  },
+  {
+   "name": "Ember-Fanged Courier",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Vampire Rogue",
+   "rule_text": "Haste\nWhenever CARDNAME attacks, you may sacrifice another creature. If you do, put two +1/+1 counters on CARDNAME.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "vampire",
+    "red",
+    "sacrifice",
+    "counters"
+   ]
+  },
+  {
+   "name": "Duskchapel Acolyte",
+   "casting_cost": "1W",
+   "super_type": "Creature",
+   "sub_type": "Vampire Cleric",
+   "rule_text": "Lifelink\nWhen CARDNAME enters, put a +1/+1 counter on up to one other target Vampire you control.",
+   "flavor_text": "She lights the candles at sunset and puts them out at dawn.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "vampire",
+    "white",
+    "lifegain",
+    "counters"
+   ]
+  },
+  {
+   "name": "Collector of the Red Debt",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Vampire Noble",
+   "rule_text": "Whenever another creature you control dies, each opponent loses 1 life and you gain 1 life.",
+   "flavor_text": "Every debt is paid in the end. He only decides the currency.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "vampire",
+    "black",
+    "drain",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Vigil-Blade of the Red Court",
+   "casting_cost": "1RW",
+   "super_type": "Creature",
+   "sub_type": "Vampire Knight",
+   "rule_text": "Double strike\nWhenever another Vampire you control enters, put a +1/+1 counter on CARDNAME.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "vampire",
+    "red",
+    "white",
+    "counters",
+    "typal"
+   ]
+  },
+  {
+   "name": "Banquet Hall Steward",
+   "casting_cost": "3B",
+   "super_type": "Creature",
+   "sub_type": "Vampire",
+   "rule_text": "When CARDNAME enters, you may sacrifice another creature. If you do, draw two cards.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "vampire",
+    "black",
+    "sacrifice",
+    "draw"
+   ]
+  },
+  {
+   "name": "Cinder-Cloak Viscount",
+   "casting_cost": "3R",
+   "super_type": "Creature",
+   "sub_type": "Vampire Noble",
+   "rule_text": "Flying\nWhenever you sacrifice another creature, CARDNAME deals 1 damage to each opponent.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "vampire",
+    "red",
+    "evasion",
+    "sacrifice",
+    "burn"
+   ]
+  },
+  {
+   "name": "Pale Abbess of the Long Night",
+   "casting_cost": "3W",
+   "super_type": "Creature",
+   "sub_type": "Vampire Cleric",
+   "rule_text": "Flying, lifelink\nAt the beginning of your end step, if you gained 3 or more life this turn, create a 1/1 black Vampire creature token with lifelink.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "vampire",
+    "white",
+    "lifegain",
+    "tokens",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Elder of the Thirsting Dark",
+   "casting_cost": "4BB",
+   "super_type": "Creature",
+   "sub_type": "Vampire Noble",
+   "rule_text": "Flying\nWhen CARDNAME enters, each opponent loses 3 life and you gain 3 life.\nWhenever another Vampire you control dies, put a +1/+1 counter on CARDNAME.",
+   "flavor_text": "It has outlived every kingdom that tried to bury it.",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "mythic rare",
+   "tags": [
+    "vampire",
+    "black",
+    "finisher",
+    "drain",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Gallows-Hall Executioner",
+   "casting_cost": "3BR",
+   "super_type": "Creature",
+   "sub_type": "Vampire Warrior",
+   "rule_text": "Menace\nWhen CARDNAME enters, you may sacrifice another creature. When you do, destroy target creature an opponent controls.",
+   "power": "4",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "vampire",
+    "black",
+    "red",
+    "removal",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Feast at Midnight",
+   "casting_cost": "3B",
+   "super_type": "Sorcery",
+   "rule_text": "Each opponent loses X life and you gain X life, where X is the number of Vampires you control.",
+   "flavor_text": "The bells strike twelve, and the doors are locked from the inside.",
+   "rarity": "uncommon",
+   "tags": [
+    "vampire",
+    "black",
+    "drain",
+    "finisher",
+    "typal"
+   ]
+  },
+  {
+   "name": "Vow of the Red Court",
+   "casting_cost": "2W",
+   "super_type": "Instant",
+   "rule_text": "Put a +1/+1 counter on each Vampire you control. Vampires you control gain lifelink until end of turn.",
+   "rarity": "common",
+   "tags": [
+    "vampire",
+    "white",
+    "counters",
+    "trick",
+    "typal"
+   ]
+  },
+  {
+   "name": "Price of the Red Feast",
+   "casting_cost": "1B",
+   "super_type": "Instant",
+   "rule_text": "As an additional cost to cast this spell, sacrifice a creature.\nDestroy target creature or planeswalker. You gain life equal to the sacrificed creature's power.",
+   "rarity": "common",
+   "tags": [
+    "black",
+    "removal",
+    "sacrifice",
+    "lifegain"
+   ]
+  },
+  {
+   "name": "Toast to the Endless Night",
+   "casting_cost": "1R",
+   "super_type": "Instant",
+   "rule_text": "CARDNAME deals 3 damage to target creature or planeswalker. If you control a Vampire, you gain 2 life.",
+   "rarity": "common",
+   "tags": [
+    "red",
+    "removal",
+    "burn",
+    "lifegain"
+   ]
+  },
+  {
+   "name": "Goblet of the Scarlet Court",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add {W}, {B}, or {R}. Spend this mana only to cast a Vampire spell.\n{2}, {T}, Sacrifice a creature: You gain 2 life and draw a card.",
+   "rarity": "uncommon",
+   "tags": [
+    "vampire",
+    "manarock",
+    "sacrifice",
+    "draw"
+   ]
+  },
+  {
+   "name": "Night of Long Teeth",
+   "casting_cost": "2B",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever a Vampire you control deals combat damage to a player, put a +1/+1 counter on that Vampire.\nWhenever a Vampire you control dies, each opponent loses 1 life and you gain 1 life.",
+   "rarity": "rare",
+   "tags": [
+    "vampire",
+    "black",
+    "counters",
+    "drain",
+    "typal"
+   ]
+  },
+  {
+   "name": "Crimson Court Ballroom",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{T}: Add {W}, {B}, or {R}. Spend this mana only to cast a Vampire spell.",
+   "flavor_text": "The music never stops, and nobody remembers arriving.",
+   "rarity": "uncommon",
+   "tags": [
+    "vampire",
+    "white",
+    "black",
+    "red"
+   ]
+  }
+ ]
+}

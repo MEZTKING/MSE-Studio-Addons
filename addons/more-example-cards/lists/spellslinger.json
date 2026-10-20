@@ -1,0 +1,287 @@
+{
+ "name": "Spellslinger",
+ "description": "Cheap instants and sorceries in blue and red, with wizards that grow, burn or draw a card every time you cast one. Copy your favourite spells and get them back from the graveyard.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Vessa Quillfire, Storm Scholar",
+   "casting_cost": "1UR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "Whenever you cast an instant or sorcery spell, CARDNAME deals 1 damage to each opponent.\nWhenever you cast your second spell each turn, draw a card.",
+   "flavor_text": "Every lesson ends in thunder.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "commander",
+    "spells",
+    "wizard",
+    "burn",
+    "draw"
+   ]
+  },
+  {
+   "name": "Tobren of the Echo Tower",
+   "casting_cost": "2UR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Elemental Wizard",
+   "rule_text": "Prowess\nWhenever you cast your second instant or sorcery spell each turn, copy that spell. You may choose new targets for the copy.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "commander",
+    "spells",
+    "copy",
+    "wizard",
+    "elemental"
+   ]
+  },
+  {
+   "name": "Cinder Novice",
+   "casting_cost": "R",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "Whenever you cast an instant or sorcery spell, CARDNAME deals 1 damage to each opponent.",
+   "flavor_text": "Most of her notes are already on fire.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "spells",
+    "red",
+    "wizard",
+    "burn"
+   ]
+  },
+  {
+   "name": "Tidecall Adept",
+   "casting_cost": "1U",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "Whenever you cast your first instant or sorcery spell each turn, draw a card, then discard a card.",
+   "power": "1",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "spells",
+    "blue",
+    "merfolk",
+    "wizard",
+    "draw"
+   ]
+  },
+  {
+   "name": "Chalkdust Savant",
+   "casting_cost": "2U",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "Instant and sorcery spells you cast cost {1} less to cast.",
+   "flavor_text": "\"Shorter words, faster spells.\"",
+   "power": "1",
+   "toughness": "4",
+   "rarity": "uncommon",
+   "tags": [
+    "spells",
+    "blue",
+    "wizard",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Twinned Cadence",
+   "casting_cost": "1UR",
+   "super_type": "Instant",
+   "rule_text": "Copy target instant or sorcery spell you control. You may choose new targets for the copy.\nDraw a card.",
+   "rarity": "uncommon",
+   "tags": [
+    "spells",
+    "copy",
+    "draw",
+    "blue",
+    "red"
+   ]
+  },
+  {
+   "name": "Galeforge Drake",
+   "casting_cost": "3U",
+   "super_type": "Creature",
+   "sub_type": "Drake",
+   "rule_text": "Flying\nWhenever you cast an instant or sorcery spell, CARDNAME gets +1/+1 until end of turn and you scry 1.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "spells",
+    "blue",
+    "drake",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Kindling Conjurer",
+   "casting_cost": "3R",
+   "super_type": "Creature",
+   "sub_type": "Human Shaman",
+   "rule_text": "Whenever you cast an instant or sorcery spell, create a 1/1 red Elemental creature token.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "spells",
+    "red",
+    "shaman",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Ashpage Archivist",
+   "casting_cost": "3U",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "When CARDNAME enters, return up to one target instant or sorcery card from your graveyard to your hand.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "spells",
+    "blue",
+    "wizard",
+    "recursion"
+   ]
+  },
+  {
+   "name": "Study of Sparks",
+   "casting_cost": "2R",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever you cast an instant or sorcery spell, CARDNAME deals 1 damage to any target.\nAt the beginning of your end step, if you've cast three or more spells this turn, draw a card.",
+   "rarity": "rare",
+   "tags": [
+    "spells",
+    "red",
+    "burn",
+    "draw"
+   ]
+  },
+  {
+   "name": "Midnight Revision",
+   "casting_cost": "1U",
+   "super_type": "Instant",
+   "rule_text": "Draw a card. If you've cast another instant or sorcery spell this turn, draw two cards instead.",
+   "flavor_text": "One more page, then sleep. One more page…",
+   "rarity": "common",
+   "tags": [
+    "spells",
+    "blue",
+    "draw"
+   ]
+  },
+  {
+   "name": "Ember Flick",
+   "casting_cost": "R",
+   "super_type": "Instant",
+   "rule_text": "CARDNAME deals 2 damage to target creature or planeswalker. If you've cast another instant or sorcery spell this turn, it deals 3 damage instead.",
+   "flavor_text": "Small spark, short argument.",
+   "rarity": "common",
+   "tags": [
+    "spells",
+    "red",
+    "removal",
+    "burn"
+   ]
+  },
+  {
+   "name": "Quiet the Chorus",
+   "casting_cost": "1U",
+   "super_type": "Instant",
+   "rule_text": "Counter target spell with mana value 3 or less.\nScry 1.",
+   "flavor_text": "Not every spell deserves to be finished.",
+   "rarity": "uncommon",
+   "tags": [
+    "spells",
+    "blue",
+    "counter"
+   ]
+  },
+  {
+   "name": "Restless Rewrite",
+   "casting_cost": "1R",
+   "super_type": "Sorcery",
+   "rule_text": "Discard up to two cards, then draw that many cards plus one.",
+   "rarity": "common",
+   "tags": [
+    "spells",
+    "red",
+    "draw"
+   ]
+  },
+  {
+   "name": "Spellwright's Inkwell",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add {C}.\n{T}: Add two mana in any combination of {U} and/or {R}. Spend this mana only to cast instant or sorcery spells.",
+   "rarity": "uncommon",
+   "tags": [
+    "spells",
+    "ramp",
+    "manarock"
+   ]
+  },
+  {
+   "name": "Lantern of Twin Flames",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "rule_text": "{3}, {T}: When you next cast an instant or sorcery spell this turn, copy that spell. You may choose new targets for the copy.",
+   "rarity": "rare",
+   "tags": [
+    "spells",
+    "copy"
+   ]
+  },
+  {
+   "name": "Library Inferno",
+   "casting_cost": "4RR",
+   "super_type": "Sorcery",
+   "rule_text": "CARDNAME deals X damage to each opponent, where X is the number of instant and sorcery cards in your graveyard.",
+   "flavor_text": "Years of study, let out all at once.",
+   "rarity": "rare",
+   "tags": [
+    "spells",
+    "red",
+    "burn",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Scrollwing Dragon",
+   "casting_cost": "4RR",
+   "super_type": "Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying\nWhenever you cast an instant or sorcery spell, CARDNAME deals 2 damage to each opponent.",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "mythic rare",
+   "tags": [
+    "spells",
+    "red",
+    "dragon",
+    "finisher",
+    "burn"
+   ]
+  },
+  {
+   "name": "Lecture Hall Ruins",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped.\n{T}: Add {U} or {R}.\n{2}{U}{R}, {T}, Sacrifice CARDNAME: Return target instant or sorcery card from your graveyard to your hand.",
+   "flavor_text": "The lessons still echo, even without a roof.",
+   "rarity": "uncommon",
+   "tags": [
+    "spells",
+    "recursion",
+    "blue",
+    "red"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,314 @@
+{
+ "name": "Goblin warband",
+ "description": "Red and black Goblins with haste that swarm the board with tokens, throw themselves away for damage and follow a Goblin lord into battle.",
+ "group": "Creature types",
+ "cards": [
+  {
+   "name": "Gorvak Gutspark",
+   "casting_cost": "2BR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Goblin Warrior",
+   "rule_text": "Haste\nAt the beginning of combat on your turn, create a 1/1 red Goblin creature token. It gains haste until end of turn.\nWhenever another Goblin you control dies, CARDNAME deals 1 damage to each opponent.",
+   "flavor_text": "He never counts his warband. There are always more.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "mythic rare",
+   "tags": [
+    "goblin",
+    "commander",
+    "tokens",
+    "sacrifice",
+    "burn"
+   ]
+  },
+  {
+   "name": "Mother Hagga of the Spore Warren",
+   "casting_cost": "1BRG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Goblin Shaman",
+   "rule_text": "Sacrifice another Goblin: Add {B}, {R}, or {G}.\nAt the beginning of your end step, if a Goblin you controlled died this turn, create two 1/1 red Goblin creature tokens.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "goblin",
+    "commander",
+    "sacrifice",
+    "tokens",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Rabble-Rousing Warcaller",
+   "casting_cost": "1RR",
+   "super_type": "Creature",
+   "sub_type": "Goblin Warrior",
+   "rule_text": "Other Goblins you control get +1/+1.\nWhenever CARDNAME attacks, create a 1/1 red Goblin creature token that's tapped and attacking.",
+   "flavor_text": "Nobody listens to the plan. Everybody listens to the shouting.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "goblin",
+    "red",
+    "anthem",
+    "tokens",
+    "typal"
+   ]
+  },
+  {
+   "name": "Sparkfuse Runt",
+   "casting_cost": "R",
+   "super_type": "Creature",
+   "sub_type": "Goblin",
+   "rule_text": "Haste\nWhen CARDNAME dies, it deals 1 damage to any target.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "goblin",
+    "red",
+    "burn",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Gutter-Knife Sneak",
+   "casting_cost": "B",
+   "super_type": "Creature",
+   "sub_type": "Goblin Rogue",
+   "rule_text": "Menace\nWhen CARDNAME dies, each opponent loses 1 life.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "goblin",
+    "black",
+    "drain",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Tunnel-Horn Blower",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Goblin",
+   "rule_text": "When CARDNAME enters or dies, create a 1/1 red Goblin creature token.",
+   "flavor_text": "One blast on the horn, and the tunnels empty.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "goblin",
+    "red",
+    "tokens",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Pitfire Sapper",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Goblin",
+   "rule_text": "Haste\n{1}, Sacrifice CARDNAME: It deals 2 damage to target creature.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "goblin",
+    "red",
+    "removal",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Ashpit Bombardier",
+   "casting_cost": "2R",
+   "super_type": "Creature",
+   "sub_type": "Goblin Warrior",
+   "rule_text": "Haste\n{R}, Sacrifice another Goblin: CARDNAME deals 1 damage to any target. Scry 1.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "goblin",
+    "red",
+    "sacrifice",
+    "burn"
+   ]
+  },
+  {
+   "name": "Grimewick Fortune-Teller",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Goblin Warlock",
+   "rule_text": "Whenever another Goblin you control dies, scry 1.\n{2}{B}, Sacrifice a Goblin: Draw a card.",
+   "flavor_text": "She reads the future in the smoke, and it always says the same thing: more.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "goblin",
+    "black",
+    "draw",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Kettledrum Brute",
+   "casting_cost": "3R",
+   "super_type": "Creature",
+   "sub_type": "Goblin Berserker",
+   "rule_text": "Trample, haste\nWhen CARDNAME enters, other Goblins you control get +1/+0 and gain haste until end of turn.",
+   "power": "4",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "goblin",
+    "red",
+    "typal"
+   ]
+  },
+  {
+   "name": "Sewer-Grate Extortionist",
+   "casting_cost": "3B",
+   "super_type": "Creature",
+   "sub_type": "Goblin Rogue",
+   "rule_text": "Menace\nWhen CARDNAME enters, each opponent discards a card.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "goblin",
+    "black",
+    "discard"
+   ]
+  },
+  {
+   "name": "Wartrumpet of the Hundred Tunnels",
+   "casting_cost": "4R",
+   "super_type": "Creature",
+   "sub_type": "Goblin Warrior",
+   "rule_text": "When CARDNAME enters, create a 1/1 red Goblin creature token for each opponent you have. Goblins you control gain haste until end of turn.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "goblin",
+    "red",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Skullpile Overlord",
+   "casting_cost": "4BR",
+   "super_type": "Creature",
+   "sub_type": "Goblin Warrior",
+   "rule_text": "Trample, haste\nWhenever CARDNAME attacks, sacrifice any number of other Goblins. CARDNAME gets +2/+0 until end of turn for each Goblin sacrificed this way.",
+   "flavor_text": "He sits on a throne of everyone who followed him.",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "mythic rare",
+   "tags": [
+    "goblin",
+    "black",
+    "red",
+    "finisher",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Horns Under the Mountain",
+   "casting_cost": "3R",
+   "super_type": "Sorcery",
+   "rule_text": "Create three 1/1 red Goblin creature tokens. They gain haste until end of turn.",
+   "rarity": "common",
+   "tags": [
+    "goblin",
+    "red",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Toss the Runt",
+   "casting_cost": "R",
+   "super_type": "Instant",
+   "rule_text": "As an additional cost to cast this spell, sacrifice a creature.\nCARDNAME deals 3 damage to any target. If a Goblin was sacrificed this way, it deals 4 damage instead.",
+   "flavor_text": "He volunteered. Probably.",
+   "rarity": "uncommon",
+   "tags": [
+    "goblin",
+    "red",
+    "burn",
+    "sacrifice",
+    "removal"
+   ]
+  },
+  {
+   "name": "Swarm of Small Blades",
+   "casting_cost": "2B",
+   "super_type": "Instant",
+   "rule_text": "Target creature gets -X/-X until end of turn, where X is the number of Goblins you control.",
+   "rarity": "common",
+   "tags": [
+    "goblin",
+    "black",
+    "removal",
+    "typal"
+   ]
+  },
+  {
+   "name": "Last Howl of the Warband",
+   "casting_cost": "2BR",
+   "super_type": "Sorcery",
+   "rule_text": "Goblins you control get +2/+0 and gain menace and haste until end of turn.\nUntil end of turn, whenever a Goblin you control dies, each opponent loses 1 life.",
+   "rarity": "rare",
+   "tags": [
+    "goblin",
+    "black",
+    "red",
+    "finisher",
+    "typal"
+   ]
+  },
+  {
+   "name": "Warren Funeral Pyre",
+   "casting_cost": "1R",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever a Goblin you control dies, put an ember counter on CARDNAME.\nRemove three ember counters from CARDNAME: It deals 3 damage to any target.",
+   "rarity": "uncommon",
+   "tags": [
+    "goblin",
+    "red",
+    "burn",
+    "sacrifice",
+    "typal"
+   ]
+  },
+  {
+   "name": "Scrap-Heap Catapult",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "rule_text": "Goblins you control have haste.\n{1}, {T}, Sacrifice a Goblin: CARDNAME deals 2 damage to any target.",
+   "rarity": "rare",
+   "tags": [
+    "goblin",
+    "sacrifice",
+    "burn",
+    "typal"
+   ]
+  },
+  {
+   "name": "Smoke-Choked Warrens",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{3}{R}, {T}: Create a 1/1 red Goblin creature token. Activate only as a sorcery.",
+   "flavor_text": "Follow the smoke and you'll find them. Follow it further and they'll find you.",
+   "rarity": "rare",
+   "tags": [
+    "goblin",
+    "red",
+    "tokens"
+   ]
+  }
+ ]
+}

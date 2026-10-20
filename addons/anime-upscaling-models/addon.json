@@ -1,0 +1,58 @@
+{
+  "id": "anime-upscaling-models",
+  "name": "Anime upscaling models",
+  "version": "1.0.0",
+  "kind": "models",
+  "description": "Real-ESRGAN's AnimeVideo v3 models (2×, 3× and 4×: small and fast, made for anime) and 4xHFA2k (4×, trained on anime art). Upscayl's Digital Art model is still the default.",
+  "author": "xinntao, Real-ESRGAN, Phhofm – collected by Upscayl",
+  "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/anime-upscaling-models",
+  "license": "the model authors' (see the README)",
+  "min_app_version": "0.12.1",
+  "tags": [
+    "anime",
+    "art",
+    "upscaling"
+  ],
+  "fetch": [
+    {
+      "path": "models/realesr-animevideov3-x2.param",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/realesr-animevideov3-x2.param",
+      "sha256": "b88ff4f00ebf019a7fdac17fdd45a7fd3665d37509efc5baf2e4da2e24420a04"
+    },
+    {
+      "path": "models/realesr-animevideov3-x2.bin",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/realesr-animevideov3-x2.bin",
+      "sha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d"
+    },
+    {
+      "path": "models/realesr-animevideov3-x3.param",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/realesr-animevideov3-x3.param",
+      "sha256": "d1a5755008791d09b57e3425fc9dd0bd26b00fdf79c606210bc0e693f8230881"
+    },
+    {
+      "path": "models/realesr-animevideov3-x3.bin",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/realesr-animevideov3-x3.bin",
+      "sha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d"
+    },
+    {
+      "path": "models/realesr-animevideov3-x4.param",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/realesr-animevideov3-x4.param",
+      "sha256": "850a248e7c14c27e5bd8cf7265113a9441036a7db63963bb8aa5169d788a435e"
+    },
+    {
+      "path": "models/realesr-animevideov3-x4.bin",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/realesr-animevideov3-x4.bin",
+      "sha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d"
+    },
+    {
+      "path": "models/4xHFA2k.param",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/4xHFA2k.param",
+      "sha256": "4576ed5c2fc5fa250d3c3d585ef02248f26abdfc1867088078f501fe71e5d61e"
+    },
+    {
+      "path": "models/4xHFA2k.bin",
+      "url": "https://raw.githubusercontent.com/upscayl/custom-models/4b6d2cfa59c7442af115dfc6e50fd8d7d40b96ef/models/4xHFA2k.bin",
+      "sha256": "8a135402b4f39286121b76abb47601a6b7b7e8d4f3e999a5aaa45ed277824fb4"
+    }
+  ]
+}

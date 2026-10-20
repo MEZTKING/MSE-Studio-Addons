@@ -1,0 +1,280 @@
+{
+ "name": "Enchantments and auras",
+ "description": "White and green cards that put auras on your own creatures, draw a card when you cast enchantments, tell stories as sagas and keep your favourite creature safe.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Halvene, Warden of Threads",
+   "casting_cost": "1GW",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Cleric",
+   "rule_text": "Enchanted creatures you control get +1/+1 and have ward {1}.\nWhenever an Aura you control is put into a graveyard from the battlefield, you may return that card to its owner's hand.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "commander",
+    "auras",
+    "protection",
+    "cleric"
+   ]
+  },
+  {
+   "name": "Verith, Grove of Stories",
+   "casting_cost": "2GW",
+   "super_type": "Legendary Enchantment Creature",
+   "sub_type": "Dryad",
+   "rule_text": "Whenever another enchantment you control enters, you gain 1 life and scry 1.\nWhenever you cast your second enchantment spell each turn, draw two cards.",
+   "flavor_text": "She remembers every story ever told beneath her leaves.",
+   "power": "3",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "commander",
+    "enchantments",
+    "dryad",
+    "draw",
+    "lifegain"
+   ]
+  },
+  {
+   "name": "Mossy Shrine Dryad",
+   "casting_cost": "1G",
+   "super_type": "Enchantment Creature",
+   "sub_type": "Dryad",
+   "rule_text": "{T}: Add one mana of any color.\nWhenever another enchantment you control enters, put a +1/+1 counter on CARDNAME.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "enchantments",
+    "green",
+    "dryad",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Lanternmoss Keeper",
+   "casting_cost": "2G",
+   "super_type": "Enchantment Creature",
+   "sub_type": "Elf Spirit",
+   "rule_text": "Whenever another enchantment you control enters, look at the top card of your library. If it's a land or enchantment card, you may reveal it and put it into your hand.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "enchantments",
+    "green",
+    "spirit",
+    "draw"
+   ]
+  },
+  {
+   "name": "Loom of Small Blessings",
+   "casting_cost": "1W",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever you cast an enchantment spell, you gain 1 life.\nAt the beginning of your end step, if you've cast two or more enchantment spells this turn, draw a card.",
+   "rarity": "uncommon",
+   "tags": [
+    "enchantments",
+    "white",
+    "lifegain",
+    "draw"
+   ]
+  },
+  {
+   "name": "Petal Augury",
+   "casting_cost": "G",
+   "super_type": "Enchantment",
+   "rule_text": "When CARDNAME enters, scry 2.\n{2}{G}, Sacrifice CARDNAME: Draw a card.",
+   "flavor_text": "Read the petals before they fall.",
+   "rarity": "common",
+   "tags": [
+    "enchantments",
+    "green",
+    "draw"
+   ]
+  },
+  {
+   "name": "Gather the Wards",
+   "casting_cost": "2G",
+   "super_type": "Sorcery",
+   "rule_text": "Look at the top six cards of your library. You may reveal up to two enchantment cards from among them and put them into your hand. Put the rest on the bottom of your library in a random order.",
+   "rarity": "common",
+   "tags": [
+    "enchantments",
+    "green",
+    "draw"
+   ]
+  },
+  {
+   "name": "Gift of the Open Hand",
+   "casting_cost": "1W",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature you control\nWhen CARDNAME enters, draw a card.\nEnchanted creature gets +1/+1 and has vigilance.",
+   "rarity": "common",
+   "tags": [
+    "auras",
+    "white",
+    "draw"
+   ]
+  },
+  {
+   "name": "Thornbark Mantle",
+   "casting_cost": "1G",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature you control\nEnchanted creature gets +2/+2 and has trample.",
+   "flavor_text": "The forest lends its armour to those who walk gently.",
+   "rarity": "common",
+   "tags": [
+    "auras",
+    "green",
+    "enchantments"
+   ]
+  },
+  {
+   "name": "Wings of the Dawn Choir",
+   "casting_cost": "2W",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature\nEnchanted creature gets +1/+1 and has flying and lifelink.",
+   "rarity": "uncommon",
+   "tags": [
+    "auras",
+    "white",
+    "evasion",
+    "lifegain"
+   ]
+  },
+  {
+   "name": "Veil of Quiet Vows",
+   "casting_cost": "1W",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Flash\nEnchant creature you control\nEnchanted creature has hexproof and indestructible.",
+   "flavor_text": "A promise kept is the strongest shield.",
+   "rarity": "uncommon",
+   "tags": [
+    "auras",
+    "white",
+    "protection"
+   ]
+  },
+  {
+   "name": "Starhorn Unicorn",
+   "casting_cost": "2W",
+   "super_type": "Enchantment Creature",
+   "sub_type": "Unicorn",
+   "rule_text": "Bestow {4}{W} (If you cast this card for its bestow cost, it's an Aura spell with enchant creature. It becomes a creature again if it's not attached.)\nLifelink\nEnchanted creature gets +2/+2 and has lifelink.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "auras",
+    "enchantments",
+    "white",
+    "unicorn",
+    "lifegain"
+   ]
+  },
+  {
+   "name": "Song of the First Seed",
+   "casting_cost": "2G",
+   "super_type": "Enchantment",
+   "sub_type": "Saga",
+   "rule_text": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.\nII — Put a +1/+1 counter on each of up to two target creatures you control.\nIII — Return up to one target enchantment card from your graveyard to your hand.",
+   "rarity": "uncommon",
+   "tags": [
+    "enchantments",
+    "green",
+    "landsearch",
+    "recursion"
+   ]
+  },
+  {
+   "name": "Chronicle of the Long Watch",
+   "casting_cost": "2W",
+   "super_type": "Enchantment",
+   "sub_type": "Saga",
+   "rule_text": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI — Create two 1/1 white Spirit creature tokens with flying.\nII — Return up to one target enchantment card with mana value 2 or less from your graveyard to the battlefield.\nIII — Creatures you control get +1/+1 and gain vigilance until end of turn.",
+   "rarity": "rare",
+   "tags": [
+    "enchantments",
+    "white",
+    "tokens",
+    "recursion"
+   ]
+  },
+  {
+   "name": "Gentle Banishment",
+   "casting_cost": "1W",
+   "super_type": "Enchantment",
+   "rule_text": "When CARDNAME enters, exile target creature or enchantment an opponent controls with mana value 3 or less until CARDNAME leaves the battlefield.",
+   "flavor_text": "Not gone. Just elsewhere, for a while.",
+   "rarity": "uncommon",
+   "tags": [
+    "enchantments",
+    "white",
+    "removal"
+   ]
+  },
+  {
+   "name": "Steadfast Weave",
+   "casting_cost": "1W",
+   "super_type": "Instant",
+   "rule_text": "Choose one —\n• Target creature you control gains hexproof and indestructible until end of turn.\n• Enchantments you control gain indestructible until end of turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "enchantments",
+    "white",
+    "protection",
+    "trick"
+   ]
+  },
+  {
+   "name": "Crown of the Endless Spring",
+   "casting_cost": "2GW",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Enchant creature you control\nEnchanted creature gets +1/+1 for each enchantment you control and has trample and hexproof.",
+   "rarity": "mythic rare",
+   "tags": [
+    "auras",
+    "enchantments",
+    "finisher",
+    "protection"
+   ]
+  },
+  {
+   "name": "Ancient of the Woven Grove",
+   "casting_cost": "4GG",
+   "super_type": "Creature",
+   "sub_type": "Treefolk",
+   "rule_text": "Vigilance, trample\nCARDNAME gets +1/+1 for each enchantment you control.",
+   "flavor_text": "Every ribbon tied to its branches makes it stand a little taller.",
+   "power": "4",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "enchantments",
+    "green",
+    "treefolk",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Shrine of Hanging Charms",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped.\n{T}: Add {G} or {W}.\n{4}, {T}, Sacrifice CARDNAME: Return target enchantment card from your graveyard to your hand.",
+   "rarity": "uncommon",
+   "tags": [
+    "enchantments",
+    "recursion",
+    "green",
+    "white"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,302 @@
+{
+ "name": "Lands and landfall",
+ "description": "Extra land drops, cards that reward you whenever a land enters, useful lands and ways to find more of them, in green, red and white.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Hedgerow Wanderer",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Elf Scout",
+   "rule_text": "You may play an additional land on each of your turns.\nLandfall — Whenever a land you control enters, you gain 1 life.",
+   "flavor_text": "She has never slept in the same field twice.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "landfall",
+    "ramp",
+    "lifegain",
+    "elf"
+   ]
+  },
+  {
+   "name": "Trailmarker Scout",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Human Scout",
+   "rule_text": "When CARDNAME enters or dies, search your library for a basic land card, reveal it, put it into your hand, then shuffle.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "lands",
+    "landsearch",
+    "green",
+    "scout"
+   ]
+  },
+  {
+   "name": "Wake the Buried Hills",
+   "casting_cost": "3G",
+   "super_type": "Sorcery",
+   "rule_text": "Search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle. You gain 2 life for each land put onto the battlefield this way.",
+   "flavor_text": "The hills were only sleeping.",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "ramp",
+    "landsearch",
+    "lifegain",
+    "green"
+   ]
+  },
+  {
+   "name": "Ridgeback Grazer",
+   "casting_cost": "3G",
+   "super_type": "Creature",
+   "sub_type": "Beast",
+   "rule_text": "Trample\nLandfall — Whenever a land you control enters, put a +1/+1 counter on CARDNAME.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "landfall",
+    "counters",
+    "green",
+    "beast"
+   ]
+  },
+  {
+   "name": "Ever-Spreading Shoots",
+   "casting_cost": "2G",
+   "super_type": "Enchantment",
+   "rule_text": "Landfall — Whenever a land you control enters, create a 0/1 green Plant creature token.\n{2}{G}, Sacrifice four Plants: Draw two cards.",
+   "rarity": "uncommon",
+   "tags": [
+    "landfall",
+    "tokens",
+    "draw",
+    "plant",
+    "green"
+   ]
+  },
+  {
+   "name": "Loamseer of the Low Fields",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "{T}: Add {G}.\nLandfall — Whenever a land you control enters, you may pay {1}. If you do, draw a card. This ability triggers only once each turn.",
+   "power": "1",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "landfall",
+    "ramp",
+    "draw",
+    "elf",
+    "green"
+   ]
+  },
+  {
+   "name": "Gather the Fallen Stones",
+   "casting_cost": "1G",
+   "super_type": "Sorcery",
+   "rule_text": "Return up to two target land cards from your graveyard to your hand. You gain 2 life.",
+   "rarity": "common",
+   "tags": [
+    "lands",
+    "recursion",
+    "green"
+   ]
+  },
+  {
+   "name": "Rumblestep Elemental",
+   "casting_cost": "2R",
+   "super_type": "Creature",
+   "sub_type": "Elemental",
+   "rule_text": "Landfall — Whenever a land you control enters, CARDNAME deals 1 damage to each opponent.",
+   "flavor_text": "Every step it takes, the ground answers.",
+   "power": "3",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "landfall",
+    "burn",
+    "red",
+    "elemental"
+   ]
+  },
+  {
+   "name": "Split-Earth Blast",
+   "casting_cost": "1R",
+   "super_type": "Instant",
+   "rule_text": "CARDNAME deals 2 damage to any target. If a land you control entered this turn, it deals 4 damage instead.",
+   "rarity": "common",
+   "tags": [
+    "landfall",
+    "burn",
+    "removal",
+    "red"
+   ]
+  },
+  {
+   "name": "Scree Runner",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Goblin Scout",
+   "rule_text": "Haste\nLandfall — Whenever a land you control enters, CARDNAME gets +2/+0 until end of turn.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "landfall",
+    "red",
+    "goblin"
+   ]
+  },
+  {
+   "name": "Seam-Cutter Prospector",
+   "casting_cost": "2R",
+   "super_type": "Creature",
+   "sub_type": "Dwarf",
+   "rule_text": "When CARDNAME enters, you may sacrifice a land. If you do, search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "landfall",
+    "ramp",
+    "landsearch",
+    "dwarf"
+   ]
+  },
+  {
+   "name": "Wayside Pilgrim",
+   "casting_cost": "1W",
+   "super_type": "Creature",
+   "sub_type": "Human Cleric",
+   "rule_text": "When CARDNAME enters, if an opponent controls more lands than you, search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "flavor_text": "The road is long, but it is never empty.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "lands",
+    "landsearch",
+    "ramp",
+    "white",
+    "cleric"
+   ]
+  },
+  {
+   "name": "Border Keep Captain",
+   "casting_cost": "3W",
+   "super_type": "Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "Soldiers you control have vigilance.\nLandfall — Whenever a land you control enters, create a 1/1 white Soldier creature token.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "landfall",
+    "tokens",
+    "white",
+    "soldier"
+   ]
+  },
+  {
+   "name": "Banner of Claimed Ground",
+   "casting_cost": "2W",
+   "super_type": "Enchantment",
+   "rule_text": "Landfall — Whenever a land you control enters, creatures you control get +1/+0 and gain vigilance until end of turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "landfall",
+    "anthem",
+    "white"
+   ]
+  },
+  {
+   "name": "Gundrel, Shaker of Peaks",
+   "casting_cost": "2RG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Giant Druid",
+   "rule_text": "You may play an additional land on each of your turns.\nLandfall — Whenever a land you control enters, CARDNAME deals 1 damage to any target.",
+   "flavor_text": "Where he walks, mountains learn to move.",
+   "power": "3",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "commander",
+    "landfall",
+    "gruul",
+    "ramp",
+    "burn"
+   ]
+  },
+  {
+   "name": "Orlaith, Warden of the Long Meadow",
+   "casting_cost": "1GW",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Druid",
+   "rule_text": "Vigilance\nLandfall — Whenever a land you control enters, put a +1/+1 counter on target creature you control.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "commander",
+    "landfall",
+    "counters",
+    "selesnya"
+   ]
+  },
+  {
+   "name": "Shattered Rise",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped.\nWhen CARDNAME enters, you may return target land card from your graveyard to your hand.\n{T}: Add {R} or {G}.",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "recursion",
+    "gruul"
+   ]
+  },
+  {
+   "name": "Broken Cairn Steppe",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{1}, {T}, Sacrifice CARDNAME: Search your library for a basic land card, put it onto the battlefield, then shuffle. You gain 1 life.",
+   "rarity": "common",
+   "tags": [
+    "lands",
+    "landsearch",
+    "landfall"
+   ]
+  },
+  {
+   "name": "Beastcaller's Hollow",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{4}{G}, {T}: Create a 3/3 green Beast creature token. Activate only as a sorcery.",
+   "rarity": "rare",
+   "tags": [
+    "lands",
+    "tokens",
+    "beast",
+    "green"
+   ]
+  },
+  {
+   "name": "Sunward Fortress",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{2}{W}, {T}: Target creature you control gains indestructible until end of turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "protection",
+    "white"
+   ]
+  }
+ ]
+}

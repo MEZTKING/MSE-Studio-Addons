@@ -1,0 +1,298 @@
+{
+ "name": "Graveyard and reanimation",
+ "description": "Fill your graveyard by milling and discarding, then bring your biggest creatures back. Black, green and blue cards with flashback spells, hefty creatures worth returning and ways to keep your graveyard safe.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Ysolde, Keeper of the Turned Earth",
+   "casting_cost": "2BG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "At the beginning of your end step, mill two cards.\nWhenever one or more creature cards are put into your graveyard from your library, put a +1/+1 counter on CARDNAME.\n{1}{B}{G}, Remove three +1/+1 counters from CARDNAME: Return target creature card from your graveyard to the battlefield. Activate only as a sorcery.",
+   "flavor_text": "Nothing planted in her fields stays buried for long.",
+   "power": "3",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "graveyard",
+    "reanimator",
+    "mill",
+    "elf",
+    "commander"
+   ]
+  },
+  {
+   "name": "Ithren, the Silted Lantern",
+   "casting_cost": "1BGU",
+   "super_type": "Legendary Creature",
+   "sub_type": "Zombie Wizard",
+   "rule_text": "At the beginning of your upkeep, mill two cards.\nWhenever you cast a spell from your graveyard, draw a card.",
+   "flavor_text": "Its lamp lights only the things that were lost.",
+   "power": "3",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "graveyard",
+    "mill",
+    "draw",
+    "zombie",
+    "commander"
+   ]
+  },
+  {
+   "name": "Barrow Gleaner",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "When CARDNAME enters, mill three cards. You may put a land card milled this way into your hand.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "mill",
+    "graveyard",
+    "elf",
+    "green"
+   ]
+  },
+  {
+   "name": "Tidewrack Diviner",
+   "casting_cost": "2U",
+   "super_type": "Creature",
+   "sub_type": "Merfolk Wizard",
+   "rule_text": "When CARDNAME enters, mill two cards, then draw a card.",
+   "flavor_text": "She reads the future in what the tide leaves behind.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "mill",
+    "draw",
+    "merfolk",
+    "blue"
+   ]
+  },
+  {
+   "name": "Turn Over the Old Soil",
+   "casting_cost": "2G",
+   "super_type": "Sorcery",
+   "rule_text": "Mill four cards. You may put a land card milled this way onto the battlefield tapped.\nFlashback {4}{G}",
+   "flavor_text": "Every season leaves something in the ground.",
+   "rarity": "uncommon",
+   "tags": [
+    "ramp",
+    "mill",
+    "graveyard"
+   ]
+  },
+  {
+   "name": "Murkwater Visions",
+   "casting_cost": "1U",
+   "super_type": "Instant",
+   "rule_text": "Draw two cards, then discard two cards.\nFlashback {3}{U}",
+   "rarity": "common",
+   "tags": [
+    "draw",
+    "discard",
+    "graveyard"
+   ]
+  },
+  {
+   "name": "Silt-Rise Rite",
+   "casting_cost": "2B",
+   "super_type": "Sorcery",
+   "rule_text": "Return target creature card from your graveyard to the battlefield with a finality counter on it. You lose 3 life.",
+   "flavor_text": "The river gives back what it was given.",
+   "rarity": "rare",
+   "tags": [
+    "reanimator",
+    "recursion",
+    "graveyard"
+   ]
+  },
+  {
+   "name": "Ossuary Behemoth",
+   "casting_cost": "6BB",
+   "super_type": "Creature",
+   "sub_type": "Zombie Horror",
+   "rule_text": "Trample\nWhen CARDNAME enters, each opponent sacrifices a creature with the greatest power among creatures they control.",
+   "power": "8",
+   "toughness": "8",
+   "rarity": "rare",
+   "tags": [
+    "finisher",
+    "reanimator",
+    "removal",
+    "zombie"
+   ]
+  },
+  {
+   "name": "Loamheart Colossus",
+   "casting_cost": "6GG",
+   "super_type": "Creature",
+   "sub_type": "Elemental",
+   "rule_text": "This spell costs {1} less to cast for each creature card in your graveyard.\nTrample\nWhen CARDNAME enters, return up to one target land card from your graveyard to the battlefield.",
+   "power": "8",
+   "toughness": "8",
+   "rarity": "rare",
+   "tags": [
+    "finisher",
+    "graveyard",
+    "elemental",
+    "green"
+   ]
+  },
+  {
+   "name": "Boneheap Gorger",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Zombie Horror",
+   "rule_text": "Menace\nCARDNAME gets +1/+1 for each creature card in your graveyard.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "graveyard",
+    "evasion",
+    "zombie",
+    "black"
+   ]
+  },
+  {
+   "name": "Grasp from the Barrow",
+   "casting_cost": "1B",
+   "super_type": "Instant",
+   "rule_text": "Target creature gets -3/-3 until end of turn.\nFlashback {4}{B}",
+   "rarity": "common",
+   "tags": [
+    "removal",
+    "graveyard",
+    "black"
+   ]
+  },
+  {
+   "name": "Deepwater Refusal",
+   "casting_cost": "1UU",
+   "super_type": "Instant",
+   "rule_text": "Counter target spell.\nFlashback {5}{U}{U}",
+   "flavor_text": "The answer is no. It will still be no tomorrow.",
+   "rarity": "uncommon",
+   "tags": [
+    "counter",
+    "graveyard",
+    "blue"
+   ]
+  },
+  {
+   "name": "Crypt-Seal Lantern",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "Cards in your graveyard can't be the targets of spells or abilities your opponents control.\n{2}, {T}: Mill two cards.",
+   "rarity": "uncommon",
+   "tags": [
+    "protection",
+    "mill",
+    "graveyard"
+   ]
+  },
+  {
+   "name": "Tally of the Buried",
+   "casting_cost": "3B",
+   "super_type": "Sorcery",
+   "rule_text": "Draw cards equal to the number of creature cards in your graveyard, up to four. You lose 1 life for each card you drew this way.",
+   "rarity": "uncommon",
+   "tags": [
+    "draw",
+    "graveyard",
+    "black"
+   ]
+  },
+  {
+   "name": "Duskmire Lamplighter",
+   "casting_cost": "UB",
+   "super_type": "Creature",
+   "sub_type": "Zombie Rogue",
+   "rule_text": "Whenever CARDNAME attacks, draw a card, then discard a card.\nWhenever you discard a creature card, each opponent loses 1 life.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "discard",
+    "draw",
+    "zombie"
+   ]
+  },
+  {
+   "name": "Mire-Bell Ringer",
+   "casting_cost": "3B",
+   "super_type": "Creature",
+   "sub_type": "Zombie Cleric",
+   "rule_text": "When CARDNAME enters, return target creature card with mana value 2 or less from your graveyard to the battlefield.\nWhen CARDNAME dies, mill two cards.",
+   "flavor_text": "One toll for the living. Two for everyone else.",
+   "power": "3",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "recursion",
+    "reanimator",
+    "zombie",
+    "cleric"
+   ]
+  },
+  {
+   "name": "Drowned-Road Leviathan",
+   "casting_cost": "6UU",
+   "super_type": "Creature",
+   "sub_type": "Leviathan",
+   "rule_text": "Ward {3}\nWhen CARDNAME enters, return up to two target nonland permanents your opponents control to their owners' hands.",
+   "power": "7",
+   "toughness": "7",
+   "rarity": "rare",
+   "tags": [
+    "finisher",
+    "reanimator",
+    "leviathan",
+    "blue"
+   ]
+  },
+  {
+   "name": "Barrowfen Sinkhole",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped.\n{T}: Add {B}, {G}, or {U}.\n{3}, {T}, Sacrifice CARDNAME: Return target creature card from your graveyard to your hand.",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "recursion",
+    "graveyard"
+   ]
+  },
+  {
+   "name": "Ysmeth, Tender of Graves",
+   "casting_cost": "3BG",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Ysmeth",
+   "rule_text": "+1: Mill three cards. You gain 1 life for each creature card milled this way.\n−2: Return target creature card from your graveyard to your hand.\n−7: Return all creature cards from your graveyard to the battlefield. They gain haste until end of turn.",
+   "loyalty": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "graveyard",
+    "mill",
+    "recursion",
+    "reanimator"
+   ]
+  },
+  {
+   "name": "Mourner's Reprieve",
+   "casting_cost": "BG",
+   "super_type": "Instant",
+   "rule_text": "Choose one or both —\n• Return target creature card from your graveyard to your hand.\n• Cards in your graveyard can't be the targets of spells or abilities your opponents control this turn.",
+   "rarity": "uncommon",
+   "tags": [
+    "recursion",
+    "protection",
+    "graveyard",
+    "trick"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,293 @@
+{
+ "name": "Beasts and dinosaurs",
+ "description": "Beasts and Dinosaurs in green and red: big trampling creatures, +1/+1 counters, ramp to cast them early and fights to clear the way.",
+ "group": "Creature types",
+ "cards": [
+  {
+   "name": "Ruhgra, Cinder-Crested Matriarch",
+   "casting_cost": "3RG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Dinosaur",
+   "rule_text": "Trample\nWhenever another creature you control with power 4 or greater enters, it fights up to one target creature you don't control.",
+   "flavor_text": "The ground shakes twice: once when she roars, once when she lands.",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "mythic rare",
+   "tags": [
+    "dinosaur",
+    "green",
+    "red",
+    "commander",
+    "removal"
+   ]
+  },
+  {
+   "name": "Ossa Hornwild, Herd-Mother",
+   "casting_cost": "1RG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Beast",
+   "rule_text": "At the beginning of combat on your turn, put a +1/+1 counter on target creature you control. If it's a Beast or Dinosaur, put two +1/+1 counters on it instead.\nCreatures you control with +1/+1 counters on them have trample.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "beast",
+    "green",
+    "red",
+    "commander",
+    "counters"
+   ]
+  },
+  {
+   "name": "Thunderhoof Alpha",
+   "casting_cost": "2RG",
+   "super_type": "Creature",
+   "sub_type": "Beast",
+   "rule_text": "Trample\nOther Beasts and Dinosaurs you control get +1/+1 and have trample.",
+   "flavor_text": "Where it runs, the herd follows.",
+   "power": "4",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "beast",
+    "dinosaur",
+    "green",
+    "anthem",
+    "typal"
+   ]
+  },
+  {
+   "name": "Mossgrub Hatchling",
+   "casting_cost": "G",
+   "super_type": "Creature",
+   "sub_type": "Dinosaur",
+   "rule_text": "{T}: Add {R} or {G}.\nWhenever another Beast or Dinosaur you control enters, put a +1/+1 counter on CARDNAME.",
+   "power": "0",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "dinosaur",
+    "green",
+    "ramp",
+    "counters"
+   ]
+  },
+  {
+   "name": "Cragtooth Raptor",
+   "casting_cost": "1R",
+   "super_type": "Creature",
+   "sub_type": "Dinosaur",
+   "rule_text": "Trample\nEnrage — Whenever CARDNAME is dealt damage, it deals 2 damage to target opponent.",
+   "power": "3",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "dinosaur",
+    "red",
+    "burn"
+   ]
+  },
+  {
+   "name": "Briarcoat Cub",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Beast",
+   "rule_text": "When CARDNAME enters, put a +1/+1 counter on target Beast or Dinosaur you control.",
+   "flavor_text": "Small today. Not small for long.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "beast",
+    "green",
+    "counters"
+   ]
+  },
+  {
+   "name": "Thornback Wanderer",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Beast",
+   "rule_text": "Trample\nWhen CARDNAME enters, you may put a land card from your hand onto the battlefield tapped.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "beast",
+    "green",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Scorchmane Brawler",
+   "casting_cost": "1RG",
+   "super_type": "Creature",
+   "sub_type": "Beast",
+   "rule_text": "Trample\nWhen CARDNAME enters, it fights up to one target creature you don't control.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "beast",
+    "green",
+    "red",
+    "removal"
+   ]
+  },
+  {
+   "name": "Ashquake Charger",
+   "casting_cost": "3R",
+   "super_type": "Creature",
+   "sub_type": "Dinosaur",
+   "rule_text": "Trample, haste\nEnrage — Whenever CARDNAME is dealt damage, put a +1/+1 counter on it.",
+   "flavor_text": "Hurting it only makes it bigger, and angrier.",
+   "power": "4",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "dinosaur",
+    "red",
+    "counters"
+   ]
+  },
+  {
+   "name": "Stonefield Grazer",
+   "casting_cost": "4G",
+   "super_type": "Creature",
+   "sub_type": "Beast",
+   "rule_text": "Trample\nWhen CARDNAME enters, search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "uncommon",
+   "tags": [
+    "beast",
+    "green",
+    "ramp",
+    "landsearch"
+   ]
+  },
+  {
+   "name": "Cinderfang Behemoth",
+   "casting_cost": "4RG",
+   "super_type": "Creature",
+   "sub_type": "Dinosaur",
+   "rule_text": "Trample\nWhen CARDNAME enters, it deals 4 damage to target creature an opponent controls.\nWhenever CARDNAME attacks, other Dinosaurs you control get +2/+0 until end of turn.",
+   "power": "6",
+   "toughness": "6",
+   "rarity": "rare",
+   "tags": [
+    "dinosaur",
+    "red",
+    "green",
+    "removal",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Valleyhorn Titanosaur",
+   "casting_cost": "5GG",
+   "super_type": "Creature",
+   "sub_type": "Dinosaur",
+   "rule_text": "Trample, ward {2}\nWhen CARDNAME enters, other creatures you control get +2/+2 and gain trample until end of turn.",
+   "flavor_text": "Mountains have been named after smaller things.",
+   "power": "8",
+   "toughness": "8",
+   "rarity": "mythic rare",
+   "tags": [
+    "dinosaur",
+    "green",
+    "finisher",
+    "anthem"
+   ]
+  },
+  {
+   "name": "Horn Meets Claw",
+   "casting_cost": "1G",
+   "super_type": "Sorcery",
+   "rule_text": "Put a +1/+1 counter on target creature you control. Then that creature fights target creature you don't control.",
+   "rarity": "common",
+   "tags": [
+    "green",
+    "removal",
+    "counters"
+   ]
+  },
+  {
+   "name": "Follow the Stampede",
+   "casting_cost": "2G",
+   "super_type": "Sorcery",
+   "rule_text": "Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. If you control a creature with power 4 or greater, draw a card.",
+   "flavor_text": "Where the herd has walked, the path is easy.",
+   "rarity": "common",
+   "tags": [
+    "green",
+    "ramp",
+    "landsearch",
+    "draw"
+   ]
+  },
+  {
+   "name": "Bellow of the Burning Crag",
+   "casting_cost": "2R",
+   "super_type": "Instant",
+   "rule_text": "CARDNAME deals 4 damage to target creature or planeswalker. If you control a Dinosaur, CARDNAME also deals 2 damage to that permanent's controller.",
+   "rarity": "uncommon",
+   "tags": [
+    "dinosaur",
+    "red",
+    "burn",
+    "removal"
+   ]
+  },
+  {
+   "name": "Earthshudder Charge",
+   "casting_cost": "3RG",
+   "super_type": "Sorcery",
+   "rule_text": "Put a +1/+1 counter on each creature you control. Then creatures you control gain trample and haste until end of turn.",
+   "rarity": "rare",
+   "tags": [
+    "green",
+    "red",
+    "counters",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Nesting Grounds of Ages",
+   "casting_cost": "2G",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever a Beast or Dinosaur you control enters, put a +1/+1 counter on it.\nAt the beginning of your end step, if you control three or more creatures with power 4 or greater, draw a card.",
+   "rarity": "rare",
+   "tags": [
+    "beast",
+    "dinosaur",
+    "counters",
+    "draw",
+    "typal"
+   ]
+  },
+  {
+   "name": "Ambered Fossil Idol",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add {R} or {G}. If that mana is spent on a Beast or Dinosaur spell, that creature enters with an additional +1/+1 counter on it.",
+   "rarity": "uncommon",
+   "tags": [
+    "manarock",
+    "ramp",
+    "counters"
+   ]
+  },
+  {
+   "name": "Smouldering Fern Hollow",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped.\n{T}: Add {R} or {G}.\n{3}{R}{G}, {T}: Put a +1/+1 counter on target Beast or Dinosaur you control. Activate only as a sorcery.",
+   "rarity": "uncommon",
+   "tags": [
+    "beast",
+    "dinosaur",
+    "counters"
+   ]
+  }
+ ]
+}

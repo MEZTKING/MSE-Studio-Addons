@@ -1,0 +1,229 @@
+{
+ "name": "Planeswalkers",
+ "description": "A planeswalker in each colour and five more in colour pairs, plus a few cards that protect them or reward you for playing them.",
+ "group": "Colours, planeswalkers and tokens",
+ "cards": [
+  {
+   "name": "Halvene, Dawn Warden",
+   "casting_cost": "2WW",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Halvene",
+   "rule_text": "+1: Create a 1/1 white Soldier creature token.\n−3: Exile target creature or enchantment an opponent controls.\n−7: You get an emblem with \"Creatures you control get +2/+2 and have vigilance.\"",
+   "loyalty": "4",
+   "rarity": "rare",
+   "tags": [
+    "planeswalker",
+    "white",
+    "tokens",
+    "removal"
+   ]
+  },
+  {
+   "name": "Quillon, Archivist of Tides",
+   "casting_cost": "2UU",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Quillon",
+   "rule_text": "+1: Draw a card, then put a card from your hand on top of your library.\n−2: Return target nonland permanent to its owner's hand.\n−7: You get an emblem with \"Whenever an opponent casts their first spell each turn, counter that spell unless its controller pays {3}.\"",
+   "loyalty": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "planeswalker",
+    "blue",
+    "draw",
+    "control"
+   ]
+  },
+  {
+   "name": "Nethra, Grave Singer",
+   "casting_cost": "3BB",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Nethra",
+   "rule_text": "+1: Each opponent loses 1 life and you gain 1 life.\n−3: Destroy target creature.\n−8: You get an emblem with \"At the beginning of each opponent's upkeep, that player sacrifices a creature of their choice.\"",
+   "loyalty": "5",
+   "rarity": "rare",
+   "tags": [
+    "planeswalker",
+    "black",
+    "drain",
+    "removal"
+   ]
+  },
+  {
+   "name": "Tarrik, Ember-Hand",
+   "casting_cost": "2RR",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Tarrik",
+   "rule_text": "+1: Discard up to one card, then draw a card.\n−2: CARDNAME deals 3 damage to target creature or planeswalker.\n−7: You get an emblem with \"Whenever you cast an instant or sorcery spell, this emblem deals 2 damage to any target.\"",
+   "loyalty": "4",
+   "rarity": "rare",
+   "tags": [
+    "planeswalker",
+    "red",
+    "burn",
+    "removal"
+   ]
+  },
+  {
+   "name": "Fennick, Grove-Speaker",
+   "casting_cost": "2GG",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Fennick",
+   "rule_text": "+1: Look at the top card of your library. If it's a creature or land card, you may reveal it and put it into your hand.\n−2: Create a 3/3 green Beast creature token.\n−7: You get an emblem with \"Creatures you control get +3/+3 and have trample.\"",
+   "loyalty": "4",
+   "rarity": "uncommon",
+   "tags": [
+    "planeswalker",
+    "green",
+    "draw",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Elsabet, Keeper of the Accord",
+   "casting_cost": "2WU",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Elsabet",
+   "rule_text": "+1: Tap up to one target creature. It doesn't untap during its controller's next untap step.\n−2: Draw two cards.\n−8: Exile all nonland permanents your opponents control.",
+   "loyalty": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "planeswalker",
+    "azorius",
+    "lock",
+    "draw"
+   ]
+  },
+  {
+   "name": "Draskel, the Grinning Flame",
+   "casting_cost": "2BR",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Draskel",
+   "rule_text": "+1: Create a 1/1 red Devil creature token with \"When this creature dies, it deals 1 damage to any target.\"\n−2: Each opponent sacrifices a creature of their choice.\n−7: You get an emblem with \"Whenever a creature you control dies, each opponent loses 2 life.\"",
+   "loyalty": "4",
+   "rarity": "rare",
+   "tags": [
+    "planeswalker",
+    "rakdos",
+    "tokens",
+    "sacrifice",
+    "removal"
+   ]
+  },
+  {
+   "name": "Seldra, Voice of the Meadow",
+   "casting_cost": "2GW",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Seldra",
+   "rule_text": "+1: Put a +1/+1 counter on each of up to two target creatures.\n−2: Create a 2/2 green Wolf creature token. You gain 2 life.\n−6: You get an emblem with \"Whenever a creature you control enters, put two +1/+1 counters on it.\"",
+   "loyalty": "4",
+   "rarity": "uncommon",
+   "tags": [
+    "planeswalker",
+    "selesnya",
+    "counters",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Zephrin, the Restless Spark",
+   "casting_cost": "2UR",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Zephrin",
+   "rule_text": "+1: Draw a card, then discard a card.\n−3: CARDNAME deals damage to target creature or planeswalker equal to the number of instant and sorcery cards in your graveyard.\n−7: You get an emblem with \"Instant and sorcery spells you cast cost {1} less to cast.\"",
+   "loyalty": "4",
+   "rarity": "rare",
+   "tags": [
+    "planeswalker",
+    "izzet",
+    "draw",
+    "removal"
+   ]
+  },
+  {
+   "name": "Ossia, Mother of Mould",
+   "casting_cost": "2BG",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Ossia",
+   "rule_text": "+1: Create a 1/1 green Saproling creature token.\n−2: Return target creature or planeswalker card from your graveyard to your hand.\n−7: Return all creature cards from your graveyard to the battlefield.",
+   "loyalty": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "planeswalker",
+    "golgari",
+    "tokens",
+    "recursion"
+   ]
+  },
+  {
+   "name": "Oathsworn Shieldbearer",
+   "casting_cost": "1W",
+   "super_type": "Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "Vigilance\nPlaneswalkers you control have hexproof.",
+   "flavor_text": "Her oath was to one person, not to a kingdom.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "planeswalker",
+    "protection",
+    "white",
+    "soldier"
+   ]
+  },
+  {
+   "name": "Sparkstone Lens",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add {C}.\n{2}, {T}: Put a loyalty counter on target planeswalker you control. Activate only as a sorcery.",
+   "rarity": "uncommon",
+   "tags": [
+    "planeswalker",
+    "manarock",
+    "counters"
+   ]
+  },
+  {
+   "name": "Rekindle the Oaths",
+   "casting_cost": "1U",
+   "super_type": "Instant",
+   "rule_text": "Proliferate. Draw a card.",
+   "flavor_text": "A promise grows stronger each time it is kept.",
+   "rarity": "common",
+   "tags": [
+    "planeswalker",
+    "counters",
+    "draw",
+    "blue"
+   ]
+  },
+  {
+   "name": "Thornward Keeper",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Elf Warrior",
+   "rule_text": "Reach\nWhenever you activate a loyalty ability, put a +1/+1 counter on CARDNAME.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "planeswalker",
+    "protection",
+    "counters",
+    "green",
+    "elf"
+   ]
+  },
+  {
+   "name": "Hall of Many Sparks",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast planeswalker spells.",
+   "rarity": "rare",
+   "tags": [
+    "planeswalker",
+    "lands",
+    "ramp"
+   ]
+  }
+ ]
+}

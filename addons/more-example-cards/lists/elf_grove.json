@@ -1,0 +1,315 @@
+{
+ "name": "Elf grove",
+ "description": "Green and black Elves that make mana, fill the board with Elf tokens, make each other stronger and keep you drawing cards.",
+ "group": "Creature types",
+ "cards": [
+  {
+   "name": "Vaerith Nightbloom",
+   "casting_cost": "1BG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Elf Warlock",
+   "rule_text": "Whenever another Elf you control enters, each opponent loses 1 life and you gain 1 life.\nAt the beginning of your end step, if three or more Elves you control entered this turn, draw a card.",
+   "flavor_text": "She plants her seeds at night, and the grove wakes up larger.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "mythic rare",
+   "tags": [
+    "elf",
+    "commander",
+    "drain",
+    "tokens",
+    "draw"
+   ]
+  },
+  {
+   "name": "Ildrin, Keeper of the Root-Library",
+   "casting_cost": "1BGU",
+   "super_type": "Legendary Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "Other Elves you control have \"{T}: Add {G}.\"\n{3}, {T}: Draw a card. This ability costs {1} less to activate for each other Elf you control.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "elf",
+    "commander",
+    "ramp",
+    "draw",
+    "typal"
+   ]
+  },
+  {
+   "name": "Banner-Warden of the Oldwood",
+   "casting_cost": "1GG",
+   "super_type": "Creature",
+   "sub_type": "Elf Warrior",
+   "rule_text": "Other Elves you control get +1/+1.\n{1}{G}, {T}: Create a 1/1 green Elf Warrior creature token.",
+   "flavor_text": "Where her banner flies, the forest answers.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "elf",
+    "green",
+    "anthem",
+    "tokens",
+    "typal"
+   ]
+  },
+  {
+   "name": "Dewgather Initiate",
+   "casting_cost": "G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "{T}: Add {G}.\nWhen CARDNAME enters, if you control another Elf, scry 1.",
+   "flavor_text": "Every morning she gathers the dew, and every morning the grove grows.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "elf",
+    "green",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Gloomroot Stalker",
+   "casting_cost": "B",
+   "super_type": "Creature",
+   "sub_type": "Elf Assassin",
+   "rule_text": "Deathtouch\nWhen CARDNAME dies, create a 1/1 green Elf Warrior creature token.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "elf",
+    "black",
+    "tokens",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Leafshadow Bowyer",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Elf Archer",
+   "rule_text": "Reach\nWhen CARDNAME enters, create a 1/1 green Elf Warrior creature token.",
+   "power": "1",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "elf",
+    "green",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Grovecant Seer",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "When CARDNAME enters, look at the top four cards of your library. You may reveal an Elf card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "elf",
+    "green",
+    "draw",
+    "tutor",
+    "typal"
+   ]
+  },
+  {
+   "name": "Mirewood Mourner",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Elf Shaman",
+   "rule_text": "Whenever another Elf you control dies, you draw a card and you lose 1 life. This ability triggers only once each turn.",
+   "flavor_text": "She weeps for every fallen kinsman, and remembers what each one knew.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "elf",
+    "black",
+    "draw",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Hollowbark Ranger",
+   "casting_cost": "3G",
+   "super_type": "Creature",
+   "sub_type": "Elf Scout",
+   "rule_text": "When CARDNAME enters, search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "elf",
+    "green",
+    "ramp",
+    "landsearch"
+   ]
+  },
+  {
+   "name": "Duskleaf Blademaster",
+   "casting_cost": "1BG",
+   "super_type": "Creature",
+   "sub_type": "Elf Warrior",
+   "rule_text": "Deathtouch\nWhenever CARDNAME attacks, create a 1/1 green Elf Warrior creature token that's tapped and attacking.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "elf",
+    "black",
+    "green",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Gloomvine Hexer",
+   "casting_cost": "3B",
+   "super_type": "Creature",
+   "sub_type": "Elf Warlock",
+   "rule_text": "When CARDNAME enters, target creature an opponent controls gets -X/-X until end of turn, where X is the number of Elves you control.",
+   "power": "3",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "elf",
+    "black",
+    "removal",
+    "typal"
+   ]
+  },
+  {
+   "name": "Mother of the Thornhollow",
+   "casting_cost": "4G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "When CARDNAME enters, create two 1/1 green Elf Warrior creature tokens. Then if you control seven or more Elves, draw two cards.",
+   "power": "4",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "elf",
+    "green",
+    "tokens",
+    "draw",
+    "typal"
+   ]
+  },
+  {
+   "name": "Highcrown Treesinger",
+   "casting_cost": "4GG",
+   "super_type": "Creature",
+   "sub_type": "Elf Shaman",
+   "rule_text": "Trample\nOther Elves you control have trample.\nWhen CARDNAME enters, put a +1/+1 counter on each Elf you control.",
+   "flavor_text": "When she sings, the oldest trees bend to listen.",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "mythic rare",
+   "tags": [
+    "elf",
+    "green",
+    "finisher",
+    "counters",
+    "typal"
+   ]
+  },
+  {
+   "name": "Sound the Leafhorn",
+   "casting_cost": "3G",
+   "super_type": "Sorcery",
+   "rule_text": "Create three 1/1 green Elf Warrior creature tokens. Then if you control five or more Elves, put a +1/+1 counter on each Elf you control.",
+   "rarity": "uncommon",
+   "tags": [
+    "elf",
+    "green",
+    "tokens",
+    "counters",
+    "typal"
+   ]
+  },
+  {
+   "name": "Counsel of the Ring-Trees",
+   "casting_cost": "2G",
+   "super_type": "Instant",
+   "rule_text": "Look at the top X cards of your library, where X is the number of Elves you control. Put up to two of them into your hand and the rest on the bottom of your library in a random order.",
+   "rarity": "uncommon",
+   "tags": [
+    "elf",
+    "green",
+    "draw",
+    "typal"
+   ]
+  },
+  {
+   "name": "Venom from the Roots",
+   "casting_cost": "1B",
+   "super_type": "Instant",
+   "rule_text": "Target creature gets -2/-2 until end of turn. If you control three or more Elves, that creature gets -4/-4 until end of turn instead.",
+   "rarity": "common",
+   "tags": [
+    "elf",
+    "black",
+    "removal",
+    "typal"
+   ]
+  },
+  {
+   "name": "Blight of the Deep Wood",
+   "casting_cost": "3BB",
+   "super_type": "Sorcery",
+   "rule_text": "All non-Elf creatures get -3/-3 until end of turn.",
+   "flavor_text": "The grove keeps its own. Everything else rots.",
+   "rarity": "rare",
+   "tags": [
+    "elf",
+    "black",
+    "wipe",
+    "typal"
+   ]
+  },
+  {
+   "name": "Moonleaf Gathering",
+   "casting_cost": "2G",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever one or more Elves you control enter, draw a card. This ability triggers only once each turn.",
+   "rarity": "rare",
+   "tags": [
+    "elf",
+    "green",
+    "draw",
+    "typal"
+   ]
+  },
+  {
+   "name": "Heartseed of the First Tree",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "rule_text": "{T}: Add {B} or {G}.\n{4}, {T}, Sacrifice CARDNAME: Draw two cards.",
+   "rarity": "uncommon",
+   "tags": [
+    "green",
+    "black",
+    "manarock",
+    "draw"
+   ]
+  },
+  {
+   "name": "Glade of the Elder Boughs",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped unless you control an Elf.\n{T}: Add {B} or {G}.",
+   "rarity": "uncommon",
+   "tags": [
+    "elf",
+    "black",
+    "green"
+   ]
+  }
+ ]
+}

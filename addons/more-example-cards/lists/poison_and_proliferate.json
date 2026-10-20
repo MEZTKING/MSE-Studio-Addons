@@ -1,0 +1,289 @@
+{
+ "name": "Poison and proliferate",
+ "description": "Win with poison counters instead of damage. Black, green and blue cards with toxic and infect, proliferate to add more counters, ways past blockers and a few strong finishers.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Ruuskara, the Seeping Bloom",
+   "casting_cost": "1BG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Phyrexian Elf Druid",
+   "rule_text": "Deathtouch, toxic 1\nWhenever one or more creatures you control deal combat damage to a player, proliferate.",
+   "flavor_text": "Where she walks, the flowers glisten and the soil goes quiet.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "poison",
+    "counters",
+    "elf",
+    "commander"
+   ]
+  },
+  {
+   "name": "Thessyl, Grafter of the Glass Vats",
+   "casting_cost": "2GU",
+   "super_type": "Legendary Creature",
+   "sub_type": "Phyrexian Wizard",
+   "rule_text": "At the beginning of your end step, proliferate.\nWhenever you proliferate, draw a card. This ability triggers only once each turn.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "poison",
+    "draw",
+    "counters",
+    "wizard",
+    "commander"
+   ]
+  },
+  {
+   "name": "Bilewing Gnat",
+   "casting_cost": "1B",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Insect",
+   "rule_text": "Flying, toxic 1\nWhen CARDNAME dies, proliferate.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "poison",
+    "evasion",
+    "insect"
+   ]
+  },
+  {
+   "name": "Seepwater Infiltrator",
+   "casting_cost": "1U",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Merfolk Rogue",
+   "rule_text": "Toxic 1\nCARDNAME can't be blocked.",
+   "flavor_text": "You never see it come in. You only find the oil on the floor.",
+   "power": "1",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "poison",
+    "evasion",
+    "merfolk"
+   ]
+  },
+  {
+   "name": "Blightroot Tender",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Elf Druid",
+   "rule_text": "{T}: Add {G}.\n{4}, {T}: Proliferate.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "ramp",
+    "counters",
+    "elf",
+    "green"
+   ]
+  },
+  {
+   "name": "Oilglass Skimmer",
+   "casting_cost": "2U",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Drake",
+   "rule_text": "Flying, toxic 1\nWhen CARDNAME enters, proliferate.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "poison",
+    "evasion",
+    "drake"
+   ]
+  },
+  {
+   "name": "Vat-Grown Strangler",
+   "casting_cost": "3G",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Beast",
+   "rule_text": "Trample, infect",
+   "flavor_text": "It was grown for one purpose, and it has never once been distracted.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "poison",
+    "beast",
+    "green"
+   ]
+  },
+  {
+   "name": "Brood-Mother of the Mire",
+   "casting_cost": "2BG",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Insect",
+   "rule_text": "Toxic 1\nWhenever an opponent gets one or more poison counters, create a 1/1 colorless Phyrexian Mite artifact creature token with toxic 1 and \"This creature can't block.\" This ability triggers only once each turn.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "tokens",
+    "poison",
+    "insect"
+   ]
+  },
+  {
+   "name": "Ruinscale Despoiler",
+   "casting_cost": "3BB",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Horror",
+   "rule_text": "Menace, toxic 2\nCorrupted — When CARDNAME enters, each opponent who has three or more poison counters sacrifices a creature.",
+   "power": "4",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "poison",
+    "removal",
+    "horror",
+    "black"
+   ]
+  },
+  {
+   "name": "Blightbloom Wurm",
+   "casting_cost": "5GG",
+   "super_type": "Creature",
+   "sub_type": "Phyrexian Wurm",
+   "rule_text": "Trample, toxic 3\nWhen CARDNAME enters, proliferate, then proliferate again.",
+   "power": "6",
+   "toughness": "6",
+   "rarity": "rare",
+   "tags": [
+    "finisher",
+    "poison",
+    "wurm",
+    "green"
+   ]
+  },
+  {
+   "name": "Sudden Spore-Bloom",
+   "casting_cost": "1G",
+   "super_type": "Instant",
+   "rule_text": "Put a +1/+1 counter on target creature, then proliferate.",
+   "rarity": "common",
+   "tags": [
+    "counters",
+    "poison",
+    "trick"
+   ]
+  },
+  {
+   "name": "Insight from the Lattice",
+   "casting_cost": "2U",
+   "super_type": "Instant",
+   "rule_text": "Scry 2, then draw a card. Proliferate.",
+   "rarity": "common",
+   "tags": [
+    "draw",
+    "poison",
+    "blue"
+   ]
+  },
+  {
+   "name": "Weeping Oil Wound",
+   "casting_cost": "1B",
+   "super_type": "Instant",
+   "rule_text": "Put two -1/-1 counters on target creature, then proliferate.",
+   "rarity": "common",
+   "tags": [
+    "removal",
+    "counters",
+    "black"
+   ]
+  },
+  {
+   "name": "Drown in Black Oil",
+   "casting_cost": "1UU",
+   "super_type": "Instant",
+   "rule_text": "Counter target spell, then proliferate.",
+   "rarity": "uncommon",
+   "tags": [
+    "counter",
+    "poison",
+    "blue"
+   ]
+  },
+  {
+   "name": "Slip Through the Seams",
+   "casting_cost": "1U",
+   "super_type": "Instant",
+   "rule_text": "Creatures you control with toxic or infect can't be blocked this turn.",
+   "flavor_text": "Every wall has a crack. Every crack is a door.",
+   "rarity": "uncommon",
+   "tags": [
+    "evasion",
+    "finisher",
+    "poison"
+   ]
+  },
+  {
+   "name": "Choking Spore-Cloud",
+   "casting_cost": "2BB",
+   "super_type": "Sorcery",
+   "rule_text": "Put a -1/-1 counter on each creature, then proliferate.",
+   "rarity": "rare",
+   "tags": [
+    "wipe",
+    "counters",
+    "poison"
+   ]
+  },
+  {
+   "name": "Whispers in the Vats",
+   "casting_cost": "2U",
+   "super_type": "Enchantment",
+   "rule_text": "Corrupted — At the beginning of your upkeep, scry 1. Then if an opponent has three or more poison counters, draw a card.",
+   "rarity": "uncommon",
+   "tags": [
+    "draw",
+    "poison",
+    "blue"
+   ]
+  },
+  {
+   "name": "Oil-Tipped Lance",
+   "casting_cost": "2",
+   "super_type": "Artifact",
+   "sub_type": "Equipment",
+   "rule_text": "Equipped creature gets +1/+0 and has toxic 2.\nEquip {2}",
+   "rarity": "uncommon",
+   "tags": [
+    "poison",
+    "equipment"
+   ]
+  },
+  {
+   "name": "Vashka, Voice of the Seep",
+   "casting_cost": "2BG",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Vashka",
+   "rule_text": "+1: Proliferate.\n−2: Create two 1/1 colorless Phyrexian Mite artifact creature tokens with toxic 1 and \"This creature can't block.\"\n−7: Each opponent gets a poison counter for each creature you control.",
+   "loyalty": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "poison",
+    "tokens",
+    "finisher",
+    "counters"
+   ]
+  },
+  {
+   "name": "Seeping Undercroft",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{3}, {T}: Proliferate. Activate only as a sorcery.",
+   "rarity": "uncommon",
+   "tags": [
+    "lands",
+    "counters",
+    "poison"
+   ]
+  }
+ ]
+}

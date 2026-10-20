@@ -1,0 +1,667 @@
+{
+  "format": 1,
+  "store": "https://github.com/MEZTKING/MSE-Studio-Addons",
+  "addons": [
+    {
+      "id": "anime-archetypes",
+      "name": "Anime archetypes",
+      "version": "1.0.0",
+      "kind": "cards",
+      "description": "The characters every anime has – the hero who never gives up, the eternal rival, the wise mentor, the mascot, the sealed evil – as cards for your anime decks.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/anime-archetypes",
+      "license": "CC0-1.0",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "anime",
+        "characters",
+        "commander"
+      ],
+      "cards": [
+        "lists/anime-archetypes.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip",
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
+    },
+    {
+      "id": "anime-upscaling-models",
+      "name": "Anime upscaling models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "Real-ESRGAN's AnimeVideo v3 models (2×, 3× and 4×: small and fast, made for anime) and 4xHFA2k (4×, trained on anime art). Upscayl's Digital Art model is still the default.",
+      "author": "xinntao, Real-ESRGAN, Phhofm – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/anime-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "anime",
+        "art",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "art-only",
+      "name": "Art only",
+      "version": "1.1.2",
+      "kind": "page",
+      "description": "Just the art of a card, for your own cards: cut out of its window (Scryfall's own cut-out for real cards), or – for full-art and borderless cards – with the name bar, type line, text box, P/T and border painted over by a content-aware fill that rebuilds them from the art around them (offline; AI fill too when AI is switched on). Adds Keep only the art to the Decklists page.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/art-only",
+      "license": "MIT",
+      "min_app_version": "0.17.0",
+      "tags": [
+        "art",
+        "full art",
+        "cleanup"
+      ],
+      "page": {
+        "module": "art_only_page",
+        "class": "ArtOnlyPage",
+        "title": "Art only",
+        "icon": "ink_eraser",
+        "section": "Create",
+        "order": 45,
+        "tooltip": "The art of a card without its frame and text"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.2/art-only-1.1.2.zip",
+      "downloads": 4,
+      "versions": [
+        {
+          "version": "1.1.2",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.2/art-only-1.1.2.zip",
+          "date": "2026-10-20"
+        },
+        {
+          "version": "1.1.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.1/art-only-1.1.1.zip",
+          "date": "2026-10-16"
+        },
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.0/art-only-1.1.0.zip",
+          "date": "2026-10-15"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.0.0/art-only-1.0.0.zip",
+          "date": "2026-10-14"
+        }
+      ]
+    },
+    {
+      "id": "card-database",
+      "name": "Card database",
+      "version": "1.4.7",
+      "kind": "page",
+      "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters (legal in Commander, Standard, Modern…), pick random cards, build a whole deck for your format – around a commander, or around a key card in fours for 60-card formats – in a play style and themes you pick, see the cards, pick the ones you want or start a new deck with all of them, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-database",
+      "license": "MIT",
+      "min_app_version": "0.15.1",
+      "tags": [
+        "scryfall",
+        "cards",
+        "deck builder",
+        "random",
+        "search",
+        "formats",
+        "standard",
+        "modern"
+      ],
+      "page": {
+        "module": "card_database_page",
+        "class": "CardDatabasePage",
+        "title": "Card database",
+        "icon": "storage",
+        "section": "Review",
+        "order": 40,
+        "tooltip": "Every Magic card: search, random cards, build a deck"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.7/card-database-1.4.7.zip",
+      "downloads": 14,
+      "versions": [
+        {
+          "version": "1.4.7",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.7/card-database-1.4.7.zip",
+          "date": "2026-10-20"
+        },
+        {
+          "version": "1.4.6",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.6/card-database-1.4.6.zip",
+          "date": "2026-10-19"
+        },
+        {
+          "version": "1.4.5",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.5/card-database-1.4.5.zip",
+          "date": "2026-10-18"
+        },
+        {
+          "version": "1.4.4",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.4/card-database-1.4.4.zip",
+          "date": "2026-10-18"
+        },
+        {
+          "version": "1.4.3",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.3/card-database-1.4.3.zip",
+          "date": "2026-10-16"
+        },
+        {
+          "version": "1.4.2",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.2/card-database-1.4.2.zip",
+          "date": "2026-10-16"
+        },
+        {
+          "version": "1.4.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.1/card-database-1.4.1.zip",
+          "date": "2026-10-15"
+        },
+        {
+          "version": "1.4.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.0/card-database-1.4.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.3.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.3.0/card-database-1.3.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.2.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.2.0/card-database-1.2.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.1.0/card-database-1.1.0.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.0.2",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.2/card-database-1.0.2.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.1/card-database-1.0.1.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.0/card-database-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "card-prices",
+      "name": "Card prices",
+      "version": "1.0.1",
+      "kind": "page",
+      "description": "What the real cards of your deck, or a decklist, cost at TCGplayer and Cardmarket: the cheapest printing of each, totals per store and the cheapest mix, in your currency – with a TCGplayer Mass Entry link and a Cardmarket wants list. Uses the Card database add-on's prices when it's installed.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/card-prices",
+      "license": "MIT",
+      "min_app_version": "0.15.1",
+      "tags": [
+        "prices",
+        "tcgplayer",
+        "cardmarket",
+        "buying"
+      ],
+      "page": {
+        "module": "card_prices_page",
+        "class": "CardPricesPage",
+        "title": "Card prices",
+        "icon": "payments",
+        "section": "Review",
+        "order": 45,
+        "tooltip": "What the real cards cost at TCGplayer and Cardmarket"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
+          "date": "2026-10-13"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.0/card-prices-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "deck-notes",
+      "name": "Deck notes",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "A notes page for each deck: ideas, to-dos and cards to fix, saved by itself as notes.md in the deck's folder. Can make a checklist of every card in the deck.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/deck-notes",
+      "license": "MIT",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "notes",
+        "to-do",
+        "checklist"
+      ],
+      "page": {
+        "module": "notes_page",
+        "class": "NotesPage",
+        "title": "Notes",
+        "icon": "edit",
+        "section": "Manage",
+        "tooltip": "Notes and to-dos for this deck"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip",
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
+    },
+    {
+      "id": "deck-sharing",
+      "name": "Deck sharing",
+      "version": "1.0.1",
+      "kind": "page",
+      "description": "Share decks with friends: pick a folder you all share on OneDrive, Google Drive or Dropbox and your decks and theirs show up on one list, with a picture, who shared it and a note. Open a friend's deck and it's added to your decks (never over one of yours). Or send a deck as one file on Discord or by e-mail.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/deck-sharing",
+      "license": "MIT",
+      "min_app_version": "0.16.0",
+      "tags": [
+        "share",
+        "friends",
+        "onedrive",
+        "google drive",
+        "dropbox"
+      ],
+      "page": {
+        "module": "sharing_page",
+        "class": "SharingPage",
+        "title": "Deck sharing",
+        "icon": "cloud",
+        "section": "Manage",
+        "order": 60,
+        "tooltip": "Share decks with friends through a shared folder or a file"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.1",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
+          "date": "2026-10-14"
+        },
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.0/deck-sharing-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "dragon-cards",
+      "name": "Dragon cards",
+      "version": "1.0.0",
+      "kind": "cards",
+      "description": "Twelve dragon ideas in every colour, with a legendary dragon commander, ramp for dragon decks and dragon tokens.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/dragon-cards",
+      "license": "CC0-1.0",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "dragons",
+        "tribal",
+        "commander"
+      ],
+      "cards": [
+        "lists/dragon-cards.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip",
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
+    },
+    {
+      "id": "fast-upscaling-models",
+      "name": "Fast upscaling models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "Light, quick 4× models for big batches: Real-ESRGAN General v3 (and its wide-and-deep version) and 4xLSDIRCompactC3.",
+      "author": "xinntao, Real-ESRGAN, Phhofm – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/fast-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "fast",
+        "general",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/fast-upscaling-models-v1.0.0/fast-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/fast-upscaling-models-v1.0.0/fast-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "gear-and-auras",
+      "name": "Gear and auras",
+      "version": "1.0.0",
+      "kind": "cards",
+      "description": "Equipment and Auras for Voltron decks (one big creature with lots of gear), plus the creatures that find and pay for them.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/gear-and-auras",
+      "license": "CC0-1.0",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "equipment",
+        "auras",
+        "voltron"
+      ],
+      "cards": [
+        "lists/gear-and-auras.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
+      "downloads": 2,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
+          "date": "2026-10-12"
+        }
+      ]
+    },
+    {
+      "id": "more-example-cards",
+      "name": "More example cards",
+      "version": "1.0.0",
+      "kind": "cards",
+      "description": "21 more lists for Card ideas – 407 cards of our own: decks of a creature type (Vampires, Zombies, Elves, Goblins, Angels, Merfolk, Knights, Beasts), play styles (spells, +1/+1 counters, artifacts, enchantments, graveyard, life gain, tokens, poison, lands, control), two-colour pairs, planeswalkers and tokens to print. Each has commanders and the cards a deck of its kind needs.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/more-example-cards",
+      "license": "CC0-1.0",
+      "min_app_version": "0.11.0",
+      "tags": [
+        "commander",
+        "typal",
+        "archetypes",
+        "tokens",
+        "planeswalkers"
+      ],
+      "cards": [
+        "lists/vampire_court.json",
+        "lists/zombie_horde.json",
+        "lists/elf_grove.json",
+        "lists/goblin_warband.json",
+        "lists/angels_and_spirits.json",
+        "lists/merfolk_and_wizards.json",
+        "lists/knights_and_soldiers.json",
+        "lists/beasts_and_dinosaurs.json",
+        "lists/spellslinger.json",
+        "lists/plus_one_counters.json",
+        "lists/artifacts_and_treasure.json",
+        "lists/enchantments_and_auras.json",
+        "lists/graveyard_and_reanimation.json",
+        "lists/lifegain_and_drain.json",
+        "lists/tokens_go_wide.json",
+        "lists/poison_and_proliferate.json",
+        "lists/lands_and_landfall.json",
+        "lists/control_toolbox.json",
+        "lists/two_colour_pairs.json",
+        "lists/planeswalkers.json",
+        "lists/token_cards.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-example-cards-v1.0.0/more-example-cards-1.0.0.zip",
+      "downloads": 1,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-example-cards-v1.0.0/more-example-cards-1.0.0.zip",
+          "date": "2026-10-18"
+        }
+      ]
+    },
+    {
+      "id": "more-formats",
+      "name": "More formats",
+      "version": "1.0.0",
+      "kind": "formats",
+      "description": "Six more deck formats to choose on the Deck page and in the New deck window: Duel Commander, PreDH, Premodern, Penny Dreadful, Historic and Timeless – their deck size, copies, life and which real cards are allowed (Scryfall's lists). Make your own under My formats.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/more-formats",
+      "license": "CC0-1.0",
+      "min_app_version": "0.25.0",
+      "tags": [
+        "formats",
+        "commander",
+        "constructed"
+      ],
+      "formats": [
+        "formats/more-formats.json"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-formats-v1.0.0/more-formats-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-formats-v1.0.0/more-formats-1.0.0.zip",
+          "date": "2026-10-18"
+        }
+      ]
+    },
+    {
+      "id": "nmkd-upscaling-models",
+      "name": "NMKD upscaling models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "NMKD Siax (4×: a universal upscaler for clean and lightly compressed pictures) and NMKD Superscale (4×: sharp results on clean, artifact-free pictures).",
+      "author": "NMKD – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/nmkd-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "general",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "paint-studio",
+      "name": "Paint studio",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Paint card art like in a real painting app: layers with blend modes, clipping and locks; 34 brushes (pencils, inks, oils, gouache, watercolour with wet edges, airbrushes, chalk, charcoal, sprays, glows, sparkles) and your own in Brush studio; pen pressure, smudging and blending, symmetry, straight lines and neat ellipses by holding the pen still, selections and the magic wand, fill, gradients, liquify, shapes, moving and resizing, 14 adjustments (colour, levels, blur, sharpen, glow, gradient map…), a colour wheel with harmonies and palettes, touch gestures, and the card's frame over the painting while you paint. Paintings are .ora files Krita and GIMP open; Photoshop layers can be brought in.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/paint-studio",
+      "license": "MIT",
+      "min_app_version": "0.25.0",
+      "tags": [
+        "art",
+        "painting",
+        "drawing",
+        "brushes",
+        "layers"
+      ],
+      "page": {
+        "module": "studio_page",
+        "class": "PaintStudioPage",
+        "title": "Paint studio",
+        "icon": "brush",
+        "section": "Create",
+        "order": 30,
+        "tooltip": "Paint your cards' art with layers and real-feeling brushes"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.0.0/paint-studio-1.0.0.zip",
+      "downloads": 1,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.0.0/paint-studio-1.0.0.zip",
+          "date": "2026-10-18"
+        }
+      ]
+    },
+    {
+      "id": "photo-upscaling-models",
+      "name": "Photo and restoration models",
+      "version": "1.0.0",
+      "kind": "models",
+      "description": "4× models for photos, screenshots and damaged pictures: 4xNomos8kSC, 4xLSDIR, 4xLSDIRplusC, Uniscale Restore and \"Unknown\" (a model Upscayl once shipped by mistake that people liked).",
+      "author": "Phhofm, Kim2091, unknown – see Upscayl's notes – collected by Upscayl",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/photo-upscaling-models",
+      "license": "the model authors' (see the README)",
+      "min_app_version": "0.12.1",
+      "tags": [
+        "photo",
+        "restore",
+        "upscaling"
+      ],
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "picture-grabber",
+      "name": "Picture grabber",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Collect card art from anywhere: every picture on a web page (Pinterest, ArtStation, a booru, Reddit, any site) saved full size with its credit, and live mode – every picture you copy and every new screenshot is saved into the deck's art folder by itself.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/picture-grabber",
+      "license": "MIT",
+      "min_app_version": "0.15.0",
+      "tags": [
+        "art",
+        "pictures",
+        "web",
+        "clipboard"
+      ],
+      "page": {
+        "module": "pictures_page",
+        "class": "PictureGrabberTab",
+        "title": "Pictures",
+        "icon": "add_photo_alternate",
+        "section": "Create",
+        "tooltip": "Picture grabber: pictures from web pages, the clipboard and screenshots",
+        "order": 11
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    },
+    {
+      "id": "playtest",
+      "name": "Playtest",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Goldfish your deck: deal opening hands (with the free mulligan of multiplayer Commander), keep or mulligan, play turns – draw, play cards, tap them, life and poison counters – and see the odds of having the cards you need by a given turn. Plays your own cards as MSE draws them, real cards with their real pictures, or any decklist (Decklists → Playtest). Until MSE Studio 0.25 this page came with the app.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/playtest",
+      "license": "MIT",
+      "min_app_version": "0.25.0",
+      "tags": [
+        "playtest",
+        "goldfish",
+        "odds",
+        "decklists"
+      ],
+      "page": {
+        "module": "playtest_page",
+        "class": "PlaytestPage",
+        "title": "Playtest",
+        "icon": "playing_cards",
+        "section": "Review",
+        "order": 10,
+        "tooltip": "Playtest · opening hands, turns and odds"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/playtest-v1.0.0/playtest-1.0.0.zip",
+      "downloads": 1,
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/playtest-v1.0.0/playtest-1.0.0.zip",
+          "date": "2026-10-16"
+        }
+      ]
+    },
+    {
+      "id": "capture",
+      "name": "Video capture",
+      "version": "1.0.0",
+      "kind": "page",
+      "description": "Take screenshots of episodes with a hotkey, straight into the right episode folder – even while the video is fullscreen. Adds the Video capture page.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/capture",
+      "license": "MIT",
+      "min_app_version": "0.15.0",
+      "tags": [
+        "art",
+        "screenshots",
+        "video"
+      ],
+      "page": {
+        "module": "capture_page",
+        "class": "CaptureTab",
+        "title": "Video capture",
+        "icon": "screenshot_monitor",
+        "section": "Create",
+        "tooltip": "Capture screenshots of episodes into episode folders",
+        "order": 10
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/capture-v1.0.0/capture-1.0.0.zip",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/capture-v1.0.0/capture-1.0.0.zip",
+          "date": "2026-10-13"
+        }
+      ]
+    }
+  ]
+}

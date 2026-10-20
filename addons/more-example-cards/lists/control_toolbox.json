@@ -1,0 +1,286 @@
+{
+ "name": "Control toolbox",
+ "description": "Counterspells, board wipes, removal, card draw and a few big finishers in blue, white and black – everything a deck needs to say no, then win.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Stillwater Denial",
+   "casting_cost": "1UU",
+   "super_type": "Instant",
+   "rule_text": "Counter target spell. If that spell was a creature spell, scry 2.",
+   "flavor_text": "\"No.\"",
+   "rarity": "common",
+   "tags": [
+    "control",
+    "counter",
+    "blue"
+   ]
+  },
+  {
+   "name": "Hush the Chant",
+   "casting_cost": "U",
+   "super_type": "Instant",
+   "rule_text": "Counter target instant or sorcery spell unless its controller pays {2}. Scry 1.",
+   "rarity": "common",
+   "tags": [
+    "control",
+    "counter",
+    "blue"
+   ]
+  },
+  {
+   "name": "Unspun Thread",
+   "casting_cost": "2U",
+   "super_type": "Instant",
+   "rule_text": "Counter target creature spell. Create a 1/1 blue Bird creature token with flying.",
+   "rarity": "uncommon",
+   "tags": [
+    "control",
+    "counter",
+    "tokens",
+    "blue",
+    "bird"
+   ]
+  },
+  {
+   "name": "Keeper of the Sealed Stacks",
+   "casting_cost": "2UU",
+   "super_type": "Creature",
+   "sub_type": "Human Wizard",
+   "rule_text": "Flash\nWhen CARDNAME enters, counter target spell with mana value 3 or less.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "counter",
+    "blue",
+    "wizard"
+   ]
+  },
+  {
+   "name": "Ruling of the Silent Court",
+   "casting_cost": "1WU",
+   "super_type": "Instant",
+   "rule_text": "Counter target spell. You gain life equal to its mana value.",
+   "flavor_text": "The court does not argue. It decides.",
+   "rarity": "uncommon",
+   "tags": [
+    "control",
+    "counter",
+    "lifegain",
+    "azorius"
+   ]
+  },
+  {
+   "name": "Hour of Clean Ash",
+   "casting_cost": "2WW",
+   "super_type": "Sorcery",
+   "rule_text": "Destroy all creatures. You gain 1 life for each creature destroyed this way.",
+   "flavor_text": "After the fire, only the quiet was left standing.",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "wipe",
+    "lifegain",
+    "white"
+   ]
+  },
+  {
+   "name": "Creeping Blackfog",
+   "casting_cost": "2BB",
+   "super_type": "Sorcery",
+   "rule_text": "All creatures get -3/-3 until end of turn.\nCycling {2}",
+   "rarity": "uncommon",
+   "tags": [
+    "control",
+    "wipe",
+    "black"
+   ]
+  },
+  {
+   "name": "Undertow of Ages",
+   "casting_cost": "4UU",
+   "super_type": "Sorcery",
+   "rule_text": "Return all nonland permanents to their owners' hands. Draw two cards.",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "wipe",
+    "draw",
+    "blue"
+   ]
+  },
+  {
+   "name": "Binding Vow",
+   "casting_cost": "2W",
+   "super_type": "Enchantment",
+   "rule_text": "When CARDNAME enters, exile target creature or planeswalker an opponent controls until CARDNAME leaves the battlefield. Scry 1.",
+   "rarity": "uncommon",
+   "tags": [
+    "control",
+    "removal",
+    "white"
+   ]
+  },
+  {
+   "name": "Sudden Gloom",
+   "casting_cost": "1B",
+   "super_type": "Instant",
+   "rule_text": "Destroy target creature with mana value 3 or less. Surveil 1.",
+   "rarity": "common",
+   "tags": [
+    "control",
+    "removal",
+    "black"
+   ]
+  },
+  {
+   "name": "Penance and Ash",
+   "casting_cost": "1WB",
+   "super_type": "Instant",
+   "rule_text": "Exile target creature or planeswalker. Its controller gains life equal to its mana value.",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "removal",
+    "orzhov"
+   ]
+  },
+  {
+   "name": "Lost in Reverie",
+   "casting_cost": "1U",
+   "super_type": "Enchantment",
+   "sub_type": "Aura",
+   "rule_text": "Flash\nEnchant creature an opponent controls\nEnchanted creature can't attack or block.\nAt the beginning of your upkeep, scry 1.",
+   "rarity": "uncommon",
+   "tags": [
+    "control",
+    "removal",
+    "lock",
+    "blue"
+   ]
+  },
+  {
+   "name": "Lamplit Study",
+   "casting_cost": "2U",
+   "super_type": "Instant",
+   "rule_text": "Look at the top four cards of your library. Put two of them into your hand and the rest into your graveyard.",
+   "flavor_text": "The best answers are found after midnight.",
+   "rarity": "uncommon",
+   "tags": [
+    "control",
+    "draw",
+    "blue"
+   ]
+  },
+  {
+   "name": "Bleak Accounting",
+   "casting_cost": "2B",
+   "super_type": "Sorcery",
+   "rule_text": "You draw two cards and you lose 2 life. If a creature died this turn, draw an additional card.",
+   "rarity": "common",
+   "tags": [
+    "control",
+    "draw",
+    "black"
+   ]
+  },
+  {
+   "name": "Vigil of the Still Hall",
+   "casting_cost": "2W",
+   "super_type": "Enchantment",
+   "rule_text": "At the beginning of your end step, if you didn't attack this turn, draw a card.",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "draw",
+    "white"
+   ]
+  },
+  {
+   "name": "Shadowpost Informant",
+   "casting_cost": "1UB",
+   "super_type": "Creature",
+   "sub_type": "Human Rogue",
+   "rule_text": "Flash\nWhenever you cast your first spell during each opponent's turn, draw a card.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "draw",
+    "dimir",
+    "rogue"
+   ]
+  },
+  {
+   "name": "Leviathan of the Deep Archive",
+   "casting_cost": "5UU",
+   "super_type": "Creature",
+   "sub_type": "Leviathan",
+   "rule_text": "Ward {4}\nWhen CARDNAME enters, return up to two target nonland permanents your opponents control to their owners' hands.",
+   "power": "6",
+   "toughness": "6",
+   "rarity": "mythic rare",
+   "tags": [
+    "control",
+    "finisher",
+    "blue",
+    "leviathan"
+   ]
+  },
+  {
+   "name": "Seraph of the Final Hour",
+   "casting_cost": "4WW",
+   "super_type": "Creature",
+   "sub_type": "Angel",
+   "rule_text": "Flying, vigilance, lifelink\nWard {2}",
+   "flavor_text": "She comes when the arguing is over.",
+   "power": "4",
+   "toughness": "5",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "finisher",
+    "lifegain",
+    "white",
+    "angel"
+   ]
+  },
+  {
+   "name": "Gravebell Horror",
+   "casting_cost": "4BB",
+   "super_type": "Creature",
+   "sub_type": "Horror",
+   "rule_text": "Menace\nAt the beginning of your upkeep, each opponent loses 2 life and you gain 2 life.",
+   "power": "4",
+   "toughness": "6",
+   "rarity": "rare",
+   "tags": [
+    "control",
+    "finisher",
+    "drain",
+    "black",
+    "horror"
+   ]
+  },
+  {
+   "name": "Velisar, the Last Word",
+   "casting_cost": "1WUB",
+   "super_type": "Legendary Creature",
+   "sub_type": "Human Advisor",
+   "rule_text": "Flash\nVigilance\nWhenever you cast an instant spell during an opponent's turn, each opponent loses 1 life and you draw a card.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "commander",
+    "control",
+    "draw",
+    "drain",
+    "advisor"
+   ]
+  }
+ ]
+}

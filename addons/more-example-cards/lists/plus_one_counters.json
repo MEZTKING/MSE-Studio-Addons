@@ -1,0 +1,289 @@
+{
+ "name": "+1/+1 counters",
+ "description": "Green, white and black creatures that arrive with +1/+1 counters, spread them with proliferate and move them about, with rewards for every creature that has grown.",
+ "group": "Play styles",
+ "cards": [
+  {
+   "name": "Oriel Thornmantle, Grove Warden",
+   "casting_cost": "1GW",
+   "super_type": "Legendary Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "Whenever another creature you control enters, put a +1/+1 counter on it.\nAt the beginning of your end step, if you control three or more creatures with +1/+1 counters on them, draw a card.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "rare",
+   "tags": [
+    "commander",
+    "counters",
+    "elf",
+    "draw"
+   ]
+  },
+  {
+   "name": "Hesk, Marrow Gardener",
+   "casting_cost": "2BG",
+   "super_type": "Legendary Creature",
+   "sub_type": "Zombie Druid",
+   "rule_text": "Whenever another creature you control dies, if it had +1/+1 counters on it, put those counters on target creature you control.\n{1}{B}, Sacrifice another creature with a +1/+1 counter on it: Draw a card.",
+   "flavor_text": "Nothing in his garden is ever wasted.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "mythic rare",
+   "tags": [
+    "commander",
+    "counters",
+    "sacrifice",
+    "zombie",
+    "draw"
+   ]
+  },
+  {
+   "name": "Hedge Squire",
+   "casting_cost": "W",
+   "super_type": "Creature",
+   "sub_type": "Human Soldier",
+   "rule_text": "When CARDNAME enters, put a +1/+1 counter on target creature you control.",
+   "flavor_text": "Small hands, steady work.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "counters",
+    "white",
+    "soldier"
+   ]
+  },
+  {
+   "name": "Bramblehide Boar",
+   "casting_cost": "2G",
+   "super_type": "Creature",
+   "sub_type": "Boar",
+   "rule_text": "Trample\nCARDNAME enters with a +1/+1 counter on it.",
+   "flavor_text": "It grows a little meaner every season.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "counters",
+    "green",
+    "boar"
+   ]
+  },
+  {
+   "name": "Rising Sap",
+   "casting_cost": "1G",
+   "super_type": "Instant",
+   "rule_text": "Choose one or both —\n• Put a +1/+1 counter on target creature you control.\n• Proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+   "rarity": "common",
+   "tags": [
+    "counters",
+    "green",
+    "trick"
+   ]
+  },
+  {
+   "name": "Mossbound Chorister",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Fungus Druid",
+   "rule_text": "{1}{G}, {T}: Proliferate. Activate only as a sorcery. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+   "power": "1",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "counters",
+    "green",
+    "fungus"
+   ]
+  },
+  {
+   "name": "Swellroot Druid",
+   "casting_cost": "1G",
+   "super_type": "Creature",
+   "sub_type": "Elf Druid",
+   "rule_text": "{T}: Add {G}.\n{3}{G}, {T}: Put a +1/+1 counter on each creature you control. Activate only as a sorcery.",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "uncommon",
+   "tags": [
+    "counters",
+    "green",
+    "elf",
+    "ramp"
+   ]
+  },
+  {
+   "name": "Dawnwing Instructor",
+   "casting_cost": "2W",
+   "super_type": "Creature",
+   "sub_type": "Bird Cleric",
+   "rule_text": "Flying\nWhen CARDNAME enters, put a +1/+1 counter on each of up to two other target creatures you control.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "counters",
+    "white",
+    "bird",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Graft-Hand Healer",
+   "casting_cost": "1W",
+   "super_type": "Creature",
+   "sub_type": "Human Cleric",
+   "rule_text": "{1}, {T}: Move a +1/+1 counter from target creature you control onto another target creature you control.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "counters",
+    "white",
+    "cleric"
+   ]
+  },
+  {
+   "name": "Duskvine Exchanger",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Elf Warlock",
+   "rule_text": "When CARDNAME enters, put a -1/-1 counter on up to one target creature an opponent controls and a +1/+1 counter on up to one target creature you control.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "counters",
+    "black",
+    "elf",
+    "removal"
+   ]
+  },
+  {
+   "name": "Envious Blight",
+   "casting_cost": "1B",
+   "super_type": "Instant",
+   "rule_text": "Target creature gets -2/-2 until end of turn. If you control a creature with a +1/+1 counter on it, that creature gets -4/-4 until end of turn instead.",
+   "flavor_text": "What it cannot have, it withers.",
+   "rarity": "common",
+   "tags": [
+    "counters",
+    "black",
+    "removal"
+   ]
+  },
+  {
+   "name": "Ripening Hour",
+   "casting_cost": "1G",
+   "super_type": "Instant",
+   "rule_text": "Put a +1/+1 counter on target creature you control. Then if its power is 4 or greater, draw a card.",
+   "rarity": "common",
+   "tags": [
+    "counters",
+    "green",
+    "draw",
+    "trick"
+   ]
+  },
+  {
+   "name": "Gravesap Vintner",
+   "casting_cost": "3B",
+   "super_type": "Creature",
+   "sub_type": "Vampire",
+   "rule_text": "Whenever a creature you control with a +1/+1 counter on it dies, each opponent loses 2 life and you gain 2 life.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "counters",
+    "black",
+    "vampire",
+    "drain"
+   ]
+  },
+  {
+   "name": "Oath of the Tall Grass",
+   "casting_cost": "1GW",
+   "super_type": "Enchantment",
+   "rule_text": "At the beginning of combat on your turn, put a +1/+1 counter on target creature you control.\nCreatures you control with +1/+1 counters on them have trample.",
+   "rarity": "rare",
+   "tags": [
+    "counters",
+    "anthem",
+    "green",
+    "white"
+   ]
+  },
+  {
+   "name": "Call the Grown Ranks",
+   "casting_cost": "3W",
+   "super_type": "Sorcery",
+   "rule_text": "Create two 1/1 white Soldier creature tokens, then put a +1/+1 counter on each creature you control.",
+   "rarity": "uncommon",
+   "tags": [
+    "counters",
+    "white",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Brennia, Bloomwarden",
+   "casting_cost": "2GW",
+   "super_type": "Legendary Planeswalker",
+   "sub_type": "Brennia",
+   "rule_text": "+1: Put a +1/+1 counter on up to one target creature. It gains vigilance and trample until end of turn.\n−2: Create a 2/2 green Wolf creature token, then put a +1/+1 counter on it.\n−7: Put three +1/+1 counters on each creature you control, then proliferate.",
+   "loyalty": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "counters",
+    "green",
+    "white",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Elder of Many Rings",
+   "casting_cost": "4GG",
+   "super_type": "Creature",
+   "sub_type": "Treefolk",
+   "rule_text": "Trample\nWhen CARDNAME enters, put two +1/+1 counters on each other creature you control.",
+   "flavor_text": "Each ring a year, each year a little stronger.",
+   "power": "4",
+   "toughness": "5",
+   "rarity": "rare",
+   "tags": [
+    "counters",
+    "green",
+    "treefolk",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Briarcrown Hydra",
+   "casting_cost": "XGG",
+   "super_type": "Creature",
+   "sub_type": "Hydra",
+   "rule_text": "Trample\nCARDNAME enters with X +1/+1 counters on it.\nWhenever one or more +1/+1 counters are put on another creature you control, put a +1/+1 counter on CARDNAME.",
+   "power": "0",
+   "toughness": "0",
+   "rarity": "mythic rare",
+   "tags": [
+    "counters",
+    "green",
+    "hydra",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Proving Meadow",
+   "super_type": "Land",
+   "rule_text": "{T}: Add {C}.\n{4}, {T}: Put a +1/+1 counter on target creature you control. Activate only as a sorcery.",
+   "flavor_text": "Everyone who trains here leaves a little taller.",
+   "rarity": "uncommon",
+   "tags": [
+    "counters",
+    "land"
+   ]
+  }
+ ]
+}

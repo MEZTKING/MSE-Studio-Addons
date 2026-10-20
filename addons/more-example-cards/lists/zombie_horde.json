@@ -1,0 +1,296 @@
+{
+ "name": "Zombie horde",
+ "description": "Blue and black Zombies that fill your graveyard, climb back out of it and crowd the board with 2/2 Zombie tokens to sacrifice.",
+ "group": "Creature types",
+ "cards": [
+  {
+   "name": "Morvane, Drowned Archivist",
+   "casting_cost": "2UB",
+   "super_type": "Legendary Creature",
+   "sub_type": "Zombie Wizard",
+   "rule_text": "At the beginning of your end step, mill two cards.\nWhenever one or more creature cards are put into your graveyard from your library, create a tapped 2/2 black Zombie creature token. This ability triggers only once each turn.",
+   "flavor_text": "She drowned with her books, and kept reading.",
+   "power": "2",
+   "toughness": "4",
+   "rarity": "mythic rare",
+   "tags": [
+    "zombie",
+    "black",
+    "commander",
+    "mill",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Vorrik, the Stitched Tyrant",
+   "casting_cost": "1UBR",
+   "super_type": "Legendary Creature",
+   "sub_type": "Zombie Warlock",
+   "rule_text": "Whenever one or more creature cards leave your graveyard, create a tapped 2/2 black Zombie creature token. This ability triggers only once each turn.\n{1}, Sacrifice another Zombie: CARDNAME deals 1 damage to each opponent. Scry 1.",
+   "power": "3",
+   "toughness": "4",
+   "rarity": "rare",
+   "tags": [
+    "zombie",
+    "commander",
+    "recursion",
+    "sacrifice",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Bell-Ringer of the Barrow",
+   "casting_cost": "1BB",
+   "super_type": "Creature",
+   "sub_type": "Zombie Cleric",
+   "rule_text": "Other Zombies you control get +1/+1.\n{3}{B}, Exile a creature card from your graveyard: Create a tapped 2/2 black Zombie creature token.",
+   "flavor_text": "One toll for the living. Two for everyone else.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "rare",
+   "tags": [
+    "zombie",
+    "black",
+    "anthem",
+    "typal",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Restless Ditch-Crawler",
+   "casting_cost": "B",
+   "super_type": "Creature",
+   "sub_type": "Zombie",
+   "rule_text": "CARDNAME can't block.\n{2}{B}: Return CARDNAME from your graveyard to the battlefield tapped. Activate only as a sorcery.",
+   "power": "2",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "zombie",
+    "black",
+    "recursion",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Brine-Soaked Deckhand",
+   "casting_cost": "1U",
+   "super_type": "Creature",
+   "sub_type": "Zombie Pirate",
+   "rule_text": "When CARDNAME enters, mill three cards. If one or more Zombie cards were milled this way, draw a card.",
+   "flavor_text": "The ship sank years ago. Nobody told the crew.",
+   "power": "1",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "zombie",
+    "blue",
+    "mill",
+    "draw"
+   ]
+  },
+  {
+   "name": "Fog-Wrapped Lamplighter",
+   "casting_cost": "2U",
+   "super_type": "Creature",
+   "sub_type": "Zombie Wizard",
+   "rule_text": "Flying\nWhen CARDNAME enters, draw a card, then discard a card.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "zombie",
+    "blue",
+    "draw",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Corpsepile Hauler",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Zombie Warrior",
+   "rule_text": "Menace\nWhen CARDNAME dies, create a tapped 2/2 black Zombie creature token.",
+   "power": "3",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "zombie",
+    "black",
+    "tokens",
+    "sacrifice"
+   ]
+  },
+  {
+   "name": "Sexton of the Saltmarsh",
+   "casting_cost": "1UB",
+   "super_type": "Creature",
+   "sub_type": "Zombie Cleric",
+   "rule_text": "Sacrifice another creature: Scry 1.\nWhenever another Zombie you control dies, each opponent loses 1 life and you mill a card.",
+   "power": "2",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "zombie",
+    "black",
+    "sacrifice",
+    "drain",
+    "mill"
+   ]
+  },
+  {
+   "name": "Barrowpit Gravepicker",
+   "casting_cost": "3B",
+   "super_type": "Creature",
+   "sub_type": "Zombie",
+   "rule_text": "When CARDNAME enters, mill two cards. Then you may return a Zombie card from your graveyard to your hand.",
+   "power": "3",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "zombie",
+    "black",
+    "recursion",
+    "mill"
+   ]
+  },
+  {
+   "name": "Bonepile Gorger",
+   "casting_cost": "2B",
+   "super_type": "Creature",
+   "sub_type": "Zombie Horror",
+   "rule_text": "Whenever one or more creature cards are put into your graveyard from anywhere, put a +1/+1 counter on CARDNAME. This ability triggers only once each turn.",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "uncommon",
+   "tags": [
+    "zombie",
+    "black",
+    "counters",
+    "mill"
+   ]
+  },
+  {
+   "name": "Dirge-Singing Ghoul",
+   "casting_cost": "4B",
+   "super_type": "Creature",
+   "sub_type": "Zombie",
+   "rule_text": "When CARDNAME enters, create two tapped 2/2 black Zombie creature tokens.",
+   "flavor_text": "Its song has no words, but every grave knows the tune.",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "uncommon",
+   "tags": [
+    "zombie",
+    "black",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Leviathan of the Drowned Fleet",
+   "casting_cost": "5U",
+   "super_type": "Creature",
+   "sub_type": "Zombie Leviathan",
+   "rule_text": "Ward {2}\nWhen CARDNAME enters, tap up to two target creatures your opponents control. Those creatures don't untap during their controllers' next untap steps.",
+   "power": "6",
+   "toughness": "6",
+   "rarity": "rare",
+   "tags": [
+    "zombie",
+    "blue",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Call of the Drowned Bell",
+   "casting_cost": "4B",
+   "super_type": "Sorcery",
+   "rule_text": "Return up to two target Zombie creature cards from your graveyard to the battlefield tapped.",
+   "flavor_text": "Under the lake, the old bell still rings for the dead.",
+   "rarity": "uncommon",
+   "tags": [
+    "zombie",
+    "black",
+    "recursion",
+    "typal"
+   ]
+  },
+  {
+   "name": "Trawl the Black Shallows",
+   "casting_cost": "2U",
+   "super_type": "Instant",
+   "rule_text": "Draw two cards, then mill two cards.",
+   "rarity": "common",
+   "tags": [
+    "blue",
+    "draw",
+    "mill"
+   ]
+  },
+  {
+   "name": "Muster the Unburied",
+   "casting_cost": "XBB",
+   "super_type": "Sorcery",
+   "rule_text": "Create X tapped 2/2 black Zombie creature tokens.",
+   "rarity": "rare",
+   "tags": [
+    "zombie",
+    "black",
+    "tokens",
+    "finisher"
+   ]
+  },
+  {
+   "name": "Grave-Tide Grasp",
+   "casting_cost": "1UB",
+   "super_type": "Instant",
+   "rule_text": "Return target creature to its owner's hand. If you control three or more Zombies, destroy that creature instead.",
+   "rarity": "uncommon",
+   "tags": [
+    "blue",
+    "black",
+    "removal",
+    "typal"
+   ]
+  },
+  {
+   "name": "Unquiet Burial Field",
+   "casting_cost": "1B",
+   "super_type": "Enchantment",
+   "rule_text": "Whenever a nontoken Zombie you control dies, create a tapped 2/2 black Zombie creature token.",
+   "rarity": "uncommon",
+   "tags": [
+    "zombie",
+    "black",
+    "tokens",
+    "sacrifice",
+    "typal"
+   ]
+  },
+  {
+   "name": "Altar of Bone and Brine",
+   "casting_cost": "3",
+   "super_type": "Artifact",
+   "rule_text": "Sacrifice a creature: Mill two cards.\n{2}, {T}, Exile a creature card from your graveyard: Create a tapped 2/2 black Zombie creature token.",
+   "rarity": "rare",
+   "tags": [
+    "zombie",
+    "sacrifice",
+    "mill",
+    "tokens"
+   ]
+  },
+  {
+   "name": "Drowned Ossuary",
+   "super_type": "Land",
+   "rule_text": "CARDNAME enters tapped.\n{T}: Add {U} or {B}.\n{2}, {T}, Sacrifice CARDNAME: Return target Zombie card from your graveyard to your hand.",
+   "rarity": "uncommon",
+   "tags": [
+    "zombie",
+    "blue",
+    "black",
+    "recursion"
+   ]
+  }
+ ]
+}

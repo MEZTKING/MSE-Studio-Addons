@@ -1,0 +1,280 @@
+{
+ "name": "Tokens to print",
+ "description": "The token cards decks need most: common creature tokens in every colour and the Treasure, Clue, Food, Blood and Map artifacts. Print a few of each to keep with your favourite decks.",
+ "group": "Colours, planeswalkers and tokens",
+ "cards": [
+  {
+   "name": "Soldier",
+   "super_type": "Token Creature",
+   "sub_type": "Soldier",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "white",
+    "soldier"
+   ]
+  },
+  {
+   "name": "Zombie",
+   "super_type": "Token Creature",
+   "sub_type": "Zombie",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "black",
+    "zombie"
+   ]
+  },
+  {
+   "name": "Saproling",
+   "super_type": "Token Creature",
+   "sub_type": "Saproling",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "green",
+    "saproling"
+   ]
+  },
+  {
+   "name": "Beast",
+   "super_type": "Token Creature",
+   "sub_type": "Beast",
+   "power": "3",
+   "toughness": "3",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "green",
+    "beast"
+   ]
+  },
+  {
+   "name": "Goblin",
+   "super_type": "Token Creature",
+   "sub_type": "Goblin",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "red",
+    "goblin"
+   ]
+  },
+  {
+   "name": "Angel",
+   "super_type": "Token Creature",
+   "sub_type": "Angel",
+   "rule_text": "Flying",
+   "power": "4",
+   "toughness": "4",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "white",
+    "angel",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Bird",
+   "super_type": "Token Creature",
+   "sub_type": "Bird",
+   "rule_text": "Flying",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "blue",
+    "bird",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Spirit",
+   "super_type": "Token Creature",
+   "sub_type": "Spirit",
+   "rule_text": "Flying",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "white",
+    "spirit",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Plant",
+   "super_type": "Token Creature",
+   "sub_type": "Plant",
+   "power": "0",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "green",
+    "plant"
+   ]
+  },
+  {
+   "name": "Wolf",
+   "super_type": "Token Creature",
+   "sub_type": "Wolf",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "green",
+    "wolf"
+   ]
+  },
+  {
+   "name": "Rat",
+   "super_type": "Token Creature",
+   "sub_type": "Rat",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "black",
+    "rat"
+   ]
+  },
+  {
+   "name": "Dragon",
+   "super_type": "Token Creature",
+   "sub_type": "Dragon",
+   "rule_text": "Flying",
+   "power": "5",
+   "toughness": "5",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "red",
+    "dragon",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Thopter",
+   "super_type": "Token Artifact Creature",
+   "sub_type": "Thopter",
+   "rule_text": "Flying",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "colourless",
+    "thopter",
+    "evasion"
+   ]
+  },
+  {
+   "name": "Knight",
+   "super_type": "Token Creature",
+   "sub_type": "Knight",
+   "rule_text": "Vigilance",
+   "power": "2",
+   "toughness": "2",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "white",
+    "knight"
+   ]
+  },
+  {
+   "name": "Elf Warrior",
+   "super_type": "Token Creature",
+   "sub_type": "Elf Warrior",
+   "power": "1",
+   "toughness": "1",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "green",
+    "elf",
+    "warrior"
+   ]
+  },
+  {
+   "name": "Treasure",
+   "super_type": "Token Artifact",
+   "sub_type": "Treasure",
+   "rule_text": "{T}, Sacrifice CARDNAME: Add one mana of any color.",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "treasure",
+    "ramp",
+    "colourless"
+   ]
+  },
+  {
+   "name": "Clue",
+   "super_type": "Token Artifact",
+   "sub_type": "Clue",
+   "rule_text": "{2}, Sacrifice CARDNAME: Draw a card.",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "clue",
+    "draw",
+    "colourless"
+   ]
+  },
+  {
+   "name": "Food",
+   "super_type": "Token Artifact",
+   "sub_type": "Food",
+   "rule_text": "{2}, {T}, Sacrifice CARDNAME: You gain 3 life.",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "food",
+    "lifegain",
+    "colourless"
+   ]
+  },
+  {
+   "name": "Blood",
+   "super_type": "Token Artifact",
+   "sub_type": "Blood",
+   "rule_text": "{1}, {T}, Discard a card, Sacrifice CARDNAME: Draw a card.",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "blood",
+    "draw",
+    "discard",
+    "colourless"
+   ]
+  },
+  {
+   "name": "Map",
+   "super_type": "Token Artifact",
+   "sub_type": "Map",
+   "rule_text": "{1}, {T}, Sacrifice CARDNAME: Target creature you control explores. Activate only as a sorcery.",
+   "rarity": "common",
+   "tags": [
+    "token",
+    "map",
+    "counters",
+    "colourless"
+   ]
+  }
+ ]
+}
