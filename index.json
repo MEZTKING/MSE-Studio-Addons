@@ -128,7 +128,7 @@
     {
       "id": "card-prices",
       "name": "Card prices",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "kind": "page",
       "description": "What the real cards of your deck, or a decklist, cost at TCGplayer and Cardmarket: the cheapest printing of each, totals per store and the cheapest mix, in your currency – with a TCGplayer Mass Entry link and a Cardmarket wants list. Uses the Card database add-on's prices when it's installed.",
       "author": "MEZTKING",
@@ -150,8 +150,13 @@
         "order": 45,
         "tooltip": "What the real cards cost at TCGplayer and Cardmarket"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.2/card-prices-1.0.2.zip",
       "versions": [
+        {
+          "version": "1.0.2",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.2/card-prices-1.0.2.zip",
+          "date": "2026-10-20"
+        },
         {
           "version": "1.0.1",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
@@ -431,6 +436,7 @@
         "tooltip": "Paint your cards' art with layers and real-feeling brushes"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.1.0/paint-studio-1.1.0.zip",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.1.0",
