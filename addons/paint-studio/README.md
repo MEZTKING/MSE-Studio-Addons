@@ -62,6 +62,13 @@ Right-click one on the page to put it on a card, export it or delete it.
 - **Colour** – a colour wheel, the colour's values, harmonies (opposite,
   neighbours, triangle…), recent colours, palettes (and one made from the
   painting).
+- **Trace a picture** (Actions → Add) – splits a picture into layers to paint
+  your own version over: clean ink lines, flat areas of colour and simple
+  shading, with the picture kept underneath – faint and locked – as a guide.
+  Trace the layer you're on, everything you see, or a picture file; choose how
+  much line detail, how thick the lines are, how many colours, how simple the
+  colour areas are and how many steps of shadow, with a preview. It's one step
+  to undo, and every layer can be repainted, hidden or deleted.
 - **The card's frame on top** (Actions → Canvas) while painting a card's art,
   so you see what will show; **See through the frame** lightens it. A thirds
   grid helps with the layout, and a reference picture can sit beside it.

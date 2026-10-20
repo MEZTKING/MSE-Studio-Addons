@@ -132,6 +132,7 @@ class StudioWindow(QMainWindow):
         self.tool_size: dict[str, float] = {}
         self.tool_opacity: dict[str, float] = {}
         self._jobs: list = []
+        self._tracing = False
         self._clipboard: Optional[QImage] = None
         self._reference: Optional[ReferenceWindow] = None
         self._closing = False
@@ -459,6 +460,10 @@ class StudioWindow(QMainWindow):
         add = m.addMenu("Add")
         add.addAction("A picture as a new layer…", self.import_picture)
         add.addAction("Layers from a Photoshop file (.psd)…", self.import_psd)
+        self.trace_act = add.addAction("Trace a picture into lines, colours and shading…",
+                                       self.trace_picture)
+        self.trace_act.setToolTip("Split a picture into layers of ink lines, flat colours and "
+                                  "shading to paint your own version over")
         add.addAction("Paste (Ctrl+V)", self.paste)
         add.addAction("Copy (Ctrl+C)", self.copy)
         add.addAction("Copy everything you see", lambda: self.copy(merged=True))
@@ -963,6 +968,95 @@ class StudioWindow(QMainWindow):
         self.layers.rebuild()
         self._layers_changed()
         self.say(f"Added {len(layers)} layers.")
+
+    def trace_picture(self) -> None:
+        """Trace a picture (the layer, everything, or a file) into new layers:
+        the picture as a faint guide, flat colours, shading and ink lines."""
+        from .trace import TraceDialog
+        if self._tracing:
+            self.say("A picture is being traced already – wait for it to finish.")
+            return
+        if self.view.transform_active():
+            self.view.apply_transform()
+        lay = self.doc.layers[self.doc.active] if self.doc.layers else None
+        dlg = TraceDialog(self, lay.image if lay is not None else QImage(),
+                          self.doc.composite(), self.doc.width, self.doc.height)
+        ok = dlg.exec() == QDialog.Accepted
+        image, o, name = dlg.source(), dlg.options(), dlg.source_name()
+        dlg.deleteLater()
+        if not ok:
+            return
+        if image.isNull() or not (o.lines or o.flat or o.shading):
+            return
+        self._trace_start(image, o, name)
+
+    def _trace_start(self, image: QImage, o, name: str) -> None:
+        from . import trace as tr
+        try:
+            from mse_studio.gui.common import Job, start
+        except ImportError:
+            self._traced((image, tr.trace(image, o), o, name))
+            return
+
+        def work(progress=None, cancel=None):
+            return image, tr.trace(image, o, progress, cancel), o, name
+        job = Job(work, label="Tracing the picture")
+        job.signals.progress.connect(self._trace_progress)
+        job.signals.finished.connect(self._traced)
+        job.signals.failed.connect(self._trace_failed)
+        job.signals.cancelled.connect(self._trace_stopped)
+        self._tracing = True
+        self.trace_act.setEnabled(False)
+        self._jobs.append(start(job))
+        self.say("Tracing the picture…")
+
+    def _trace_progress(self, _done: int, _total: int, text: str) -> None:
+        try:
+            self.say(f"Tracing the picture: {text.lower()}…" if text != "Done" else
+                     "Making the layers…")
+        except RuntimeError:
+            return
+
+    def _trace_over(self) -> None:
+        self._tracing = False
+        self.trace_act.setEnabled(True)
+
+    def _trace_failed(self, text: str) -> None:
+        try:
+            self._trace_over()
+            _error(self, "Trace a picture", f"The picture couldn't be traced: {text}")
+        except RuntimeError:
+            return
+
+    def _trace_stopped(self) -> None:
+        try:
+            self._trace_over()
+            self.say("Tracing stopped.")
+        except RuntimeError:
+            return
+
+    def _traced(self, result) -> None:
+        """Put the traced layers above the one you're on, as one step to undo."""
+        from .trace import layers
+        try:
+            self._trace_over()
+            image, traced, o, name = result
+            new = layers(image, traced, o, name)
+            if not new:
+                self.say("Nothing came out of that picture.")
+                return
+            self.doc.snapshot_stack("Trace a picture")
+            for lay in new:
+                self.doc.layers.insert(self.doc.active + 1, lay)
+                self.doc.active += 1
+            self.doc.dirty = True
+            self.layers.rebuild()
+            self._layers_changed()
+            made = ", ".join(lay.name.split(":")[0].lower() for lay in new)
+            self.say(f"Traced into {len(new)} layers ({made}). Paint over them, hide them or "
+                     f"delete the guide when you're done.")
+        except RuntimeError:
+            return
 
     def copy(self, merged: bool = False) -> None:
         img = tl.selection_copy(self.doc, self.selection, merged)
