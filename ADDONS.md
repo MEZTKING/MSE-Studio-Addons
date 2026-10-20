@@ -287,7 +287,9 @@ class HelloPage(QWidget):
 - **Other add-ons' pages** (MSE Studio 0.25.0): `main.addon_page(id)` is an
   installed add-on's page (or None); `main.open_addon_page(id, why)` shows it,
   or offers to get it; `main.offer_addon(id, why, then=fn)` installs one from
-  the store after asking (`fn(page)` once it's there). `main.playtest_tab` is the
+  the store after asking (`fn(page)` once it's there) – only when one of the
+  user's add-on lists has it; `main.addon_available(id)` says whether it's
+  installed or listed, so a page can leave out what nobody can get. `main.playtest_tab` is the
   Playtest add-on's page or None.
 - **Taken out of MSE Studio in 0.25.0** (now in the Playtest add-on):
   `mse_studio.gui.playtest_tab` and `core.playtest`. An add-on that needs one
