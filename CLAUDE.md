@@ -36,8 +36,8 @@ two the same).
   data folder and fonts only through MSE Studio's installers), no `eval`/`exec`, no
   downloading code, no touching MSE Studio's settings (API keys live there).
 - Card lists: the authors' own wording – no real cards' text or art.
-- Commits end with the attribution lines the session gives you. No model
-  names in commits or files.
+- Commits have no attribution lines (no Co-Authored-By, no session links).
+  No model names in commits or files.
 
 ## The three sorts
 
