@@ -21,12 +21,11 @@
         "lists/anime-archetypes.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip",
-      "downloads": 2,
       "versions": [
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-archetypes-v1.0.0/anime-archetypes-1.0.0.zip",
-          "date": "2026-10-12"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -50,7 +49,7 @@
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/anime-upscaling-models-v1.0.0/anime-upscaling-models-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -79,27 +78,11 @@
         "tooltip": "The art of a card without its frame and text"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.2/art-only-1.1.2.zip",
-      "downloads": 4,
       "versions": [
         {
           "version": "1.1.2",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.2/art-only-1.1.2.zip",
           "date": "2026-10-20"
-        },
-        {
-          "version": "1.1.1",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.1/art-only-1.1.1.zip",
-          "date": "2026-10-16"
-        },
-        {
-          "version": "1.1.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.0/art-only-1.1.0.zip",
-          "date": "2026-10-15"
-        },
-        {
-          "version": "1.0.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.0.0/art-only-1.0.0.zip",
-          "date": "2026-10-14"
         }
       ]
     },
@@ -133,77 +116,11 @@
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.7/card-database-1.4.7.zip",
-      "downloads": 14,
       "versions": [
         {
           "version": "1.4.7",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.7/card-database-1.4.7.zip",
           "date": "2026-10-20"
-        },
-        {
-          "version": "1.4.6",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.6/card-database-1.4.6.zip",
-          "date": "2026-10-19"
-        },
-        {
-          "version": "1.4.5",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.5/card-database-1.4.5.zip",
-          "date": "2026-10-18"
-        },
-        {
-          "version": "1.4.4",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.4/card-database-1.4.4.zip",
-          "date": "2026-10-18"
-        },
-        {
-          "version": "1.4.3",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.3/card-database-1.4.3.zip",
-          "date": "2026-10-16"
-        },
-        {
-          "version": "1.4.2",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.2/card-database-1.4.2.zip",
-          "date": "2026-10-16"
-        },
-        {
-          "version": "1.4.1",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.1/card-database-1.4.1.zip",
-          "date": "2026-10-15"
-        },
-        {
-          "version": "1.4.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.0/card-database-1.4.0.zip",
-          "date": "2026-10-14"
-        },
-        {
-          "version": "1.3.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.3.0/card-database-1.3.0.zip",
-          "date": "2026-10-14"
-        },
-        {
-          "version": "1.2.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.2.0/card-database-1.2.0.zip",
-          "date": "2026-10-14"
-        },
-        {
-          "version": "1.1.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.1.0/card-database-1.1.0.zip",
-          "date": "2026-10-14"
-        },
-        {
-          "version": "1.0.2",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.2/card-database-1.0.2.zip",
-          "date": "2026-10-13"
-        },
-        {
-          "version": "1.0.1",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.1/card-database-1.0.1.zip",
-          "date": "2026-10-13"
-        },
-        {
-          "version": "1.0.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.0.0/card-database-1.0.0.zip",
-          "date": "2026-10-13"
         }
       ]
     },
@@ -233,17 +150,11 @@
         "tooltip": "What the real cards cost at TCGplayer and Cardmarket"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
-      "downloads": 2,
       "versions": [
         {
           "version": "1.0.1",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.1/card-prices-1.0.1.zip",
-          "date": "2026-10-13"
-        },
-        {
-          "version": "1.0.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-prices-v1.0.0/card-prices-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -271,12 +182,11 @@
         "tooltip": "Notes and to-dos for this deck"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip",
-      "downloads": 2,
       "versions": [
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-notes-v1.0.0/deck-notes-1.0.0.zip",
-          "date": "2026-10-12"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -307,17 +217,11 @@
         "tooltip": "Share decks with friends through a shared folder or a file"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
-      "downloads": 2,
       "versions": [
         {
           "version": "1.0.1",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
-          "date": "2026-10-14"
-        },
-        {
-          "version": "1.0.0",
-          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.0/deck-sharing-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -340,12 +244,11 @@
         "lists/dragon-cards.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip",
-      "downloads": 2,
       "versions": [
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/dragon-cards-v1.0.0/dragon-cards-1.0.0.zip",
-          "date": "2026-10-12"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -369,7 +272,7 @@
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/fast-upscaling-models-v1.0.0/fast-upscaling-models-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -392,12 +295,11 @@
         "lists/gear-and-auras.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
-      "downloads": 2,
       "versions": [
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/gear-and-auras-v1.0.0/gear-and-auras-1.0.0.zip",
-          "date": "2026-10-12"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -442,12 +344,11 @@
         "lists/token_cards.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-example-cards-v1.0.0/more-example-cards-1.0.0.zip",
-      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-example-cards-v1.0.0/more-example-cards-1.0.0.zip",
-          "date": "2026-10-18"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -474,7 +375,7 @@
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-formats-v1.0.0/more-formats-1.0.0.zip",
-          "date": "2026-10-18"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -497,7 +398,7 @@
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/nmkd-upscaling-models-v1.0.0/nmkd-upscaling-models-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -528,12 +429,11 @@
         "tooltip": "Paint your cards' art with layers and real-feeling brushes"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.0.0/paint-studio-1.0.0.zip",
-      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/paint-studio-v1.0.0/paint-studio-1.0.0.zip",
-          "date": "2026-10-18"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -557,7 +457,7 @@
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/photo-upscaling-models-v1.0.0/photo-upscaling-models-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -591,7 +491,7 @@
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -621,12 +521,11 @@
         "tooltip": "Playtest · opening hands, turns and odds"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/playtest-v1.0.0/playtest-1.0.0.zip",
-      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/playtest-v1.0.0/playtest-1.0.0.zip",
-          "date": "2026-10-16"
+          "date": "2026-10-20"
         }
       ]
     },
@@ -659,7 +558,7 @@
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/capture-v1.0.0/capture-1.0.0.zip",
-          "date": "2026-10-13"
+          "date": "2026-10-20"
         }
       ]
     }
