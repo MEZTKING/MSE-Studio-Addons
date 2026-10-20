@@ -13,7 +13,7 @@ There are three sorts:
 | **Card list** | `cards` | Example cards (JSON) for the card idea maker. No code. |
 | **Formats** | `formats` | Deck formats – house rules: size, copies, a commander, life, banned cards (MSE Studio 0.25.0). No code. |
 | **Ability templates** | `templates` | Ability wordings for the Templates… window and card ideas (MSE Studio 0.25.0). No code. |
-| **Characters** | `characters` | Characters' stories and the abilities picked for them, for Cards → *From a story…* (MSE Studio 0.25.0). No code. |
+| **Characters** | `characters` | Characters' stories and the abilities picked for them, for the Cards page's *Abilities from a character's story…* (MSE Studio 0.25.0). No code. |
 | **Upscaling models** | `models` | Extra models for Upscayl (`.param` + `.bin`), offered on the Upscale page. No code. |
 
 Video capture (screenshots from videos into episode folders) and Pictures
@@ -419,9 +419,9 @@ in. They show in the Templates window with the add-on's name.
 
 ## Character add-ons
 
-Characters' stories and the abilities picked for them, for **From a
-story…** on the Cards page (and *Ideas → Abilities from a character's
-story…*) – MSE Studio 0.25.0. In that window, **Share → This character as an
+Characters' stories and the abilities picked for them, for **Abilities from
+a character's story…** on the Cards page (under the rules text, and in
+*Ideas*) – MSE Studio 0.25.0. In that window, **Share → This character as an
 add-on…** (or *Every character of this deck as an add-on…*) makes one; *This
 character as a file…* saves a `.character.json` the other person opens with
 *Saved → Open a character file…*. Installed ones are under **Saved ▾** there.
