@@ -295,6 +295,19 @@ class HelloPage(QWidget):
   user's add-on lists has it; `main.addon_available(id)` says whether it's
   installed or listed, so a page can leave out what nobody can get. `main.playtest_tab` is the
   Playtest add-on's page or None.
+- **Characters' stories** (MSE Studio 0.25.0): `mse_studio.gui.lore_dialog.open_for(main,
+  name="", story="")` opens *Abilities from a character's story* for a name
+  (looked up) or a story you already have (`story` is shown as it is).
+  `mse_studio.core.lore`: `lookup(name, series, kind=…)` finds their story
+  online; `cast(series, kind)` → `(members, where from)` – a series'
+  characters, the main ones first (`CastMember`: `name`, `role` "main",
+  "supporting" or "", `text`, `source`), from AniList or the series' fan
+  wiki; `character_card(name, text, about="", kept=(), role="")` – a
+  `card_ideas.CardIdea` for them (the type, colours, cost and abilities their
+  story fits; `card_ideas.add_to_deck(project, ideas)` adds it). `lookup` and
+  `cast` go online: run them in a `Job`. `SOURCE_KINDS` – what a story can be
+  from (`"anime"`, `"game"`, `"book"`, `"screen"`, `"comic"`). See the lore
+  add-on.
 - **Taken out of MSE Studio in 0.25.0** (now in the Playtest add-on):
   `mse_studio.gui.playtest_tab` and `core.playtest`. An add-on that needs one
   of them is out of date: MSE Studio says so on the Add-ons page.

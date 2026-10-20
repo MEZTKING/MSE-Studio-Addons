@@ -131,6 +131,7 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `real_cards.add_source(PictureSource(key, label, find, fetch, ready))`, `remove_source(key)`, `picture_sources()`, `source_label(key)` | Print-ready pictures for real cards, asked before Scryfall. `find`/`fetch` run on a worker thread (no widgets). Add in `__init__`, remove in `shutdown()` (0.25.0) |
 | `main.choose_card_back()`, `main.print_home(rows)`, `main.proof_sheet()`, `main.make_backs(rows)`, `main.cards_tab.set_copies(rows)`, `main.cards_tab.show_real(name)`; `mse_studio.pipeline.order` (`slots`, `readiness`) | Printing (0.25.0) |
 | `main.addon_page(id)`, `main.open_addon_page(id, why)`, `main.offer_addon(id, why, then=fn)` | Another add-on's page; offer to install a store add-on – only one the user's lists have; `main.addon_available(id)` (0.25.0). `main.playtest_tab` is the Playtest add-on's page or None |
+| `mse_studio.gui.lore_dialog.open_for(main, name=, story=)`, `mse_studio.core.lore`: `lookup`, `cast(series, kind)` / `CastMember`, `character_card(name, text, about, kept, role)`, `SOURCE_KINDS` | A character's story → abilities; a series' characters; a card for one (`card_ideas.add_to_deck`). `lookup`/`cast` go online: in a `Job` (0.25.0; see lore) |
 | Taken out of MSE Studio in 0.25.0 | `gui.playtest_tab`, `core.playtest` – now in the playtest add-on. `core.addons.RETIRED`: add-ons the store dropped, not loaded |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 

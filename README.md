@@ -17,6 +17,7 @@ get an **Update** button when a newer version is listed here.
 | Add-on | Kind | What it does |
 |---|---|---|
 | [Deck notes](addons/deck-notes) | Page | A notes page for each deck, saved as `notes.md` in the deck's folder, with a checklist of the deck's cards. |
+| [Lore](addons/lore) | Page | The deck's world: its characters, places, groups, items and events, what each one is and the cards that name it – gathered from your cards or a series' characters looked up, with a new card for any of them (needs 0.25.0). |
 | [Playtest](addons/playtest) | Page | Goldfish a deck or a decklist: opening hands, mulligans, turns, counters, and the odds of drawing what you need. Came with MSE Studio until 0.25 (needs 0.25.0). |
 | [Card database](addons/card-database) | Page | Every Magic card on your PC from Scryfall's bulk data: search, random cards, build a Commander deck around a commander in a play style and themes you pick (see the cards, pick some, or start a new deck with all of it), add cards as real or your own. |
 | [Card prices](addons/card-prices) | Page | What a deck's real cards cost at TCGplayer and Cardmarket: cheapest printings, totals per store, the cheapest mix, in your currency. |
