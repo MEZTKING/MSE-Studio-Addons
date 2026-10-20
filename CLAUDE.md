@@ -49,6 +49,8 @@ two the same).
 | Formats | `formats` | Deck formats (house rules) for the Deck page and New deck window: `"formats": ["formats/….json"]`, the same files as My formats → Export (needs MSE Studio 0.25.0) | `addons/more-formats` |
 | Click areas | `click-areas` | Where you click to edit each field on a frame, fixed by hand: `"click_areas": ["click_areas.json"]` – what *Share…* in MSE Studio's Click areas window makes (needs MSE Studio 0.25.0) | ADDONS.md → Click area add-ons |
 | Upscaling models | `models` | `.param` + `.bin` model pairs for Upscayl in a `models` folder, offered on the Upscale page (needs MSE Studio 0.12.1) | `addons/anime-upscaling-models` |
+| Ability templates | `templates` | Ability wordings for the Templates… window: `"templates": ["templates.txt"]`, MSE Studio's template format – what *Share → My templates as an add-on…* makes (needs MSE Studio 0.25.0) | ADDONS.md → Ability template add-ons |
+| Characters | `characters` | Characters' stories and picked abilities for Cards → *From a story…*: `"characters": ["characters.json"]` – what *Share → This character as an add-on…* makes (needs MSE Studio 0.25.0) | ADDONS.md → Character add-ons |
 
 Big files (models, programs) aren't committed: list them in `fetch` (`path`,
 `url` pinned to a commit or release tag, `sha256`) and `tools/build_index.py`

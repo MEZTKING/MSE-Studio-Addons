@@ -12,6 +12,8 @@ There are three sorts:
 | **Page** | `page` | A new page in MSE Studio's side rail, written in Python with PySide6. Runs **inside** MSE Studio. |
 | **Card list** | `cards` | Example cards (JSON) for the card idea maker. No code. |
 | **Formats** | `formats` | Deck formats – house rules: size, copies, a commander, life, banned cards (MSE Studio 0.25.0). No code. |
+| **Ability templates** | `templates` | Ability wordings for the Templates… window and card ideas (MSE Studio 0.25.0). No code. |
+| **Characters** | `characters` | Characters' stories and the abilities picked for them, for Cards → *From a story…* (MSE Studio 0.25.0). No code. |
 | **Upscaling models** | `models` | Extra models for Upscayl (`.param` + `.bin`), offered on the Upscale page. No code. |
 
 Video capture (screenshots from videos into episode folders) and Pictures
@@ -58,6 +60,8 @@ my-engine-0.1.0.zip
 | `page` | Pages: see below. |
 | `cards` | Card lists: the list files in the add-on, e.g. `["lists/dragons.json"]`. |
 | `formats` | Formats: the format files in the add-on, e.g. `["formats/house.json"]` (0.25.0). |
+| `templates` | Ability templates: text files in the template format, e.g. `["templates.txt"]` (0.25.0). |
+| `characters` | Characters: their files, e.g. `["characters.json"]` (0.25.0). |
 | `fetch` | Big files the store downloads when it builds the zip (see Upscaling models). |
 | `tags` | Words for the store's search, e.g. `["art", "fun"]`. |
 | `screenshots` | Picture links shown in the store (the first three). |
@@ -381,6 +385,61 @@ Studio's automatic boxes come last.
 [x, y, w, h] or null}}` – the box as parts of the card's width and height
 (0–1), `null` for "no click area" (the frame doesn't show that field). One
 file can hold several frames.
+
+## Ability template add-ons
+
+Ability wordings for the **Templates…** window (Cards page, beside the rules
+text) and the card ideas – shared by someone (MSE Studio 0.25.0). In the
+Templates window, **Share → My templates as an add-on…** saves your own
+templates as such an add-on; *My templates as a file…* saves a text file the
+other person adds with *Share → Add templates from a file…*.
+
+```json
+{"id": "templates-fire", "name": "Fire templates", "version": "1.0.0",
+ "kind": "templates", "min_app_version": "0.25.0",
+ "description": "Burning wordings for red decks.",
+ "templates": ["templates.txt"]}
+```
+
+`templates.txt` is in MSE Studio's own template format: `[section]` lines
+(`burn`, `draw`, `tokens`… – the deck jobs, or your own word) and one
+template a line, `colours | card types | text`:
+
+```
+[burn]
+R | creature | Whenever CARDNAME attacks, it deals 1 damage to each opponent.
+R | instant | CARDNAME deals [N] damage to any target.
+```
+
+Colours are `W U B R G`, `C` for colourless or `*` for any; card types are
+`creature`, `instant`, `sorcery`, `artifact`, `enchantment`, `planeswalker`,
+`land`, `spell`, `permanent` or `*`. `CARDNAME` becomes the card's name in
+MSE, `\n` starts a new line and `[bracketed]` parts are for the user to fill
+in. They show in the Templates window with the add-on's name.
+
+## Character add-ons
+
+Characters' stories and the abilities picked for them, for **From a
+story…** on the Cards page (and *Ideas → Abilities from a character's
+story…*) – MSE Studio 0.25.0. In that window, **Share → This character as an
+add-on…** (or *Every character of this deck as an add-on…*) makes one; *This
+character as a file…* saves a `.character.json` the other person opens with
+*Saved → Open a character file…*. Installed ones are under **Saved ▾** there.
+
+```json
+{"id": "characters-my-heroes", "name": "Characters: my heroes",
+ "version": "1.0.0", "kind": "characters", "min_app_version": "0.25.0",
+ "description": "Our heroes' stories and abilities.",
+ "characters": ["characters.json"]}
+```
+
+`characters.json`: `{"characters": [{"name", "series", "story", "abilities":
+[...], "sources": [{"title", "url", "source"}], "notes"}]}` – only `name` is
+needed. `story` is plain text; `== Heading ==` lines split it into parts, and
+the parts under an Abilities (Powers, Skills…) heading are the character's
+skills. `abilities` are rules text in the template format's wording
+(`CARDNAME` for the card's name). Write stories in your own words – not
+copied from somewhere that doesn't allow it.
 
 ## Upscaling model add-ons
 

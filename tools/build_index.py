@@ -29,12 +29,12 @@ ROOT = Path(__file__).resolve().parent.parent
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,63}$")
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 KINDS = {"game-engine", "tool", "page", "cards", "models", "exporter", "art", "formats",
-         "click-areas", "other"}
+         "click-areas", "templates", "characters", "other"}
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SECTIONS = {"Create", "Produce", "Review", "Manage"}
 FIELDS = ["id", "name", "version", "kind", "description", "author", "homepage", "license",
           "min_app_version", "tags", "screenshots", "run", "page", "cards", "formats",
-          "click_areas"]
+          "click_areas", "templates", "characters"]
 SKIP = {"__pycache__", ".DS_Store", "Thumbs.db"}
 
 
@@ -61,7 +61,8 @@ def check(addon: dict, folder: Path | None) -> list[str]:
         out.append(f"kind {kind!r} must be one of {', '.join(sorted(KINDS))}")
     if not str(addon.get("description", "")).strip():
         out.append("needs a description")
-    for key in ("tags", "screenshots", "cards", "formats", "click_areas"):
+    for key in ("tags", "screenshots", "cards", "formats", "click_areas", "templates",
+                "characters"):
         if key in addon and not isinstance(addon[key], list):
             out.append(f"{key} must be a list")
     if kind == "page":
@@ -95,6 +96,35 @@ def check(addon: dict, folder: Path | None) -> list[str]:
         out.append("a formats add-on needs \"formats\": [\"formats/….json\"]")
     if kind == "click-areas" and not addon.get("click_areas"):
         out.append("a click-areas add-on needs \"click_areas\": [\"click_areas.json\"]")
+    if kind == "templates" and not addon.get("templates"):
+        out.append("a templates add-on needs \"templates\": [\"templates.txt\"]")
+    for rel in addon.get("templates") or []:
+        if folder is None:
+            continue
+        try:
+            lines = (folder / rel).read_text(encoding="utf-8").splitlines()
+        except OSError as e:
+            out.append(f"{rel}: {e}")
+            continue
+        rows = [ln for ln in lines if ln.strip() and not ln.strip().startswith(("#", "["))]
+        bad = [ln for ln in rows if ln.count("|") < 2 or not ln.split("|", 2)[2].strip()]
+        if not rows or bad:
+            out.append(f"{rel}: every line needs colours | card types | text"
+                       + (f" (not: {bad[0][:60]})" if bad else ""))
+    if kind == "characters" and not addon.get("characters"):
+        out.append("a characters add-on needs \"characters\": [\"characters.json\"]")
+    for rel in addon.get("characters") or []:
+        if folder is None:
+            continue
+        try:
+            data = json.loads((folder / rel).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as e:
+            out.append(f"{rel}: {e}")
+            continue
+        chars = data.get("characters", [data]) if isinstance(data, dict) else data
+        if not isinstance(chars, list) or not chars or any(
+                not isinstance(c, dict) or not str(c.get("name", "")).strip() for c in chars):
+            out.append(f"{rel}: {{\"characters\": [{{\"name\", \"story\", …}}]}} expected")
     for rel in addon.get("click_areas") or []:
         if folder is None:
             continue
