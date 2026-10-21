@@ -67,6 +67,21 @@ def _keyword_line_pieces(line: str) -> list[str] | None:
     return None
 
 
+def _plain(text: str) -> str:
+    return re.sub(r"\s+", " ", text.replace("’", "'").replace("‘", "'").replace("“", '"')
+                  .replace("”", '"')).lower()
+
+
+def _still_applies(note: dict, card: Card) -> bool:
+    """A note or question about a card's wording is only shown while the card still
+    says it: its "if_text", else the first quoted words of the question (up to "…")."""
+    want = note.get("if_text")
+    if not want:
+        m = re.search(r"“([^”]+)”", note.get("question", ""))
+        want = m.group(1).split("…")[0].strip(" .") if m else ""
+    return not want or _plain(want) in _plain(card.rules_text)
+
+
 def classify(deck: Deck) -> tuple[list[CardResult], list[Finding]]:
     kb = knowledge()
     kw_info = kb["keywords"]
@@ -148,7 +163,9 @@ def classify(deck: Deck) -> tuple[list[CardResult], list[Finding]]:
         if any(t.lower() == "code" for t in c.types):
             r.raise_to("engine", "Code card type (Geass system)")
 
-        note = card_notes.get(c.base_name) or card_notes.get(c.name)
+        note = card_notes.get(c.name) or (card_notes.get(c.base_name) if not c.marker else None)
+        if note and not _still_applies(note, c):
+            note = None
         if note:
             if note.get("tier"):
                 r.raise_to(note["tier"], note.get("note", "see note"))

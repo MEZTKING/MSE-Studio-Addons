@@ -345,11 +345,13 @@
     },
     "Red-Handed": {
       "tier": "manual",
-      "note": "Players may lie and call “Red-handed”: a social game no engine can referee. Simulations skip it; in live play it's resolved by hand."
+      "note": "Players may lie and call “Red-handed”: a social game no engine can referee. Simulations skip it; in live play it's resolved by hand.",
+      "if_text": "lie about"
     },
     "Curses and Criticizing [Art 2]": {
       "tier": "manual",
-      "note": "“Without negotiation, once everyone decided” — hidden simultaneous choices; possible in software but bots can't judge it meaningfully. Resolve by hand at first."
+      "note": "“Without negotiation, once everyone decided” — hidden simultaneous choices; possible in software but bots can't judge it meaningfully. Resolve by hand at first.",
+      "if_text": "without negotiation"
     },
     "Lakan Fight": {
       "question": "“Deal -X/-X to target creature” — do you mean “target creature gets -X/-X until end of turn”?"
@@ -367,7 +369,8 @@
       "question": "“Roll a D6, then randomly choose an effect” — is the effect the number rolled, or a second random pick?"
     },
     "Temple of Heaven": {
-      "question": "“Whenever a player adds {G} … add another {G}” — like Mana Reflection for green only, for every player?"
+      "question": "“Whenever a player adds {G} … add another {G}” — like Mana Reflection for green only, for every player?",
+      "if_text": "add another {G}"
     },
     "Locked Chest": {
       "question": "“Move to the next phase” and “whenever you search or shuffle for the second time” — the second time this turn, this game, or every second time?"
@@ -376,13 +379,15 @@
       "question": "“Use Hadron Cannons instead when attacking … if target blocked creature …” — instead of dealing combat damage? And “Amalgamate all four Hadron Cannons” — does it need the other three Hadron cards?"
     },
     "Lancelot Albion": {
-      "question": "Power is “7-5” and “attacks normally” / “use Hadron cannons” — what are its power and the exact attack trigger?"
+      "question": "Power is “7-5” and “attacks normally” / “use Hadron cannons” — what are its power and the exact attack trigger?",
+      "if_text": "attacks normally"
     },
     "Guren Mk II": {
       "question": "“Guren's attack is doubled against flying creature” — double damage to flying creatures it fights or is blocked by?"
     },
     "Shinkirō, Zero’s Ace": {
-      "question": "“Whenever Shinkirō is a non-creature artifact … add {5} to target player's commander cost as long as it's active” — while it isn't crewed? And “Absolute Defense System” isn't defined anywhere."
+      "question": "“Whenever Shinkirō is a non-creature artifact … add {5} to target player's commander cost as long as it's active” — while it isn't crewed? And “Absolute Defense System” isn't defined anywhere.",
+      "if_text": "non-creature artifact"
     },
     "Zero Requiem Finale": {
       "question": "“Exile Lelouch vi Britannia” — the commander (Master of Geass) or the other Lelouch card? “Total power counters you control” — the counters on The Power of Absolute Obedience?"
@@ -406,9 +411,6 @@
     "-That Name Again.": {
       "question": "See Never Ever Say- (meld pair)."
     },
-    "Imperial Palace of Li": {
-      "question": "“{TBG}: You get a poison counter” — do you mean “{T}, {B}{G}:”? Note {TBG} isn't valid either way."
-    },
     "Jinshi, Imperial Moon": {
       "question": "“{4B}: Jinshi, Imperial Moon.” has no effect — what does it do?"
     },
@@ -419,7 +421,8 @@
       "question": "Typed Island Swamp but taps for {W} or {B}, and mentions Godless Shrine. Which is right?"
     },
     "Charles zi Britannia, Immortal Emperor": {
-      "question": "Has loyalty abilities but is a creature with no loyalty. Planeswalker with what loyalty? “Elite” isn't a Magic supertype."
+      "question": "Has loyalty abilities but is a creature with no loyalty. Planeswalker with what loyalty? “Elite” isn't a Magic supertype.",
+      "if_text": "+2:"
     },
     "Luciano Bradley, Knight of Ten": {
       "question": "“2:” — is that “+2:”? Creature with loyalty abilities: planeswalker?"
@@ -439,5 +442,8 @@
     "Lady Fuyou": {
       "question": "“Whenever Lady Fuyou becomes a target of a spell, counter that spell” — your own spells too (e.g. your auras or pump)?"
     }
+  },
+  "rulings": {
+    "compact-costs": "Shorthand like {TBG} or {3BG} in a cost means {T}, {B}{G} / {3}{B}{G}: tap plus that mana (author's ruling)."
   }
 }
