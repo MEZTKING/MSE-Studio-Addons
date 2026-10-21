@@ -7,6 +7,7 @@ Every check returns Findings. `kind` is:
 """
 from __future__ import annotations
 
+import json
 import re
 from collections import defaultdict
 from dataclasses import dataclass
@@ -340,6 +341,9 @@ def check_deck(deck: Deck) -> list[Finding]:
     if deck.format == "commander":
         alt = versions(deck)
         in_list = [c for c in deck.cards if c.count > 0 and not c.is_token]
+        if any("zone" in c.raw for c in deck.cards):
+            # the export says where each card starts: only deck and commander cards count
+            in_list = [c for c in in_list if str(c.raw.get("zone") or "deck") in ("deck", "commander")]
         total = sum(c.count for c in in_list if c.id not in alt and not is_art_card(c))
         groups = _likely_outside_deck(deck)
         est_out = sum(len(v) for v in groups.values())
@@ -544,6 +548,16 @@ def _likely_outside_deck(deck: Deck) -> dict[str, list[Card]]:
     return g
 
 
+@lru_cache
+def _own_cards() -> frozenset[str]:
+    """Cards the author said are their own although a real card has the name."""
+    try:
+        cards = json.loads((DATA / "mechanics.json").read_text(encoding="utf-8")).get("cards", {})
+    except (OSError, ValueError):
+        return frozenset()
+    return frozenset(n for n, v in cards.items() if isinstance(v, dict) and v.get("own"))
+
+
 def check_real_cards(deck: Deck) -> list[Finding]:
     """Custom entries whose name is a real card: real card, or a name clash."""
     out = []
@@ -552,8 +566,9 @@ def check_real_cards(deck: Deck) -> list[Finding]:
     if basics:
         out.append(_f("info", "real-basics",
                       f"{len(basics)} basic lands (e.g. {basics[0].name}) aren't marked “real”; the engine will treat them as the real basics."))
+    own = _own_cards()
     for c in deck.cards:
-        if c.real or c.base_name.lower() in BASIC_LANDS or c.base_name not in names:
+        if c.real or c.base_name.lower() in BASIC_LANDS or c.base_name not in names or c.base_name in own:
             continue
         out.append(_f("question", "real-name",
                       f"“{c.base_name}” is also the name of a real Magic card. Is this the real card or your own?", c,
@@ -565,6 +580,10 @@ def run_all(deck: Deck) -> list[Finding]:
     names = {c.base_name for c in deck.cards} | {c.short_name for c in deck.cards}
     kws = {k.name for k in deck.keywords}
     out = check_deck(deck) + check_real_cards(deck)
+    # a deck keyword whose reminder says when it happens ("When this card is cast…")
+    # gives its cards their trigger
+    timed = [k for k in deck.keywords if re.search(r"\b(when|whenever|at the beginning)\b", k.reminder, re.I)]
+    has_trigger = {c.id for c in deck.cards if any(k.pattern().search(c.rules_text) for k in timed)}
     art_only = {c.id for g in art_groups(deck).values() for c in g["blank"]}
     for c in deck.cards:
         if c.real or c.id in art_only or is_art_card(c):
@@ -572,6 +591,8 @@ def run_all(deck: Deck) -> list[Finding]:
         text = check_text(c, names)
         wrong = " ".join(f.message for f in text if f.code == "wrong-self-name")
         leftovers = [f for f in check_leftover_names(c, names, kws) if f.message.split("“")[1].split("”")[0] not in wrong]
+        if c.id in has_trigger:
+            text = [f for f in text if f.code != "permanent-imperative"]
         out += check_mana(c) + check_types(c) + check_pt(c) + text + leftovers + check_castable(c)
     return _group(out)
 

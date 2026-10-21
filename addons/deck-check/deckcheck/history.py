@@ -9,8 +9,14 @@ from .checks import Finding
 from .deck import Deck
 
 
+def steady_ids(deck: Deck) -> bool:
+    """Exported by an MSE Studio whose card ids stay with their card (it also
+    writes "version" / "zone" for every card)."""
+    return any("version" in c.raw or "zone" in c.raw for c in deck.cards)
+
+
 def snapshot(deck: Deck) -> dict:
-    return {"exported": deck.exported,
+    return {"exported": deck.exported, "steady": steady_ids(deck),
             "cards": {c.id: [c.name, c.text_hash] for c in deck.cards}}
 
 
@@ -31,7 +37,13 @@ def compare(previous: dict, deck: Deck) -> list[Finding]:
     moved = [c for c in deck.cards
              if len(old_by_name.get(c.name, [])) == 1 and c.id not in old_by_name[c.name] and not renamed(c)]
     kept = [c for c in deck.cards if len(old_by_name.get(c.name, [])) == 1]
-    if moved:
+    if moved and steady_ids(deck) and not previous.get("steady"):
+        # the first export with steady ids: every id is new once, nothing is mixed up
+        out.append(Finding("info", "ids-renewed",
+                           "This export comes from an MSE Studio whose card ids stay with their card, so every id "
+                           "changed once compared with the previous export. From now on they won't move."))
+        moved = []
+    elif moved:
         stolen = [c for c in moved if c.id in old and old[c.id][0] != c.name]
         ex = "; ".join(f"{c.name} now has {old[c.id][0]}’s old id" for c in stolen[:3])
         out.append(Finding(

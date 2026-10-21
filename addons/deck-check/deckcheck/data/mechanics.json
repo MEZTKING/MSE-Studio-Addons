@@ -36,9 +36,8 @@
     },
     "military": {
       "tier": "script",
-      "how": "Can't be stolen by opponents' spells; whenever a creature an opponent controls dies, put a +1/+1 counter on it (Forge script). The 'opponent spell' part may still need a ruling.",
-      "ruling": "Any opponent's creature that dies while this is on the battlefield gives it a +1/+1 counter.",
-      "question": "“Cannot be controlled by an opponent spell” — can an opponent's ability (not a spell) still take control of it?"
+      "how": "Opponents can't gain control of it; whenever a creature an opponent controls dies, put a +1/+1 counter on it (Forge script).",
+      "ruling": "Any opponent's creature that dies while this is on the battlefield gives it a +1/+1 counter. Opponents can't take control of it by any means, spells or abilities."
     },
     "plane": {
       "tier": "manual",
@@ -50,8 +49,8 @@
     },
     "herbal properties": {
       "tier": "engine",
-      "how": "Herbal cards live in a bag outside the deck. Maomao's and Surei's 'draw from Maomao's Bag' puts a random bag card into your hand; you may cast one herbal card per turn for free, then it returns to the bag and your turn ends. Needs the bag zone in Forge.",
-      "ruling": "Free to cast. One herbal card per turn. They come from Maomao's Bag: Maomao, The Apothecary and Surei, The Scheming draw from it, a random card. After it's used it goes back to the bag and your turn ends."
+      "how": "Herbal cards live in a bag outside the deck. Maomao's, Surei's and Xiaomao's 'draw from Maomao's Bag' puts a random bag card into your hand; you may cast one herbal card per turn for free, then it returns to the bag and your turn ends. Needs the bag zone in Forge.",
+      "ruling": "Free to cast. One herbal card per turn. They come from Maomao's Bag: Maomao, The Apothecary, Surei, The Scheming and Xiaomao draw from it, a random card. After it's used it goes back to the bag and your turn ends."
     },
     "influence": {
       "tier": "script",
@@ -60,9 +59,8 @@
     },
     "secretive movement": {
       "tier": "engine",
-      "how": "A replacement for 'reveal' (discard a card instead) plus a face-down permanent that keeps its own power and toughness. Needs engine code.",
-      "ruling": "Never revealed to an opponent (you can see it yourself): if something would reveal it, you discard a card from your hand instead; if you can't, it's revealed. On the battlefield it's face down with its own power and toughness (reminder text updated).",
-      "question": "“This card plays face-down on the battlefield” — always, whenever it's cast? And can its owner turn it face up (when, and for what cost)?"
+      "how": "Cast face down with its own power and toughness, never turned face up; 'reveal' is replaced by discarding a card (revealed only when you can't). Needs engine code.",
+      "ruling": "Always cast face down, keeping its own power and toughness, and it can't be turned face up. If something would reveal it, you discard a card from your hand instead; only if you can't is it revealed. It's never revealed to an opponent otherwise (you can look at it)."
     },
     "herbal specialist": {
       "tier": "script",
@@ -341,7 +339,7 @@
       "question": "The text says “Return Suirei from your graveyard” but the card is named Surei — same card?"
     },
     "Xiaomao": {
-      "question": "Xiaomao also says “draw from Maomao's bag” — does she draw from the bag too? (Your ruling only named Maomao and Surei.)"
+      "note": "Draws from Maomao's Bag like Maomao (ruling)."
     },
     "Red-Handed": {
       "tier": "manual",
@@ -373,7 +371,7 @@
       "if_text": "add another {G}"
     },
     "Locked Chest": {
-      "question": "“Move to the next phase” and “whenever you search or shuffle for the second time” — the second time this turn, this game, or every second time?"
+      "note": "“The second time” means every second search or shuffle: the 2nd, 4th, 6th… (ruling)."
     },
     "Mordred": {
       "question": "“Use Hadron Cannons instead when attacking … if target blocked creature …” — instead of dealing combat damage? And “Amalgamate all four Hadron Cannons” — does it need the other three Hadron cards?"
@@ -400,10 +398,7 @@
       "note": "Controlling another player's turn is Mindslaver — Forge supports it."
     },
     "Devious Plotting": {
-      "question": "“Has entered the battlefield more than twice” — counting across the whole game, even after it changed zones?"
-    },
-    "Hidden Agenda": {
-      "question": "“Play cards from the top of your library any time” — at instant speed, even sorceries and lands?"
+      "note": "“Entered the battlefield more than twice” counts the whole game, through zone changes (ruling). Needs per-card history."
     },
     "Never Ever Say-": {
       "question": "Meld: does “-That Name Again.” need to be on the battlefield, or can it be in your hand? “Becomes all card types” — creature too (with what P/T)?"
@@ -440,7 +435,19 @@
       "question": "The spell becomes a basic land card permanently (in every zone, for the rest of the game)?"
     },
     "Lady Fuyou": {
-      "question": "“Whenever Lady Fuyou becomes a target of a spell, counter that spell” — your own spells too (e.g. your auras or pump)?"
+      "note": "Counters every spell that targets her, your own included (ruling)."
+    },
+    "Learn from the Past": {
+      "own": true
+    },
+    "Structural Collapse": {
+      "own": true
+    },
+    "Pick Your Poison": {
+      "own": true
+    },
+    "Demand": {
+      "own": true
     }
   },
   "rulings": {

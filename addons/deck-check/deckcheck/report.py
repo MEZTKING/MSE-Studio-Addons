@@ -30,7 +30,7 @@ TITLES = {
     # info
     "compact-symbol": "Shorthand mana symbols", "custom-type": "New card types", "custom-supertype": "New supertypes",
     "keyword-unused": "Unused deck keywords", "alt-arts": "Alternates worded differently", "art-blank": "Art versions (pictures)",
-    "alt-renamed": "Alternates with a name of their own", "alt-alone": "Alternates of nothing", "renamed": "Renamed cards", "added-removed": "Since the last export", "real-basics": "Basic lands", "keyword-unclassified": "Unclassified keywords",
+    "alt-renamed": "Alternates with a name of their own", "alt-alone": "Alternates of nothing", "renamed": "Renamed cards", "ids-renewed": "Steady card ids", "added-removed": "Since the last export", "real-basics": "Basic lands", "keyword-unclassified": "Unclassified keywords",
 }
 ORDER = list(TITLES)
 ORDER.insert(0, ORDER.pop(ORDER.index("ids-moved")))
