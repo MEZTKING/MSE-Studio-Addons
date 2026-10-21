@@ -45,7 +45,7 @@ def compare(previous: dict, deck: Deck) -> list[Finding]:
         out.append(Finding("info", "renamed", "Renamed since the last export: "
                            + "; ".join(f"{a} → {b}" for a, b in names[:10])))
     gone = sorted(set(old_by_name) - new_names - {a for a, _ in names})
-    added = sorted({c.name for c in deck.cards} - set(old_by_name))
+    added = sorted({c.name for c in deck.cards} - set(old_by_name) - {b for _, b in names})
     if gone or added:
         out.append(Finding("info", "added-removed",
                            (f"New since the last export: {', '.join(added)}. " if added else "")
