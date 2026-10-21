@@ -2,7 +2,9 @@
 
 A page under **Review** that checks exported decks before they're played in a
 rules engine. Export a deck with **File → Export → Deck data → MSE Studio deck
-file**, then **Open decks…** on the page.
+file**, then **Open decks…** on the page – or press **Quick export**: the deck
+open in MSE Studio is exported as a deck file again (where the last one went)
+and checked straight away, with no windows.
 
 - **Fix in MSE Studio** – data the engine would trip over: mana symbols nobody
   can read, power/toughness that isn't a number, a card's text naming another

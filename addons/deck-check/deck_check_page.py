@@ -104,6 +104,11 @@ class DeckCheckPage(QWidget):
         self.again.setToolTip("Read the files again – after you've exported them again")
         self.again.clicked.connect(lambda: self.check([d.path for d, _, _ in self.analysed]))
         bar.addWidget(self.again)
+        self.quick = QPushButton("Quick export")
+        self.quick.setToolTip("Export the deck open in MSE Studio as a deck file again – where "
+                              "it went last time – and check it straight away, no windows")
+        self.quick.clicked.connect(self.quick_export)
+        bar.addWidget(self.quick)
         self.deck_box = QComboBox()
         self.deck_box.currentIndexChanged.connect(self.show_deck)
         bar.addWidget(self.deck_box, 1)
@@ -242,8 +247,46 @@ class DeckCheckPage(QWidget):
         for w in (self.again, self.deck_box, self.copy_btn, self.save_btn, self.tabs):
             w.setEnabled(has)
         if not has:
-            self.summary.setText("Open one or more exported decks to check them. In MSE Studio: "
-                                 "<b>File → Export → Deck data → MSE Studio deck file</b>.")
+            self.summary.setText("Open one or more exported decks to check them – or <b>Quick "
+                                 "export</b> the deck open in MSE Studio and check it. In MSE "
+                                 "Studio: <b>File → Export → Deck data → MSE Studio deck "
+                                 "file</b>.")
+
+    def quick_export(self):
+        """The deck open in MSE Studio as a deck file again – where MSE Studio's
+        Quick export last put one, else its exports folder – then checked,
+        with the other decks that were open."""
+        main = self.main
+        project = getattr(main, "project", None)
+        if project is None:
+            info(self, "Deck check", "Open a deck in MSE Studio first – Quick export exports "
+                                     "that deck and checks it.")
+            return
+        if not main.save():
+            return
+        path = None
+        try:
+            from mse_studio.gui.export_dialog import last_export
+            spec = last_export(main)
+            if spec and spec.get("tab") == "data" and spec.get("kind") == "deckjson":
+                path = Path(spec["path"])
+        except (ImportError, KeyError, TypeError):
+            pass
+        from mse_studio.core import deck_export
+        try:
+            out = Path(deck_export.export(project, path))
+        except OSError as e:
+            error(self, "Deck check", f"Couldn't export {project.name}: {e}")
+            return
+        others = [Path(d.path) for d, _, _ in self.analysed if Path(d.path) != out]
+        self.check([out] + others)
+        i = next((n for n, (d, _, _) in enumerate(self.analysed) if Path(d.path) == out), -1)
+        if i >= 0:
+            self.deck_box.setCurrentIndex(i)
+        try:
+            main.statusBar().showMessage(f"Deck check: exported and checked {out}", 10000)
+        except (AttributeError, RuntimeError):
+            pass
 
     def pick(self):
         start = str(Path(self.analysed[0][0].path).parent) if self.analysed else ""

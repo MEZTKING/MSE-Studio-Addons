@@ -310,7 +310,10 @@ class HelloPage(QWidget):
   back from the gallery), `main.print_home(rows)`, `main.proof_sheet()`,
   `main.make_backs(rows)`, `main.cards_tab.set_copies(rows)`;
   `mse_studio.pipeline.order` has every card's print slot – `slots(project)` –
-  and `readiness(project)`.
+  and `readiness(project)`. One back card can be on several cards' backs (a
+  card and its alternates share their back): `order.ties(project)` is front →
+  back card, `order.fronts_of(project)` back card → its fronts,
+  `order.roles(project)` every card's *Front · back: …* / *Back of …*.
 - **Other add-ons' pages** (MSE Studio 0.25.0): `main.addon_page(id)` is an
   installed add-on's page (or None); `main.open_addon_page(id, why)` shows it,
   or offers to get it; `main.offer_addon(id, why, then=fn)` installs one from
