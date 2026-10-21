@@ -1,0 +1,443 @@
+{
+  "_about": "How each custom mechanic maps onto Forge. tier: script = a Forge card script can express it today; engine = needs new Java code in a Forge fork (fits Forge's structure); manual = no engine can enforce it, a person resolves it. 'question' = the wording needs the author's ruling before anyone can implement it.",
+  "keywords": {
+    "mithridatism": {
+      "tier": "engine",
+      "how": "Your poison-loss limit is 30 instead of 10 for the whole game if this card is your commander. Needs a small change to Forge's poison check.",
+      "ruling": "Always on when the card is your commander from the start of the game, wherever it is (battlefield or command zone)."
+    },
+    "eminent mithridatism": {
+      "tier": "engine",
+      "how": "You can't lose from poison counters. Same change as Mithridatism.",
+      "ruling": "No poison limit at all."
+    },
+    "indulge curiosity": {
+      "tier": "engine",
+      "how": "Each player in turn order, starting with the caster, chooses whether to participate; 'participant' means the players who joined. Forge can ask each player; the bots need logic for when joining is worth it.",
+      "ruling": "A whole-table card: every player, the caster included, chooses whether to participate, in turn order (unless the card says otherwise), seeing earlier choices."
+    },
+    "capture": {
+      "tier": "script",
+      "how": "Aura-style static: enchanted creature can't attack or block."
+    },
+    "transcendence": {
+      "tier": "engine",
+      "how": "The [bracketed] text applies only while you have fewer than 20 poison counters. Needs a condition on part of a card's text.",
+      "ruling": "The [bracketed] text is off only while you have 20 or more poison counters; below 20 it's back."
+    },
+    "majestic veil of elegance": {
+      "tier": "script",
+      "how": "While attacking: indestructible, can't be blocked by creatures with flying."
+    },
+    "mesmerize": {
+      "tier": "engine",
+      "how": "Opponents can't attack you until you attack or this leaves the battlefield; meanwhile you can't draw cards or gain life. Needs a per-game flag for 'you attacked'.",
+      "ruling": "Lasts until this card leaves the battlefield or until you attack. While it lasts you can't draw cards or gain life (reminder text updated)."
+    },
+    "military": {
+      "tier": "script",
+      "how": "Can't be stolen by opponents' spells; whenever a creature an opponent controls dies, put a +1/+1 counter on it (Forge script). The 'opponent spell' part may still need a ruling.",
+      "ruling": "Any opponent's creature that dies while this is on the battlefield gives it a +1/+1 counter.",
+      "question": "“Cannot be controlled by an opponent spell” — can an opponent's ability (not a spell) still take control of it?"
+    },
+    "plane": {
+      "tier": "manual",
+      "how": "Your reminder says it's void until a full set exists. Ignored by the engine until defined."
+    },
+    "poison": {
+      "tier": "script",
+      "how": "Cast trigger: you get N poison counters (also when cast from other zones)."
+    },
+    "herbal properties": {
+      "tier": "engine",
+      "how": "Herbal cards live in a bag outside the deck. Maomao's and Surei's 'draw from Maomao's Bag' puts a random bag card into your hand; you may cast one herbal card per turn for free, then it returns to the bag and your turn ends. Needs the bag zone in Forge.",
+      "ruling": "Free to cast. One herbal card per turn. They come from Maomao's Bag: Maomao, The Apothecary and Surei, The Scheming draw from it, a random card. After it's used it goes back to the bag and your turn ends."
+    },
+    "influence": {
+      "tier": "script",
+      "how": "Can't be the target of abilities from creatures (Forge script).",
+      "ruling": "Can't be targeted by creature abilities; 'destroy all' effects still work (reminder text updated)."
+    },
+    "secretive movement": {
+      "tier": "engine",
+      "how": "A replacement for 'reveal' (discard a card instead) plus a face-down permanent that keeps its own power and toughness. Needs engine code.",
+      "ruling": "Never revealed to an opponent (you can see it yourself): if something would reveal it, you discard a card from your hand instead; if you can't, it's revealed. On the battlefield it's face down with its own power and toughness (reminder text updated).",
+      "question": "“This card plays face-down on the battlefield” — always, whenever it's cast? And can its owner turn it face up (when, and for what cost)?"
+    },
+    "herbal specialist": {
+      "tier": "script",
+      "how": "Trigger: one or more permanents you control to graveyard → Food or Treasure."
+    },
+    "misfortune": {
+      "tier": "script",
+      "how": "Trigger on damage to you: draw a card, lose 1 life."
+    },
+    "endowment": {
+      "tier": "engine",
+      "how": "As you cast it, choose an opponent; they create the matching hairpin token (the [bracketed] text). Like Bloomburrow's gift; needs the token linked to its card.",
+      "ruling": "The hairpin tokens should be tokens (count 0), not cards in the deck."
+    },
+    "legacy of the garnet pavilion": {
+      "tier": "script",
+      "how": "Anthem: other Nobles you control get +1/+1."
+    },
+    "fragile": {
+      "tier": "script",
+      "how": "State trigger: a player was dealt more than 10 damage this turn → destroy this."
+    },
+    "stasis": {
+      "tier": "engine",
+      "how": "Turns off 'end your turn' on Herbal Properties. Depends on the herbal bag work."
+    },
+    "insecurity": {
+      "tier": "script",
+      "how": "ETB trigger on Noble/Soldier: -2/-0, then may transform if power ≤ 0."
+    },
+    "infatuated": {
+      "tier": "engine",
+      "how": "During its controller's next turn the creature's activated abilities can't be activated and its triggered abilities don't trigger. Needs code to switch off one creature's triggers.",
+      "ruling": "For the creature's controller's next turn."
+    },
+    "obsession": {
+      "tier": "engine",
+      "how": "Replacement: a Shogi Piece that would be destroyed/exiled goes face down under this card; returns to hand when it leaves."
+    },
+    "conquer": {
+      "tier": "script",
+      "how": "Static with a count condition (6+ Shogi Pieces)."
+    },
+    "eternity": {
+      "tier": "script",
+      "how": "Cast trigger: search for a named card, put it onto the battlefield or into your hand."
+    },
+    "desire": {
+      "tier": "script",
+      "how": "Until end of turn, whenever you get poison counters, add that much mana in any combination of {B} and {G} (Forge script).",
+      "ruling": "The mana empties between steps, like normal mana."
+    },
+    "command": {
+      "tier": "engine",
+      "how": "Gain control until end of turn + haste, lifelink, connive. 'Only once per creature' needs per-game memory of chosen creatures."
+    },
+    "absolute command": {
+      "tier": "engine",
+      "how": "Gain control for as long as it lives; 'once per creature' again needs per-game memory."
+    },
+    "frontline ace": {
+      "tier": "script",
+      "how": "Like Master Warcraft: you choose which creatures attack and block (Forge supports that).",
+      "question": "“Designate all attackers and blockers” — including how your opponents' creatures block?"
+    },
+    "stealth": {
+      "tier": "script",
+      "how": "Can't be the target of abilities from creatures."
+    },
+    "superior cloak": {
+      "tier": "script",
+      "how": "Discard a card: phase this out until end of turn."
+    },
+    "blaze luminous": {
+      "tier": "script",
+      "how": "Enters with a shield counter; {3}: put a shield counter on it, sorcery speed.",
+      "question": "Can it have more than one shield counter?"
+    },
+    "hadron cannons": {
+      "tier": "script",
+      "how": "7 damage to target permanent."
+    },
+    "stark hadron cannon": {
+      "tier": "engine",
+      "how": "28 damage that destroys even indestructible permanents — damage ignoring indestructible needs code.",
+      "question": "If the target is indestructible, is it destroyed anyway, or just takes the damage?"
+    },
+    "jousting lance": {
+      "tier": "script",
+      "how": "Attack trigger, condition 'blocked by a commander'."
+    },
+    "landspinner drive": {
+      "tier": "script",
+      "how": "Haste."
+    },
+    "landspinner propulsion": {
+      "tier": "script",
+      "how": "Haste."
+    },
+    "cockpit ejection system": {
+      "tier": "script",
+      "how": "{T}: return this to its owner's hand.",
+      "question": "“Sacrifice this creature, you may return this creature to its owner's hand” — once sacrificed it's in the graveyard. Do you mean return it from the graveyard, or bounce it instead of sacrificing?"
+    },
+    "pilot": {
+      "tier": "engine",
+      "how": "Alternative to Crew: tap the named creature to crew. Forge's Crew only counts power."
+    },
+    "bloodlust": {
+      "tier": "script",
+      "how": "Trigger: when it kills a creature, put N loyalty counters on it.",
+      "question": "Bloodlust is used on Luciano Bradley, a creature with no loyalty. Should he be a planeswalker?"
+    },
+    "re-engineer": {
+      "tier": "script",
+      "how": "Choose keywords from a list; they replace the creature's keywords."
+    },
+    "code bearer": {
+      "tier": "engine",
+      "how": "Part of the Geass/Code system: can't be destroyed or exiled except by Code users while you control your commander."
+    },
+    "code user": {
+      "tier": "engine",
+      "how": "Part of the Geass/Code system.",
+      "question": "“Only a Fully Awakened Code user can kill a Code bearer to inherit its skills” — how is the kill done (combat damage? any effect?), and what exactly is inherited?"
+    },
+    "reckless": {
+      "tier": "script",
+      "how": "Attack trigger: discard any number of nonland cards, that many +1/+1 counters."
+    },
+    "burn": {
+      "tier": "engine",
+      "how": "Damage that never wears off and can't reduce toughness below 1 is a new kind of damage.",
+      "question": "Damage to a creature normally heals at end of turn — does Burn damage stay? “Its caster's power” — the power of the creature with Burn?"
+    },
+    "eternal": {
+      "tier": "engine",
+      "how": "Replacement on damage.",
+      "question": "“Can only be killed in one instance of damage” — damage from separate sources in one turn doesn't add up? So it only dies to a single hit ≥ its toughness?"
+    },
+    "fully awakened": {
+      "tier": "engine",
+      "how": "Part of the Geass/Code system (Evolve level ≥ 3)."
+    },
+    "evolve": {
+      "tier": "engine",
+      "how": "Part of the Geass/Code system: Evolve level counter, +1 per Geass ability used, max 3."
+    },
+    "timeless": {
+      "tier": "script",
+      "how": "Enters with N timeless counters; upkeep: remove one, then if none, may transform (like Saga/Vanishing)."
+    },
+    "immortality": {
+      "tier": "engine",
+      "how": "Undying is script; 'immune to deathtouch' needs code."
+    },
+    "charm": {
+      "tier": "script",
+      "how": "Can't attack you or your planeswalkers until the end of its controller's next turn.",
+      "question": "Used both as a keyword on creatures (C.C.) and as a verb (“Charm target creature/player”). What does it mean on C.C. herself, and what does charming a player do?"
+    },
+    "nirvana": {
+      "tier": "script",
+      "how": "You can't lose and opponents can't win (like Platinum Angel)."
+    },
+    "paramount": {
+      "tier": "script",
+      "how": "Can't attack or block; upkeep: V.V. The Outer God gets -N/-N.",
+      "question": "Permanent -N/-N or until end of turn? Does it stack each upkeep?"
+    },
+    "primitive": {
+      "tier": "script",
+      "how": "Can't attack or block; upkeep: V.V. The Outer God gets +N/+N.",
+      "question": "Same as Paramount: permanent or until end of turn?"
+    },
+    "code": {
+      "tier": "engine",
+      "how": "New card type that grants its abilities to a creature. Part of the Geass/Code system."
+    },
+    "geass": {
+      "tier": "engine",
+      "how": "Geass counters plus abilities labelled “Geass Ability” that interact with Evolve, Code and Lelouch's draw trigger."
+    },
+    "rampage": {
+      "tier": "engine",
+      "how": "Triple P/T; must attack a random player each turn or be sacrificed. Random attack target needs code.",
+      "question": "Clashes with the real keyword Rampage N. Rename?"
+    },
+    "synova": {
+      "tier": "script",
+      "how": "Charm all creatures."
+    },
+    "full-house": {
+      "tier": "script",
+      "how": "The [bracketed] text is void until the full set is created (your reminder), so the engine leaves it out; the rest of the card plays normally."
+    }
+  },
+  "patterns": [
+    {
+      "regex": "maomao[’']s (?:herbal )?bag|herbal bag",
+      "tier": "engine",
+      "label": "herbal bag zone"
+    },
+    {
+      "regex": "\\bgeass\\b",
+      "tier": "engine",
+      "label": "Geass system"
+    },
+    {
+      "regex": "\\bevolve\\b|fully awaken",
+      "tier": "engine",
+      "label": "Geass system"
+    },
+    {
+      "regex": "entered the battlefield more than",
+      "tier": "engine",
+      "label": "per-card history"
+    },
+    {
+      "regex": "hasn[’']t been chosen this game|once per creature|only once per card",
+      "tier": "engine",
+      "label": "per-game memory"
+    },
+    {
+      "regex": "becomes? all card types",
+      "tier": "engine",
+      "label": "all card types"
+    },
+    {
+      "regex": "commander (?:cost|tax)",
+      "tier": "engine",
+      "label": "commander tax changes"
+    },
+    {
+      "regex": "you own all cards",
+      "tier": "engine",
+      "label": "ownership change"
+    },
+    {
+      "regex": "it becomes a basic (?:swamp|forest)",
+      "tier": "engine",
+      "label": "spell becomes a land"
+    },
+    {
+      "regex": "can[’']t be healed|ignores indestructible",
+      "tier": "engine",
+      "label": "new damage rules"
+    },
+    {
+      "regex": "\\b(?:lie|shout|negotiat\\w*)\\b",
+      "tier": "manual",
+      "label": "bluffing/negotiation between players"
+    },
+    {
+      "regex": "\\bpilot\\b",
+      "tier": "engine",
+      "label": "Pilot"
+    },
+    {
+      "regex": "roll a d\\d+|flip a coin",
+      "tier": "script",
+      "label": "dice/coins"
+    },
+    {
+      "regex": "face[- ]down",
+      "tier": "script",
+      "label": "face-down cards"
+    }
+  ],
+  "cards": {
+    "Maomao, The Apothecary": {
+      "note": "“Draw a card from Maomao's Bag”: a random herbal card into your hand (Herbal Properties ruling)."
+    },
+    "Surei, The Scheming": {
+      "note": "Draws from Maomao's Bag like Maomao (ruling).",
+      "question": "The text says “Return Suirei from your graveyard” but the card is named Surei — same card?"
+    },
+    "Xiaomao": {
+      "question": "Xiaomao also says “draw from Maomao's bag” — does she draw from the bag too? (Your ruling only named Maomao and Surei.)"
+    },
+    "Red-Handed": {
+      "tier": "manual",
+      "note": "Players may lie and call “Red-handed”: a social game no engine can referee. Simulations skip it; in live play it's resolved by hand."
+    },
+    "Curses and Criticizing [Art 2]": {
+      "tier": "manual",
+      "note": "“Without negotiation, once everyone decided” — hidden simultaneous choices; possible in software but bots can't judge it meaningfully. Resolve by hand at first."
+    },
+    "Lakan Fight": {
+      "question": "“Deal -X/-X to target creature” — do you mean “target creature gets -X/-X until end of turn”?"
+    },
+    "Euphemia li Britannia": {
+      "question": "“Reduce X damage divided between target permanents” — prevent the next X damage, divided as you choose, this turn?"
+    },
+    "Euphie Special": {
+      "question": "“Negate all damage received” — prevent all damage that would be dealt to creatures you control this turn?"
+    },
+    "Sayoko Shinozaki": {
+      "question": "“Negate any damage received by Nunnally” — prevent all damage dealt to Nunnally, always?"
+    },
+    "Withered Blue Rose": {
+      "question": "“Roll a D6, then randomly choose an effect” — is the effect the number rolled, or a second random pick?"
+    },
+    "Temple of Heaven": {
+      "question": "“Whenever a player adds {G} … add another {G}” — like Mana Reflection for green only, for every player?"
+    },
+    "Locked Chest": {
+      "question": "“Move to the next phase” and “whenever you search or shuffle for the second time” — the second time this turn, this game, or every second time?"
+    },
+    "Mordred": {
+      "question": "“Use Hadron Cannons instead when attacking … if target blocked creature …” — instead of dealing combat damage? And “Amalgamate all four Hadron Cannons” — does it need the other three Hadron cards?"
+    },
+    "Lancelot Albion": {
+      "question": "Power is “7-5” and “attacks normally” / “use Hadron cannons” — what are its power and the exact attack trigger?"
+    },
+    "Guren Mk II": {
+      "question": "“Guren's attack is doubled against flying creature” — double damage to flying creatures it fights or is blocked by?"
+    },
+    "Shinkirō, Zero’s Ace": {
+      "question": "“Whenever Shinkirō is a non-creature artifact … add {5} to target player's commander cost as long as it's active” — while it isn't crewed? And “Absolute Defense System” isn't defined anywhere."
+    },
+    "Zero Requiem Finale": {
+      "question": "“Exile Lelouch vi Britannia” — the commander (Master of Geass) or the other Lelouch card? “Total power counters you control” — the counters on The Power of Absolute Obedience?"
+    },
+    "Ragnarök Connection": {
+      "tier": "engine",
+      "note": "Taking ownership of every exiled card changes who owns cards — large change, keep for later."
+    },
+    "Lelouch’s Gambit": {
+      "note": "Controlling another player's turn is Mindslaver — Forge supports it."
+    },
+    "Devious Plotting": {
+      "question": "“Has entered the battlefield more than twice” — counting across the whole game, even after it changed zones?"
+    },
+    "Hidden Agenda": {
+      "question": "“Play cards from the top of your library any time” — at instant speed, even sorceries and lands?"
+    },
+    "Never Ever Say-": {
+      "question": "Meld: does “-That Name Again.” need to be on the battlefield, or can it be in your hand? “Becomes all card types” — creature too (with what P/T)?"
+    },
+    "-That Name Again.": {
+      "question": "See Never Ever Say- (meld pair)."
+    },
+    "Imperial Palace of Li": {
+      "question": "“{TBG}: You get a poison counter” — do you mean “{T}, {B}{G}:”? Note {TBG} isn't valid either way."
+    },
+    "Jinshi, Imperial Moon": {
+      "question": "“{4B}: Jinshi, Imperial Moon.” has no effect — what does it do?"
+    },
+    "Ashford Academy": {
+      "question": "Text ends at “Whenever you connive, add” and it's a Saga with no chapters. What's the full card?"
+    },
+    "Geass Mausoleum": {
+      "question": "Typed Island Swamp but taps for {W} or {B}, and mentions Godless Shrine. Which is right?"
+    },
+    "Charles zi Britannia, Immortal Emperor": {
+      "question": "Has loyalty abilities but is a creature with no loyalty. Planeswalker with what loyalty? “Elite” isn't a Magic supertype."
+    },
+    "Luciano Bradley, Knight of Ten": {
+      "question": "“2:” — is that “+2:”? Creature with loyalty abilities: planeswalker?"
+    },
+    "Luciano Bradley, Vampire of Britannia": {
+      "question": "Creature with loyalty abilities and Bloodlust: planeswalker with what loyalty?"
+    },
+    "Ash Phoenix, Nameless Flame": {
+      "question": "“Deal X Burn damage equal to its power to any blocking creatures” and “Apply Burn” — see the Burn questions."
+    },
+    "Rumors of House Verdigris": {
+      "question": "“Reset the commander cost of all players” — remove all commander tax? “If a ‘Win the game’ effect is used by an opponent, negate that effect” — like Platinum Angel's opponent half?"
+    },
+    "Silver in Cash": {
+      "question": "The spell becomes a basic land card permanently (in every zone, for the rest of the game)?"
+    },
+    "Lady Fuyou": {
+      "question": "“Whenever Lady Fuyou becomes a target of a spell, counter that spell” — your own spells too (e.g. your auras or pump)?"
+    }
+  }
+}
