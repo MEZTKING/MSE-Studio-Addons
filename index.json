@@ -167,7 +167,7 @@
     {
       "id": "deck-check",
       "name": "Deck check",
-      "version": "0.2.8",
+      "version": "0.2.9",
       "kind": "page",
       "description": "Checks exported decks (.deck.json) before they're played in the MTG engine: data to fix in MSE Studio, wording that needs your ruling, and for every card whether the Forge rules engine can run it as it is, needs new engine code, or has to be resolved by hand. Works only on files you pick; nothing is sent anywhere by itself. With AI switched on in MSE Studio, Check keywords with AI asks your chosen AI service about the deck's keywords.",
       "author": "MEZTKING",
@@ -188,8 +188,14 @@
         "section": "Review",
         "tooltip": "Check exported decks for the MTG engine"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.8/deck-check-0.2.8.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.9/deck-check-0.2.9.zip",
+      "downloads": 1,
       "versions": [
+        {
+          "version": "0.2.9",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.9/deck-check-0.2.9.zip",
+          "date": "2026-10-21"
+        },
         {
           "version": "0.2.8",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.8/deck-check-0.2.8.zip",
