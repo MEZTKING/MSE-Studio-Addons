@@ -274,6 +274,17 @@ class HelloPage(QWidget):
   (AI repaints the white part of a mask) and every page in a scroll area – made
   for 0.24.0, which wasn't released. Use them only behind a fallback, as Art
   only does.
+- **Versions of a card** (MSE Studio 0.25.0): `mse_studio.core.versions`. An
+  alternate is played as its card (counted once, always its rules); an art
+  card is a picture of a card, never played. `info(project)` gives, by card
+  index, `kind` ("", "alt", "art"), `of` (the card's index or -1),
+  `versions(i)`, `card_of(i)`, `counts(i)`; `counted(project)` is the cards
+  that count for the deck (use it rather than `project.set.cards` for sizes
+  and checks – `decklists.deck_cards` already does). `add_version(project, i,
+  kind)`, `set_version`, `unlink`, `share_rules`, `zone(project, i)`. Copies
+  and backs of a version are kept under `order.card_key(project, card)`
+  ("#" + its id), so read them with `order.quantity(project, card)`. Card ids
+  (`deck_export.card_ids`) are steady: they stay with their card.
 - **Real cards' actions** (MSE Studio 0.25.0): `mse_studio.gui.real_card_actions`
   does what the Cards page does with a deck's real cards, each taking `main` and
   the cards (`decklists.Entry`): `make_own`, `set_copies`, `picture_from_file`,
