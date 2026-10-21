@@ -258,6 +258,18 @@ class HelloPage(QWidget):
   `for_addons.enabled(settings)` is False – hide your AI buttons and text
   (`not_ready` says it's switched off). For older MSE Studio:
   `getattr(ai, "enabled", lambda s: True)(settings)`.
+- **Keywords checked by AI** (MSE Studio 0.25.0): `mse_studio.ai.keyword_check`
+  asks the AI service about a deck's keywords – MSE Studio's
+  (`main.project.set.keywords`) or a `.deck.json`'s. `cards_using(keywords,
+  [(card name, rules text)])` picks a few cards using each;
+  `check_keywords(settings, keywords, uses, deck_name, engine=False,
+  progress=…)` returns `(verdicts, notes)`: each `KeywordVerdict` has
+  `keyword`, `verdict` (fine, unclear or problem), `problems`, `questions`
+  (what only the deck's author can decide), `reminder` (better wording, ""
+  to keep it) and `similar`, and with `engine=True` also `tier` (script,
+  engine or manual – for a rules engine like Forge) and `how`. It goes over
+  the internet: only with `for_addons.enabled(settings)`, from a button, in a
+  `Job`; it raises `for_addons.AiError` with a message to show.
 - **Planned, not in MSE Studio yet**: `edit_picture` / `picture_edit_not_ready`
   (AI repaints the white part of a mask) and every page in a scroll area – made
   for 0.24.0, which wasn't released. Use them only behind a fallback, as Art
