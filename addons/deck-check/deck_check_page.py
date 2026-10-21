@@ -295,18 +295,22 @@ class DeckCheckPage(QWidget):
             return
         deck, results, findings = cur
         self._deck_name = deck.name
-        tiers = Counter(r.tier for r in results)
+        cards = [r for r in results if not r.version_of]       # each card once, its versions under it
+        n_versions = len(results) - len(cards)
+        tiers = Counter(r.tier for r in cards)
         kinds = Counter(f.kind for f in findings if _ignore_key(deck.name, f) not in self.ignored)
         parts = [f'<span style="color:{TIER_COLOR[t]}"><b>{tiers[t]}</b> {TIER_LABEL[t]}</span>'
                  for t in ("script", "engine", "manual", "reference") if tiers.get(t)]
         self.summary.setText(
-            f"<b>{deck.name}</b> · {len(results)} cards · commander: {', '.join(deck.commander) or 'none'}<br>"
+            f"<b>{deck.name}</b> · {len(cards)} cards"
+            + (f" (+{n_versions} alternate version{'s' if n_versions != 1 else ''})" if n_versions else "")
+            + f" · commander: {', '.join(deck.commander) or 'none'}<br>"
             + " &nbsp;·&nbsp; ".join(parts)
             + f" &nbsp;·&nbsp; <b>{kinds['error']}</b> to fix &nbsp;·&nbsp; <b>{kinds['question']}</b> questions")
         self.tabs.setTabText(0, f"Fix in MSE Studio ({kinds['error']})")
         self.tabs.setTabText(1, f"Questions for you ({kinds['question']})")
         self.tabs.setTabText(2, f"Good to know ({kinds['info']})")
-        self.tabs.setTabText(3, f"Every card ({len(results)})")
+        self.tabs.setTabText(3, f"Every card ({len(cards)})")
 
         self._fill(self.errors, [f for f in findings if f.kind == "error"],
                    lambda f: [f.card, f.message, f.fix])
@@ -324,26 +328,42 @@ class DeckCheckPage(QWidget):
 
         self.cards.clear()
         order = ["manual", "engine", "script", "reference"]
-        for r in sorted(results, key=lambda r: (order.index(r.tier), r.card.name.lower())):
-            why = "; ".join(r.reasons)
-            if r.keywords:
-                why += "\nKeywords: " + ", ".join(r.keywords)
-            it = QTreeWidgetItem([r.card.name, TIER_LABEL[r.tier], why])
-            it.setToolTip(0, f"{r.card.type_line.strip()}\n\n{r.card.rules_text}")
-            it.setData(2, Qt.UserRole, f"<b>{escape(r.card.name)}</b> · {escape(r.card.type_line.strip())} "
-                                       f"{escape(r.card.mana_cost)}<br>{escape(r.card.rules_text).replace(chr(10), '<br>')}"
-                                       f"<br><br><i>{escape(why).replace(chr(10), '<br>')}</i>")
-            it.setForeground(1, QColor(TIER_COLOR[r.tier]))
-            it.setData(1, Qt.UserRole, r.tier)
+        alts = defaultdict(list)
+        for r in results:
+            if r.version_of:
+                alts[r.version_of_id].append(r)
+        for r in sorted(cards, key=lambda r: (order.index(r.tier), r.card.name.lower())):
+            it = self._card_item(r)
+            for v in sorted(alts.get(r.card.id, []), key=lambda v: v.card.name.lower()):
+                it.addChild(self._card_item(v))
+            if it.childCount():
+                it.setText(0, f"{r.card.name}  (+{it.childCount()})")
+                it.setToolTip(0, it.toolTip(0) + "\n\nOther versions: "
+                              + ", ".join(it.child(i).text(0) for i in range(it.childCount())))
             self.cards.addTopLevelItem(it)
         self.tier_box.blockSignals(True)
         self.tier_box.clear()
-        self.tier_box.addItem(f"All tiers ({len(results)})", "")
+        self.tier_box.addItem(f"All tiers ({len(cards)})", "")
         for t in order:
             if tiers.get(t):
                 self.tier_box.addItem(f"{TIER_LABEL[t]} ({tiers[t]})", t)
         self.tier_box.blockSignals(False)
         self._filter_cards()
+
+    @staticmethod
+    def _card_item(r) -> QTreeWidgetItem:
+        """A row on Every card: the card (or one of its versions) and its tier."""
+        why = "; ".join(r.reasons)
+        if r.keywords:
+            why += "\nKeywords: " + ", ".join(r.keywords)
+        it = QTreeWidgetItem([r.card.name, TIER_LABEL[r.tier], why])
+        it.setToolTip(0, f"{r.card.type_line.strip()}\n\n{r.card.rules_text}")
+        it.setData(2, Qt.UserRole, f"<b>{escape(r.card.name)}</b> · {escape(r.card.type_line.strip())} "
+                                   f"{escape(r.card.mana_cost)}<br>{escape(r.card.rules_text).replace(chr(10), '<br>')}"
+                                   f"<br><br><i>{escape(why).replace(chr(10), '<br>')}</i>")
+        it.setForeground(1, QColor(TIER_COLOR[r.tier]))
+        it.setData(1, Qt.UserRole, r.tier)
+        return it
 
     def _fill(self, tree, findings, columns, editable=None):
         tree.clear()
@@ -421,7 +441,8 @@ class DeckCheckPage(QWidget):
         q = self.search.text().strip().lower()
         for i in range(self.cards.topLevelItemCount()):
             it = self.cards.topLevelItem(i)
-            text = " ".join(it.text(c) for c in range(3)).lower() + " " + it.toolTip(0).lower()
+            text = " ".join(it.text(c) for c in range(3)).lower() + " " + it.toolTip(0).lower() \
+                + " ".join(it.child(i).text(0).lower() for i in range(it.childCount()))
             it.setHidden(bool((tier and it.data(1, Qt.UserRole) != tier) or (q and q not in text)))
 
     def copy_answers(self):

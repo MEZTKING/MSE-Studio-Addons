@@ -338,8 +338,9 @@ def check_deck(deck: Deck) -> list[Finding]:
 
     # size and singleton
     if deck.format == "commander":
+        alt = versions(deck)
         in_list = [c for c in deck.cards if c.count > 0 and not c.is_token]
-        total = sum(c.count for c in in_list)
+        total = sum(c.count for c in in_list if c.id not in alt and not is_art_card(c))
         groups = _likely_outside_deck(deck)
         est_out = sum(len(v) for v in groups.values())
         detail = "; ".join(f"{k}: {len(v)}" for k, v in groups.items() if v)
@@ -354,7 +355,7 @@ def check_deck(deck: Deck) -> list[Finding]:
         elif total < 100:
             out.append(_f("error", "deck-size", f"Only {total} cards; a Commander deck is exactly 100."))
         for base, g in art_groups(deck).items():
-            versions = ", ".join(c.name for c in g["all"])
+            listing = ", ".join(c.name for c in g["all"])
             if g["mixup"]:
                 blank_cards = [c for c in g["all"] if not is_art_card(c) and not (c.rules_text.strip() or c.mana_cost)]
                 out.append(_f("error", "art-mixup",
@@ -371,12 +372,17 @@ def check_deck(deck: Deck) -> list[Finding]:
             if g["same"]:
                 if len(g["texts"]) > 1:
                     out.append(_f("info", "alt-arts",
-                                  f"“{base}” has {len(g['all'])} arts ({versions}). The wording differs a little but "
+                                  f"“{base}” has {len(g['all'])} arts ({listing}). The wording differs a little but "
                                   f"means the same, so they're one card; the engine uses {g['main'].name}'s text."))
             else:
+                kinds = []
+                for m in g["cards"]:
+                    arts = [c.name for c in g["all"] if g["version_of"].get(c.id) is m]
+                    kinds.append(f"{m.name} ({m.type_line.strip()}"
+                                 + (f", also {', '.join(arts)}" if arts else "") + ")")
                 out.append(_f("error", "singleton",
-                              f"“{base}” is the name of {len(g['texts'])} different cards ({versions}): "
-                              "their rules don't match, so they aren't alternate arts.",
+                              f"“{base}” is the name of {len(g['cards'])} different cards: "
+                              + "; ".join(kinds) + ". Their rules don't match, so they aren't alternate arts.",
                               fix="give the different cards different names (or make the arts' texts match)"))
     return out
 
@@ -422,20 +428,42 @@ def art_groups(deck: Deck) -> dict[str, dict]:
             # the game text only lives on a version marked as art
             mixup = [c for c in cs if is_art_card(c) and has_text(c)]
             played = mixup or cs
-        main = max(played, key=lambda c: (len(c.rules_text), bool(c.mana_cost)))
+        # versions that mean the same are one card; a name can hold several cards
+        clusters: dict[str, list[Card]] = defaultdict(list)
+        for c in played:
+            clusters[_meaning(c)].append(c)
+        fullest = lambda group: max(group, key=lambda c: (len(c.rules_text), bool(c.mana_cost)))
+        cards = sorted(clusters.values(), key=len, reverse=True)
+        main = fullest(cards[0])
+        blank = [c for c in art_only if c not in played]
+        version_of = {c.id: main for c in blank}
+        for group in cards:
+            m = fullest(group)
+            version_of.update({c.id: m for c in group if c is not m})
         texts = {c.rules_text.strip() for c in played}
-        groups[base] = {"all": cs, "blank": [c for c in art_only if c not in played], "main": main,
-                        "mixup": mixup, "texts": texts, "same": len({_meaning(c) for c in played}) == 1}
+        groups[base] = {"all": cs, "blank": blank, "main": main, "mixup": mixup, "texts": texts,
+                        "cards": [fullest(g) for g in cards], "version_of": version_of,
+                        "same": len(clusters) == 1}
     return groups
+
+
+def versions(deck: Deck) -> dict[str, Card]:
+    """Each alternate version's id → the card it's a version of (alternate arts
+    and art-only versions). The card itself isn't in the map."""
+    out: dict[str, Card] = {}
+    for g in art_groups(deck).values():
+        out.update(g["version_of"])
+    return out
 
 
 def _likely_outside_deck(deck: Deck) -> dict[str, list[Card]]:
     g: dict[str, list[Card]] = {"tokens": [], "rules/emblem/code cards": [], "bag cards": [],
-                                "probable back faces": [], "extra alt-arts": []}
+                                "probable back faces": []}
     seen_base: set[str] = set()
     transform_targets = " ".join(c.rules_text for c in deck.cards).lower()
+    alt = versions(deck)
     for c in deck.cards:
-        if c.count <= 0:
+        if c.count <= 0 or c.id in alt or is_art_card(c):    # versions are counted once already
             continue
         tl = c.type_line.lower()
         if c.is_token or c.name.lower().endswith(" token") or "token" in tl:
@@ -448,8 +476,6 @@ def _likely_outside_deck(deck: Deck) -> dict[str, list[Card]]:
             g["probable back faces"].append(c)
         elif not c.mana_cost and not c.has_type("Land") and c.short_name.lower() in transform_targets:
             g["probable back faces"].append(c)
-        elif is_art_card(c) or (c.base_name in seen_base and c.base_name.lower() not in BASIC_LANDS):
-            g["extra alt-arts"].append(c)
         seen_base.add(c.base_name)
     return g
 

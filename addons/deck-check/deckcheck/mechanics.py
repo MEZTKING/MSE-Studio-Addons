@@ -7,7 +7,7 @@ import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 
-from .checks import DATA, KEYWORD_ACTIONS, Finding, forge_keywords
+from .checks import DATA, KEYWORD_ACTIONS, Finding, forge_keywords, is_art_card, versions
 from .deck import Card, Deck
 
 TIERS = ("script", "engine", "manual")
@@ -32,6 +32,8 @@ class CardResult:
     keywords: list[str] = field(default_factory=list)  # deck keywords used
     real_keywords: list[str] = field(default_factory=list)
     unknown_keywords: list[str] = field(default_factory=list)
+    version_of: str = ""        # the card this is an alternate version of (art, art only)
+    version_of_id: str = ""
 
     def raise_to(self, tier: str, reason: str):
         if TIERS.index(tier) > TIERS.index(self.tier):
@@ -158,4 +160,18 @@ def classify(deck: Deck) -> tuple[list[CardResult], list[Finding]]:
         if not r.reasons:
             r.reasons.append("standard Magic wording")
         results.append(r)
+    # alternate versions follow their card: same tier, art-only ones aren't played
+    alt = versions(deck)
+    by_id = {r.card.id: r for r in results}
+    for r in results:
+        main = alt.get(r.card.id)
+        if main is None:
+            continue
+        r.version_of, r.version_of_id = main.name, main.id
+        if is_art_card(r.card) or not (r.card.rules_text.strip() or r.card.mana_cost):
+            r.tier, r.reasons = "reference", [f"art only: a picture of {main.name}"]
+        else:
+            m = by_id.get(main.id)
+            r.tier = m.tier if m else r.tier
+            r.reasons = [f"alternate art of {main.name}: plays as that card"]
     return results, findings

@@ -12,8 +12,10 @@ file**, then **Open decks…** on the page.
   your ruling in the box under the list; **Copy my answers** puts them all on
   the clipboard.
 - **Good to know** – alternate arts, art-only versions, new card types.
-- **Every card** – whether the Forge rules engine can run each card as it is
-  (Forge script), needs new engine code, or has to be resolved by hand.
+- **Every card** – each card once, with its other versions under it
+  (alternate arts, and "Art Card" pictures that aren't played), and whether
+  the Forge rules engine can run it as it is (Forge script), needs new engine
+  code, or has to be resolved by hand. Versions count once in the deck size.
 
 Anything can be ignored (**Ignore** under the list) – it moves to *Ignored*
 and leaves the counts. The page remembers each deck's last two exports and

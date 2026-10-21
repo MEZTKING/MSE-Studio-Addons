@@ -44,7 +44,8 @@ def write_reports(analysed, out_dir: Path):
     payload = []
     with open(out_dir / "cards.csv", "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
-        w.writerow(["deck", "card_id", "name", "count", "type_line", "tier", "deck_keywords", "reasons", "errors", "questions"])
+        w.writerow(["deck", "card_id", "name", "count", "type_line", "tier", "version_of", "deck_keywords", "reasons",
+                    "errors", "questions"])
         for deck, results, findings in analysed:
             per_card = defaultdict(lambda: Counter())
             for f in findings:
@@ -52,11 +53,12 @@ def write_reports(analysed, out_dir: Path):
                     per_card[f.card_id][f.kind] += 1
             for r in results:
                 c = r.card
-                w.writerow([deck.name, c.id, c.name, c.count, c.type_line.strip(), r.tier, "; ".join(r.keywords),
+                w.writerow([deck.name, c.id, c.name, c.count, c.type_line.strip(), r.tier, r.version_of, "; ".join(r.keywords),
                             " | ".join(r.reasons), per_card[c.id]["error"], per_card[c.id]["question"]])
             payload.append({
                 "deck": deck.name, "file": deck.path.name,
-                "cards": [{"id": r.card.id, "name": r.card.name, "tier": r.tier, "deck_keywords": r.keywords,
+                "cards": [{"id": r.card.id, "name": r.card.name, "tier": r.tier, "version_of": r.version_of_id,
+                           "deck_keywords": r.keywords,
                            "real_keywords": r.real_keywords, "unknown_keywords": r.unknown_keywords,
                            "reasons": r.reasons} for r in results],
                 "findings": [vars(f) for f in findings],
@@ -97,7 +99,12 @@ def render_html(analysed) -> str:
     tabs, panels = [], []
     for i, (deck, results, findings) in enumerate(analysed):
         slug = _slug(deck.name)
-        tiers = Counter(r.tier for r in results)
+        main_cards = [r for r in results if not r.version_of]
+        alts = defaultdict(list)
+        for r in results:
+            if r.version_of:
+                alts[r.version_of_id].append(r.card.name)
+        tiers = Counter(r.tier for r in main_cards)
         kinds = Counter(f.kind for f in findings)
         tiles = "".join(
             f'<div class="tile t-{t}"><div class="v">{tiers.get(t, 0)}</div><div class="k">{TIER_LABEL[t]}</div></div>'
@@ -105,11 +112,13 @@ def render_html(analysed) -> str:
         tiles += (f'<div class="tile t-err"><div class="v">{kinds.get("error", 0)}</div><div class="k">Data errors</div></div>'
                   f'<div class="tile t-q"><div class="v">{kinds.get("question", 0)}</div><div class="k">Questions</div></div>')
         rows = []
-        for r in sorted(results, key=lambda r: (["manual", "engine", "script", "reference"].index(r.tier), r.card.name)):
+        for r in sorted(main_cards, key=lambda r: (["manual", "engine", "script", "reference"].index(r.tier), r.card.name)):
             c = r.card
             kw = ", ".join(r.keywords)
+            more = alts.get(c.id)
             rows.append(
-                f'<tr data-tier="{r.tier}"><td class="name">{html.escape(c.name)}<div class="tl">{html.escape(c.type_line.strip())}</div></td>'
+                f'<tr data-tier="{r.tier}"><td class="name">{html.escape(c.name)}<div class="tl">{html.escape(c.type_line.strip())}</div>'
+                + (f'<div class="tl">Other versions: {html.escape(", ".join(more))}</div>' if more else "") + '</td>'
                 f'<td><span class="pill p-{r.tier}">{TIER_LABEL[r.tier]}</span></td>'
                 f'<td class="why">{html.escape("; ".join(r.reasons))}{"<div class=kw>Keywords: " + html.escape(kw) + "</div>" if kw else ""}</td></tr>')
         filt = "".join(f'<button class="f" data-tier="{t}">{TIER_LABEL[t]} ({tiers.get(t, 0)})</button>'
@@ -117,14 +126,14 @@ def render_html(analysed) -> str:
         tabs.append(f'<button class="tab{" on" if i == 0 else ""}" data-panel="{slug}">{html.escape(deck.name)}</button>')
         panels.append(f'''
 <div class="panel{" on" if i == 0 else ""}" id="{slug}">
-  <p class="meta">{html.escape(deck.path.name)} · {len(results)} card entries · commander: {html.escape(", ".join(deck.commander) or "none")}</p>
+  <p class="meta">{html.escape(deck.path.name)} · {len(main_cards)} cards{f" (+{len(results) - len(main_cards)} alternate versions)" if len(results) > len(main_cards) else ""} · commander: {html.escape(", ".join(deck.commander) or "none")}</p>
   <div class="tiles">{tiles}</div>
   {_section("error", findings, slug, "Fix in MSE Studio", "The data is wrong or incomplete. Any engine would trip over these.")}
   {_section("question", findings, slug, "Questions for you", "The wording is valid but could mean more than one thing. Type your ruling under each one; your answers stay in this browser until you copy them.")}
   {_section("info", findings, slug, "Good to know", "Nothing to fix.")}
   <section class="cards"><h3>Every card</h3>
     <p class="intro"><b>Forge script</b>: Forge's card language can express it today (the AI translation still has to be checked). <b>Needs engine code</b>: new Java in a Forge fork. <b>Manual</b>: a person resolves it. <b>Rules card</b>: a reference card, not played.</p>
-    <div class="filters"><button class="f on" data-tier="">All ({len(results)})</button>{filt}<input class="search" type="search" placeholder="Search cards"></div>
+    <div class="filters"><button class="f on" data-tier="">All ({len(main_cards)})</button>{filt}<input class="search" type="search" placeholder="Search cards"></div>
     <div class="tablewrap"><table><thead><tr><th>Card</th><th>Tier</th><th>Why</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>
   </section>
 </div>''')
