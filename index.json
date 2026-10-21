@@ -165,6 +165,39 @@
       ]
     },
     {
+      "id": "deck-check",
+      "name": "Deck check",
+      "version": "0.2.7",
+      "kind": "page",
+      "description": "Checks exported decks (.deck.json) before they're played in the MTG engine: data to fix in MSE Studio, wording that needs your ruling, and for every card whether the Forge rules engine can run it as it is, needs new engine code, or has to be resolved by hand. Works only on files you pick; nothing is sent anywhere by itself. With AI switched on in MSE Studio, Check keywords with AI asks your chosen AI service about the deck's keywords.",
+      "author": "MEZTKING",
+      "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/deck-check",
+      "license": "GPL-3.0",
+      "min_app_version": "0.25.0",
+      "tags": [
+        "engine",
+        "rules",
+        "check",
+        "forge"
+      ],
+      "page": {
+        "module": "deck_check_page",
+        "class": "DeckCheckPage",
+        "title": "Deck check",
+        "icon": "extension",
+        "section": "Review",
+        "tooltip": "Check exported decks for the MTG engine"
+      },
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.7/deck-check-0.2.7.zip",
+      "versions": [
+        {
+          "version": "0.2.7",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.7/deck-check-0.2.7.zip",
+          "date": "2026-10-21"
+        }
+      ]
+    },
+    {
       "id": "deck-notes",
       "name": "Deck notes",
       "version": "1.0.0",
@@ -335,6 +368,7 @@
         "tooltip": "The deck's world: characters, places, groups, items and events"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/lore-v1.0.0/lore-1.0.0.zip",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
