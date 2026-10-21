@@ -356,100 +356,164 @@ def check_deck(deck: Deck) -> list[Finding]:
             out.append(_f("error", "deck-size", f"Only {total} cards; a Commander deck is exactly 100."))
         for base, g in art_groups(deck).items():
             listing = ", ".join(c.name for c in g["all"])
+            if g["lone"]:
+                c = g["all"][0]
+                out.append(_f("info", "alt-alone",
+                              f"“{c.name}” is marked as an alternate, but no other card has its name or its rules, "
+                              "so it's played as a card of its own.", c,
+                              fix="drop “[Alt N]” from the name, or give it the rules of the card it's an alternate of"))
+                continue
             if g["mixup"]:
-                blank_cards = [c for c in g["all"] if not is_art_card(c) and not (c.rules_text.strip() or c.mana_cost)]
-                out.append(_f("error", "art-mixup",
-                              f"{', '.join(c.name for c in g['mixup'])} is marked “Art Card”, but it's the only version of "
-                              f"“{base}” with a cost and rules text"
-                              + (f", while {', '.join(c.name for c in blank_cards)} (blank) is still a playable card type"
-                                 if blank_cards else "") + ". The card would have nothing to play.",
-                              fix="mark the blank versions as Art Card and give the full one its real type back"))
+                own = [c for c in g["mixup"] if not c.marker]
+                if own:
+                    msg = (f"“{own[0].name}” has the card's cost and rules text but its type line is “Art Card”, "
+                           f"so nothing of “{base}” can be played.")
+                    fix = "give it its real type line back; the [Art N] versions are the pictures"
+                else:
+                    msg = (f"{', '.join(c.name for c in g['mixup'])} is an art version, but it's the only version of "
+                           f"“{base}” with a cost and rules text, so nothing can be played.")
+                    fix = "put the cost and rules text on the card itself (no [Art N]), or make this one an [Alt N]"
+                out.append(_f("error", "art-mixup", msg, fix=fix))
             if g["blank"] and not g["mixup"]:
                 out.append(_f("info", "art-blank",
-                              f"{', '.join(c.name for c in g['blank'])}: art only. "
-                              f"Played with {g['main'].name}'s cost and text.",
-                              fix="nothing to do; or copy the text over so the printed cards match"))
+                              f"{', '.join(c.name for c in g['blank'])}: pictures of {g['main'].name}, not played.",
+                              fix="nothing to do"))
+            for c in g["renamed"]:
+                m = g["version_of"][c.id]
+                out.append(_f("info", "alt-renamed",
+                              f"“{c.name}” has a name of its own but the same rules as “{m.name}”, so it's "
+                              f"played as an alternate of it (one card).", c,
+                              fix="if it's meant to be a separate card, drop “[Alt N]” from its name"))
             if g["same"]:
                 if len(g["texts"]) > 1:
                     out.append(_f("info", "alt-arts",
-                                  f"“{base}” has {len(g['all'])} arts ({listing}). The wording differs a little but "
-                                  f"means the same, so they're one card; the engine uses {g['main'].name}'s text."))
+                                  f"“{base}”: the versions' wording differs a little but means the same "
+                                  f"({listing}), so they're one card; the engine uses {g['main'].name}'s text."))
             else:
-                kinds = []
-                for m in g["cards"]:
-                    arts = [c.name for c in g["all"] if g["version_of"].get(c.id) is m]
-                    kinds.append(f"{m.name} ({m.type_line.strip()}"
-                                 + (f", also {', '.join(arts)}" if arts else "") + ")")
-                out.append(_f("error", "singleton",
-                              f"“{base}” is the name of {len(g['cards'])} different cards: "
-                              + "; ".join(kinds) + ". Their rules don't match, so they aren't alternate arts.",
-                              fix="give the different cards different names (or make the arts' texts match)"))
+                alts = [c for c in g["cards"][1:] if c.marker == "alt"]
+                if alts and not g["main"].marker:
+                    names = ", ".join(c.name for c in g["all"] if c.marker == "alt"
+                                      and g["version_of"].get(c.id, c) in alts)
+                    out.append(_f("error", "singleton",
+                                  f"{names} are marked as alternates of “{g['main'].name}” "
+                                  f"({g['main'].type_line.strip()}), but their rules are different.",
+                                  fix="if they're a different card, give them a name of their own; if they're "
+                                      "alternates, make their rules match"))
+                else:
+                    kinds = []
+                    for m in g["cards"]:
+                        arts = [c.name for c in g["all"] if g["version_of"].get(c.id) is m]
+                        kinds.append(f"{m.name} ({m.type_line.strip()}"
+                                     + (f", also {', '.join(arts)}" if arts else "") + ")")
+                    out.append(_f("error", "singleton",
+                                  f"“{base}” is the name of {len(g['cards'])} different cards: "
+                                  + "; ".join(kinds) + ". Their rules don't match, so they aren't alternates.",
+                                  fix="give the different cards different names (or make the alternates' rules match)"))
     return out
 
 
 def _meaning(card: Card) -> str:
-    """Rules text with wording-only differences removed: the card's own name, "also",
-    punctuation and spacing."""
+    """Rules text with wording-only differences removed: the card's own name, reminder
+    text in brackets, "also", punctuation and spacing."""
     t = card.rules_text.lower()
     for n in sorted({card.base_name, card.short_name}, key=len, reverse=True):
         t = t.replace(n.lower(), "~")
+    t = re.sub(r"\([^)]*\)", " ", t)
     t = re.sub(r"\balso\b", " ", t)
     t = re.sub(r"[^\w{}/+~-]+", " ", t)
     return " ".join([card.mana_cost, "/".join(card.types), card.power, card.toughness, t.strip()])
 
 
 def is_art_card(card: Card) -> bool:
-    """Marked as an art card in MSE Studio (type line "Art Card"): a picture only."""
-    return any(t.lower() == "art" for t in card.types)
+    """A picture of a card, not played: type line "Art Card", or named "… [Art N]"."""
+    return card.marker == "art" or any(t.lower() == "art" for t in card.types)
+
+
+def _has_text(card: Card) -> bool:
+    return bool(card.rules_text.strip() or card.mana_cost)
 
 
 def art_groups(deck: Deck) -> dict[str, dict]:
-    """Cards sharing a name ([Art N] versions): one card with several arts, or
-    different cards that happen to share a name. Basic lands aren't grouped.
+    """The versions of each card. Cards are grouped by name without "[Art N]" /
+    "[Alt N]"; an "[Alt N]" with a name of its own joins the card whose rules it
+    shares. Within a group:
 
-    Art-only versions (marked "Art Card", or with no cost and no text) play with
-    the full version's cost and text; `mixup` lists art-marked versions that are
-    the only ones carrying the card's game text."""
+    - art-only versions ("[Art N]", "Art Card", or no cost and no text) are
+      pictures of the card;
+    - the others are played: those that mean the same are one card (the one
+      without a suffix, else the lowest [Alt N], is the card, the rest its
+      alternates); rules that differ make different cards sharing a name.
+
+    `mixup`: only art-only versions carry the game text. `renamed`: alternates
+    joined by their rules. `lone`: an [Alt N] that's the only version of itself."""
     by_base: dict[str, list[Card]] = defaultdict(list)
     for c in deck.cards:
         if c.count <= 0 or c.is_token or c.real or c.base_name.lower() in BASIC_LANDS \
                 or any(s.lower() == "basic" for s in c.supertypes):
             continue
         by_base[c.base_name].append(c)
+    # an export that says which card each version belongs to ("version_of": its id)
+    by_id = {c.id: c for c in deck.cards}
+    for c in [c for cs in by_base.values() for c in cs if c.version_of in by_id]:
+        target = by_id[c.version_of].base_name
+        if target != c.base_name:
+            by_base[c.base_name].remove(c)
+            by_base[target].append(c)
+    by_base = {b: cs for b, cs in by_base.items() if cs}
+    linked = {c.id for cs in by_base.values() for c in cs if c.version_of in by_id}
+
+    # "[Alt N]" cards with a name of their own: join the card with the same rules
+    owner_of: dict[str, str] = {}
+    for base, cs in by_base.items():
+        for c in cs:
+            if not is_art_card(c) and _has_text(c):
+                owner_of.setdefault(_meaning(c), base)
+    renamed_into: dict[str, str] = {}
+    for base, cs in list(by_base.items()):
+        if not cs or not all(c.marker == "alt" for c in cs) or any(c.id in linked for c in cs):
+            continue
+        target = owner_of.get(_meaning(cs[0]))
+        if target and target != base and target in by_base:
+            renamed_into[base] = target
+    for base, target in renamed_into.items():
+        while target in renamed_into:                 # follow a chain to its end
+            target = renamed_into[target]
+        if base != target:
+            by_base[target].extend(by_base.pop(base))
+
     groups = {}
     for base, cs in by_base.items():
-        if len(cs) < 2:
+        if len(cs) < 2 and not any(c.marker == "alt" for c in cs):
             continue
-        has_text = lambda c: bool(c.rules_text.strip() or c.mana_cost)
-        art_only = [c for c in cs if is_art_card(c) or not has_text(c)]
-        played = [c for c in cs if c not in art_only and has_text(c)]
+        art_only = [c for c in cs if is_art_card(c) or not _has_text(c)]
+        played = [c for c in cs if c not in art_only]
         mixup = []
         if not played:
             # the game text only lives on a version marked as art
-            mixup = [c for c in cs if is_art_card(c) and has_text(c)]
+            mixup = [c for c in cs if _has_text(c)]
             played = mixup or cs
-        # versions that mean the same are one card; a name can hold several cards
+        rank = lambda c: (c.marker != "", c.marker_number, -len(c.rules_text), not c.mana_cost)
         clusters: dict[str, list[Card]] = defaultdict(list)
         for c in played:
             clusters[_meaning(c)].append(c)
-        fullest = lambda group: max(group, key=lambda c: (len(c.rules_text), bool(c.mana_cost)))
-        cards = sorted(clusters.values(), key=len, reverse=True)
-        main = fullest(cards[0])
+        cards = sorted(clusters.values(), key=lambda g: (min(rank(c) for c in g), -len(g)))
+        heads = [min(g, key=rank) for g in cards]
+        main = heads[0]
         blank = [c for c in art_only if c not in played]
         version_of = {c.id: main for c in blank}
-        for group in cards:
-            m = fullest(group)
-            version_of.update({c.id: m for c in group if c is not m})
-        texts = {c.rules_text.strip() for c in played}
-        groups[base] = {"all": cs, "blank": blank, "main": main, "mixup": mixup, "texts": texts,
-                        "cards": [fullest(g) for g in cards], "version_of": version_of,
-                        "same": len(clusters) == 1}
+        for g, head in zip(cards, heads):
+            version_of.update({c.id: head for c in g if c is not head})
+        renamed = [c for c in played if c.base_name != version_of.get(c.id, c).base_name and c.id not in linked]
+        groups[base] = {"all": cs, "blank": blank, "main": main, "mixup": mixup,
+                        "texts": {c.rules_text.strip() for c in played}, "cards": heads,
+                        "version_of": version_of, "same": len(clusters) == 1, "renamed": renamed,
+                        "lone": len(cs) == 1 and cs[0].marker == "alt"}
     return groups
 
 
 def versions(deck: Deck) -> dict[str, Card]:
-    """Each alternate version's id → the card it's a version of (alternate arts
-    and art-only versions). The card itself isn't in the map."""
+    """Each version's id → the card it's a version of (alternates and pictures).
+    The card itself isn't in the map."""
     out: dict[str, Card] = {}
     for g in art_groups(deck).values():
         out.update(g["version_of"])

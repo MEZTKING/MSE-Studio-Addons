@@ -6,7 +6,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-ART_SUFFIX = re.compile(r"\s*\[Art \d+\]\s*$", re.IGNORECASE)
+# "[Art N]": a picture of the card, not played. "[Alt N]": an alternate, played as the card.
+VERSION_SUFFIX = re.compile(r"\s*\[(Art|Alt)\s*(\d+)\]\s*$", re.IGNORECASE)
 
 
 @dataclass
@@ -35,8 +36,28 @@ class Card:
 
     @property
     def base_name(self) -> str:
-        """Name without an ' [Art N]' suffix."""
-        return ART_SUFFIX.sub("", self.name).strip()
+        """Name without an ' [Art N]' / ' [Alt N]' suffix."""
+        return VERSION_SUFFIX.sub("", self.name).strip()
+
+    @property
+    def marker(self) -> str:
+        """"art" (a picture, not played) or "alt" (an alternate, played as the card):
+        the export's "version" field when it has one, else '[Art N]' / '[Alt N]'."""
+        v = str(self.raw.get("version") or "").lower()
+        if v in ("art", "alt"):
+            return v
+        m = VERSION_SUFFIX.search(self.name)
+        return m.group(1).lower() if m else ""
+
+    @property
+    def version_of(self) -> str:
+        """The export's "version_of": the id of the card this is a version of."""
+        return str(self.raw.get("version_of") or "")
+
+    @property
+    def marker_number(self) -> int:
+        m = VERSION_SUFFIX.search(self.name)
+        return int(m.group(2)) if m else 0
 
     @property
     def short_name(self) -> str:

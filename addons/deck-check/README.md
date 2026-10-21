@@ -11,11 +11,15 @@ file**, then **Open decks…** on the page.
 - **Questions for you** – wording that can be read more than one way. Type
   your ruling in the box under the list; **Copy my answers** puts them all on
   the clipboard.
-- **Good to know** – alternate arts, art-only versions, new card types.
-- **Every card** – each card once, with its other versions under it
-  (alternate arts, and "Art Card" pictures that aren't played), and whether
+- **Good to know** – alternates and art versions, new card types.
+- **Every card** – each card once, with its versions under it, and whether
   the Forge rules engine can run it as it is (Forge script), needs new engine
   code, or has to be resolved by hand. Versions count once in the deck size.
+
+Versions of a card: name an **alternate** (the same card with different art,
+played as it) "… [Alt N]", and an **art** (a picture of the card, never
+played) "… [Art N]" or give it the type line "Art Card". An alternate with a
+name of its own is matched to the card with the same rules.
 
 Anything can be ignored (**Ignore** under the list) – it moves to *Ignored*
 and leaves the counts. The page remembers each deck's last two exports and
