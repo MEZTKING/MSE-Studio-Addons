@@ -374,6 +374,13 @@ def check_deck(deck: Deck) -> list[Finding]:
         elif total < 100:
             out.append(_f("error", "deck-size", f"Only {total} cards; a Commander deck is exactly 100."))
         marked = any("version" in c.raw for c in deck.cards)
+        # art cards are pictures: they never start anywhere in a game
+        placed = [c for c in deck.cards if is_art_card(c) and c.zone not in ("", "outside")]
+        if placed:
+            out.append(_f("error", "art-zone",
+                          "Art cards set to start in a game (" + ", ".join(f"{c.name}: {c.zone}" for c in placed)
+                          + "). They're pictures, so they'd be in the game as cards with no rules.",
+                          placed[0], fix="set them to Outside the game (right-click → Versions → Where it starts in a game)"))
         for base, g in art_groups(deck).items():
             listing = ", ".join(c.name for c in g["all"])
             if g["lone"]:
