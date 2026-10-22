@@ -56,7 +56,7 @@
     {
       "id": "art-extensions",
       "name": "Art extensions",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "kind": "page",
       "description": "One picture across several cards, so the art carries on from one card to the next when they lie side by side – a scene split over a card and its art cards, or a row of lands. Pick the cards and their order, the picture, how many lie in a row and the gap between them, move and zoom the cards on the picture, and each card gets its part as its art. Makes new extension cards (art cards of the first card, in any frame) for you.",
       "author": "MEZTKING",
@@ -78,8 +78,14 @@
         "order": 46,
         "tooltip": "One picture across several cards – the art carries on from card to card"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-extensions-v1.0.0/art-extensions-1.0.0.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-extensions-v1.1.0/art-extensions-1.1.0.zip",
+      "downloads": 1,
       "versions": [
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-extensions-v1.1.0/art-extensions-1.1.0.zip",
+          "date": "2026-10-22"
+        },
         {
           "version": "1.0.0",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-extensions-v1.0.0/art-extensions-1.0.0.zip",
@@ -229,7 +235,7 @@
         "tooltip": "Check exported decks for the MTG engine"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.16/deck-check-0.2.16.zip",
-      "downloads": 7,
+      "downloads": 8,
       "versions": [
         {
           "version": "0.2.16",
