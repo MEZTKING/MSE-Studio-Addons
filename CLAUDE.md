@@ -114,6 +114,8 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `mse_studio.gui.thumbs.cache()` / `.large()` | Picture caches at 300 px / 1400 px (`large` is 0.16.0) |
 | `mse_studio.core.picture_tools.register(id, label, run, owner=self)` | A tool for card pictures, offered on the Decklists page – `run(parent, picture, info)` (0.17.0; see the art-only add-on) |
 | `picture_tools.register_painter(label, run, owner=self)` | MSE Studio's *Paint this card's art* opens your add-on: `run(card, base, start_blank)` returns True when it opened (0.25.0; see paint-studio) |
+| `picture_tools.register_art_source(id, label, find, owner=self)` + `"art_source": {"label"}` in addon.json | Card art your add-on finds (an image search…): offered as *Art for your cards* for a deck from a prompt, New art ▾ and right-click on the Cards page. `find(info, cancel)` on a worker thread returns bytes, a path or `{"data"/"path", "credit"}` (0.25.0) |
+| `for_addons.ask_json(…, cache=True)`, `AnswerCut` / `AnswerUnusable`; `mse_studio.ai.usage` (`mark`, `since`, `used_text`, `cost`) | The same system prompt several times in a row (Claude keeps it); a cut-off / non-JSON answer (ask again); the tokens used (0.25.0) |
 | `main.decklists_tab.add_custom(entries, source, frame=, pictures=, keep_unknown=True)` | Your own cards to edit with the text, a frame and their own art, fitted like Force to fit (0.17.0) |
 | `mse_packages.install_zip(zip, styles.data_dir(main.settings.mse_path))`, `remove_package(…)`, `main.frames_changed()` | Add or take out an MSE frame – the only way to change MSE's data folder (0.17.0) |
 | `mse_studio.gui.common.delete_key(widget, fn)`, `ask_delete(parent, text)` | The Delete key on a list, and Settings' *Ask before deleting* (0.17.0) |

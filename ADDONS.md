@@ -177,6 +177,19 @@ class HelloPage(QWidget):
   start_blank)` – `base` a PIL picture to start from (the art just edited) or
   None – returns True when it opened. `picture_tools.painter()` is the one
   registered now (see the paint-studio add-on).
+- **Card art from your add-on** (MSE Studio 0.25.0):
+  `picture_tools.register_art_source(id, label, find, tooltip="",
+  owner=self)` – `id` is your add-on's id – offers your pictures as *Art for
+  your cards* when a deck is made from a prompt, in the Cards page's
+  **New art ▾** and when cards are right-clicked. `find(info, cancel)` runs on
+  a worker thread (no widgets): `info` is `{"name", "type", "art" (what the
+  picture should show, when known), "deck", "theme", "prompt", "size" ((w, h)
+  of the art box)}`, `cancel()` is True once Stop is pressed; return the
+  picture's bytes, a file path, or `{"data" or "path", "credit"}` (where it
+  came from, kept with the deck) – None when nothing was found. Put
+  `"art_source": {"label": "…", "tooltip": "…"}` in addon.json too: the
+  choice is offered before a deck (and your page) is open. Unregister in
+  `shutdown()` (`unregister_art_source(id)`).
 - **Your own cards from pictures** (MSE Studio 0.17.0):
   `main.decklists_tab.add_custom(entries, source, frame=…, pictures=[…],
   keep_unknown=True)` adds cards to edit – the real card's text (when the
@@ -252,6 +265,13 @@ class HelloPage(QWidget):
   model is the AI settings' *Picture model*). They go over the internet: call
   them only from a button the user pressed, in a `Job`, and say on the page
   which service is used.
+  0.25.0: `ask_json(…, cache=True)` when the same `system` goes out several
+  times in a row (Claude keeps it a few minutes and charges a tenth for it
+  again); an answer that was cut off raises `AnswerCut`, one that isn't JSON
+  `AnswerUnusable` (both `AiError`s – asking once more usually works). The
+  tokens every answer used are counted (`mse_studio.ai.usage`: `mark()` /
+  `since(mark)` for your job, `used_text(…)` to show it,
+  `cost(model, tokens_in, tokens_out)` for Claude's prices).
 - **AI switched off** (MSE Studio 0.25.0): AI is an experiment people switch
   on (Settings → Advanced → Experimental → AI – off until they do). Off, MSE
   Studio shows no AI option or wording at all, and add-ons do the same:
