@@ -242,6 +242,19 @@ class ArtExtensionsPage(QWidget):
         self.out_btn.clicked.connect(self.take_out)
         row.addWidget(self.out_btn)
         bv.addLayout(row)
+        row = QHBoxLayout()
+        self.cut_btn = QPushButton("Add the cards cut from this picture")
+        self.cut_btn.setToolTip("Every card of the deck whose art was cut from this picture, put "
+                                "in order: left to right, as they were cut")
+        self.cut_btn.clicked.connect(self.add_cut_cards)
+        row.addWidget(self.cut_btn)
+        self.link_btn = QPushButton("Link them…")
+        set_icon(self.link_btn, "link")
+        self.link_btn.setToolTip("The selected card is the card you play; the others become its "
+                                 "art cards – printed with it, never played or counted")
+        self.link_btn.clicked.connect(self.link_cards)
+        row.addWidget(self.link_btn)
+        bv.addLayout(row)
         nf = QFormLayout()
         self.frame = QComboBox()
         self.frame.setToolTip("The frame new extension cards get – a full-art or borderless "
@@ -321,7 +334,8 @@ class ArtExtensionsPage(QWidget):
         lay.addWidget(split, 1)
         self._editors = [self.name, self.pic_btn, self.card_pic_btn, self.cards,
                          self.add_open_btn, self.add_pick_btn, self.make_btn, self.up_btn,
-                         self.down_btn, self.out_btn, self.frame, self.no_text, self.in_zone,
+                         self.down_btn, self.out_btn, self.cut_btn, self.link_btn, self.frame,
+                         self.no_text, self.in_zone,
                          self.mode,
                          self.cols, self.gap, self.zoom, self.dx, self.dy, self.centre_btn,
                          self.put_btn, self.del_btn]
@@ -618,8 +632,11 @@ class ArtExtensionsPage(QWidget):
             return
         card = p.set.cards[row]
         g = extend.Group(card.name or "Art extension", cards=[versions.ids(p)[row]])
-        info = art.source_for(p, card)
-        src = (info or {}).get("source") or ""
+        info = art.source_for(p, card) or {}
+        ids, cols, picture = self._cut_from(extend.picture_key(info))
+        if len(ids) > 1:                        # the deck's cards cut from the same picture
+            g.cards, g.cols = ids, max(1, min(12, cols))
+        src = picture or info.get("source") or ""
         if src and Path(src).is_file():
             try:
                 g.picture = extend.keep_picture(p.folder, src)
@@ -628,8 +645,111 @@ class ArtExtensionsPage(QWidget):
         self.groups.append(g)
         self._save()
         self._fill_groups(len(self.groups) - 1)
-        self.status.setText("Now add the cards the art carries on to – or make extension "
-                            "cards – and place them on the picture.")
+        if len(ids) > 1:
+            self.status.setText(f"{len(ids)} cards were cut from this picture – they're in the "
+                                f"order they were cut, left to right. Put the art on them, or "
+                                f"Link them so only the card you play counts.")
+        else:
+            self.status.setText("Now add the cards the art carries on to – or make extension "
+                                "cards – and place them on the picture.")
+
+    def _cut_from(self, key: str) -> tuple[list, int, str]:
+        """The deck's cards whose art was cut from the picture ``key`` names:
+        (their ids in order, cards in the longest row, the picture to use)."""
+        from mse_studio.core import versions
+        p = self.main.project
+        if p is None or not key:
+            return [], 1, ""
+        sources = p.config.get("art_sources") or {}
+        ids = versions.ids(p)
+        found, infos = [], []
+        for i, c in enumerate(p.set.cards):
+            info = sources.get(c.image) if c.image else None
+            if info and extend.picture_key(info) == key:
+                found.append((ids[i], info.get("crop")))
+                infos.append(info)
+        order, cols = extend.in_order(found)
+        return order, cols, extend.best_picture(infos)
+
+    def add_cut_cards(self) -> None:
+        """The deck's cards cut from this group's picture, in the order they
+        were cut; cards that weren't stay after them."""
+        p, g = self.main.project, self.g
+        if p is None or g is None:
+            return
+        key = ""
+        sources = p.config.get("art_sources") or {}
+        for row in self.rows:
+            if row >= 0 and p.set.cards[row].image in sources:
+                key = extend.picture_key(sources[p.set.cards[row].image])
+                if key:
+                    break
+        if not key and g.picture:
+            key = extend.picture_key({"source": str(extend.picture_path(p.folder, g))})
+        ids, cols, _pic = self._cut_from(key)
+        if len(ids) < 2:
+            self.status.setText("No other card of the deck was cut from this picture.")
+            return
+        rest = [c for c in g.cards if c not in ids]
+        added = len([c for c in ids if c not in g.cards])
+        g.cards = ids + rest
+        g.cols = max(1, min(12, cols))
+        self._save()
+        self._show_group()
+        self.status.setText(f"{len(ids)} cards cut from this picture, in order"
+                            + (f" ({added} added)." if added else "."))
+
+    def link_cards(self) -> None:
+        """The selected card is the one you play; the group's other cards
+        become its art cards (not counted)."""
+        from mse_studio.core import versions
+        from mse_studio.gui.common import confirm
+        p, g = self.main.project, self.g
+        if p is None or g is None:
+            return
+        rows = [r for r in self.rows if r >= 0]
+        i = self.cards.currentRow()
+        main_row = self.rows[i] if 0 <= i < len(self.rows) else -1
+        if main_row < 0:                        # none picked: the one with the most rules
+            main_row = max(rows, key=lambda r: len(p.set.cards[r].text("rule_text")),
+                           default=-1)
+        others = [r for r in rows if r != main_row]
+        if main_row < 0 or not others:
+            self.status.setText("Add the cards first – at least two.")
+            return
+        inf = versions.info(p)
+        main_card = inf.card_of(main_row)
+        todo = [r for r in others if not (inf.kind[r] == versions.ART and inf.of[r] == main_card)]
+        name = p.set.cards[main_card].name or "the card"
+        if not todo:
+            self.status.setText(f"They're art cards of {name} already.")
+            return
+        names = ", ".join(p.set.cards[r].name or "untitled" for r in todo)
+        if not confirm(self, "Link them", f"{name} is the card you play. These become its art "
+                                          f"cards – printed with it, never played or counted:"
+                                          f"\n\n{names}"):
+            return
+        tab = getattr(self.main, "cards_tab", None)
+        if tab is not None:
+            try:
+                tab.editor.commit()
+            except Exception:  # noqa: BLE001
+                pass
+        cids = versions.ids(p)
+        main_id = cids[main_card]
+        zone = versions.add_zone(p, ZONE) if self.in_zone.isChecked() and _zones_here() else ""
+        for cid in [cids[r] for r in todo]:     # by id: rows stay put, but be safe
+            ids_now = versions.ids(p)
+            r, m = ids_now.index(cid), ids_now.index(main_id)
+            versions.set_version(p, r, versions.ART, m)
+            if zone:
+                versions.set_zone(p, r, zone)
+        p.dirty = True
+        self.main.record(f"Art extension · art cards of {name}", row=main_card)
+        self._reload_cards()
+        self._fill_cards(i)
+        self.status.setText(f"{len(todo)} card(s) are art cards of {name} now – only {name} "
+                            f"counts in the deck.")
 
     def delete_group(self) -> None:
         row = self.list.currentRow()

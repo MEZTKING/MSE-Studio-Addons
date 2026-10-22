@@ -157,3 +157,47 @@ def crop_of(box: list, pic: tuple[int, int]) -> list[int]:
     x, y, w, h = box
     x, y = max(0, min(round(x), pic[0] - 1)), max(0, min(round(y), pic[1] - 1))
     return [x, y, max(1, min(round(w), pic[0] - x)), max(1, min(round(h), pic[1] - y))]
+
+
+# ------------------------------------------------------------------ cards cut from one picture
+def picture_key(info: dict) -> str:
+    """The screenshot a card's art was cut from (before captions were
+    erased), as a key – "" when it isn't known."""
+    import os
+    path = str((info or {}).get("original") or (info or {}).get("source") or "")
+    return os.path.normcase(os.path.abspath(path)) if path else ""
+
+
+def best_picture(infos: list) -> str:
+    """Of the art sources of cards cut from one picture: the picture to
+    spread – a copy with the captions erased when there is one."""
+    for info in infos:
+        src, orig = str(info.get("source") or ""), str(info.get("original") or "")
+        if orig and src and src != orig and Path(src).is_file():
+            return src
+    for info in infos:
+        for k in ("original", "source"):
+            if info.get(k) and Path(str(info[k])).is_file():
+                return str(info[k])
+    return ""
+
+
+def in_order(found: list) -> tuple[list, int]:
+    """``found``: [(card id, crop [x, y, w, h])] cut from one picture → the
+    ids left to right (a row lower down after the row above), and how many
+    lie in the longest row."""
+    items = [(cid, [float(v) for v in crop]) for cid, crop in found if crop and len(crop) == 4]
+    if not items:
+        return [cid for cid, _c in found], max(1, len(found))
+    items.sort(key=lambda it: it[1][1] + it[1][3] / 2)
+    rows: list = []
+    for cid, c in items:
+        mid = c[1] + c[3] / 2
+        if rows and abs(mid - rows[-1][0]) < 0.5 * c[3]:
+            rows[-1][1].append((cid, c))
+        else:
+            rows.append([mid, [(cid, c)]])
+    out = []
+    for _mid, row in rows:
+        out += [cid for cid, c in sorted(row, key=lambda it: it[1][0])]
+    return out, max(len(row) for _m, row in rows)

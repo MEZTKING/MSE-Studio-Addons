@@ -9,7 +9,11 @@ landscape.
 
 1. Open the card whose art carries on, on the Cards page.
 2. On the **Extend art** page, press **New, from the open card**. The whole
-   picture its art was cut from is used (or **Choose…** another one).
+   picture its art was cut from is used (or **Choose…** another one) – the
+   copy with the subtitles erased, when you erased them in Edit art.
+   Every other card of the deck cut from the same picture comes in too, in
+   the order they were cut: left to right. (Later: **Add the cards cut from
+   this picture**.)
 3. Add the cards the art carries on to:
    - **Add the open card** / **Add a card…** – cards already in the deck
      (lands, other cards, art cards);
@@ -26,7 +30,9 @@ landscape.
      picture – the art lines up across the borders.
    - *Art box to art box*: each art box carries straight on from the one
      before – none of the picture is hidden behind the frames.
-5. Press **Put the art on the cards**. Each card gets its part of the
+5. **Link them…**: select the card you play – the others become its art
+   cards, so only it counts in the deck.
+6. Press **Put the art on the cards**. Each card gets its part of the
    picture as its art (Undo takes it back). Edit art still works on each
    card afterwards.
 
