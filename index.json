@@ -189,7 +189,7 @@
         "tooltip": "Check exported decks for the MTG engine"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.12/deck-check-0.2.12.zip",
-      "downloads": 3,
+      "downloads": 4,
       "versions": [
         {
           "version": "0.2.12",
