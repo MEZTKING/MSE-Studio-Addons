@@ -347,8 +347,9 @@ class HelloPage(QWidget):
   `mse_studio.core.lore`: `lookup(name, series, kind=…)` finds their story
   online; `cast(series, kind)` → `(members, where from)` – a series'
   characters, the main ones first (`CastMember`: `name`, `role` "main",
-  "supporting" or "", `text`, `source`), from AniList or the series' fan
-  wiki; `character_card(name, text, about="", kept=(), role="")` – a
+  "boss", "villain", "supporting" or "", `text`, `source`), from AniList or
+  the series' fan wiki (the one named after the series; its main character,
+  boss and villain categories); `character_card(name, text, about="", kept=(), role="")` – a
   `card_ideas.CardIdea` for them (the type, colours, cost and abilities their
   story fits; `card_ideas.add_to_deck(project, ideas)` adds it). `lookup` and
   `cast` go online: run them in a `Job`. `SOURCE_KINDS` – what a story can be
