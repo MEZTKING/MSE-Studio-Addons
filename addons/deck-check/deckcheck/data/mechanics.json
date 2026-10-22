@@ -352,7 +352,7 @@
       "if_text": "without negotiation"
     },
     "Lakan Fight": {
-      "question": "“Deal -X/-X to target creature” — do you mean “target creature gets -X/-X until end of turn”?"
+      "note": "Target creature gets -X/-X until end of turn (ruling)."
     },
     "Euphemia li Britannia": {
       "question": "“Reduce X damage divided between target permanents” — prevent the next X damage, divided as you choose, this turn?"
@@ -367,8 +367,7 @@
       "question": "“Roll a D6, then randomly choose an effect” — is the effect the number rolled, or a second random pick?"
     },
     "Temple of Heaven": {
-      "question": "“Whenever a player adds {G} … add another {G}” — like Mana Reflection for green only, for every player?",
-      "if_text": "add another {G}"
+      "note": "Every player's green mana is doubled, like Mana Reflection for {G} only (ruling)."
     },
     "Locked Chest": {
       "note": "“The second time” means every second search or shuffle: the 2nd, 4th, 6th… (ruling)."
@@ -401,10 +400,10 @@
       "note": "“Entered the battlefield more than twice” counts the whole game, through zone changes (ruling). Needs per-card history."
     },
     "Never Ever Say-": {
-      "question": "Meld: does “-That Name Again.” need to be on the battlefield, or can it be in your hand? “Becomes all card types” — creature too (with what P/T)?"
+      "note": "Both halves are artifacts; the set is made only while “-That Name Again.” is on the battlefield too, not in your hand (ruling)."
     },
     "-That Name Again.": {
-      "question": "See Never Ever Say- (meld pair)."
+      "note": "The other half of Never Ever Say-: both have to be on the battlefield (ruling)."
     },
     "Jinshi, Imperial Moon": {
       "question": "“{4B}: Jinshi, Imperial Moon.” has no effect — what does it do?"
@@ -429,10 +428,7 @@
       "question": "“Deal X Burn damage equal to its power to any blocking creatures” and “Apply Burn” — see the Burn questions."
     },
     "Rumors of House Verdigris": {
-      "question": "“Reset the commander cost of all players” — remove all commander tax? “If a ‘Win the game’ effect is used by an opponent, negate that effect” — like Platinum Angel's opponent half?"
-    },
-    "Silver in Cash": {
-      "question": "The spell becomes a basic land card permanently (in every zone, for the rest of the game)?"
+      "note": "Removes all commander tax for every player; an opponent's “win the game” effect does nothing and this card is sacrificed, like Platinum Angel's opponent half (ruling)."
     },
     "Lady Fuyou": {
       "note": "Counters every spell that targets her, your own included (ruling)."

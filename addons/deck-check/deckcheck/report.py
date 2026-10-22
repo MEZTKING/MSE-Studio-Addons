@@ -13,7 +13,7 @@ from .mechanics import TIER_LABEL
 TITLES = {
     # errors
     "deck-size": "Deck size", "color-identity": "Colour identity", "commander-no-cost": "Commander",
-    "commander-type": "Commander", "commander-missing": "Commander", "singleton": "Different cards with one name",
+    "commander-type": "Commander", "commander-missing": "Commander", "singleton": "Different cards with one name", "duplicate": "Two copies",
     "text-symbol": "Symbols nobody can read", "cost-symbol": "Mana cost symbols", "cost-syntax": "Mana cost",
     "mana-value": "Mana value", "pt-value": "Power / toughness", "pt-missing": "Power / toughness",
     "loyalty-missing": "Loyalty", "empty-text": "Missing rules text", "truncated": "Cut-off text",

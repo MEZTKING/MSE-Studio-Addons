@@ -203,7 +203,7 @@ def check_text(card: Card, deck_names: set[str]) -> list[Finding]:
         subj = re.sub(r"^The\s+", "", subj)
         if NOT_A_NAME.match(subj) or len(subj) < 3:
             continue
-        own = {card.base_name.lower(), card.short_name.lower(), card.base_name.split(" ")[0].lower()}
+        own = {card.base_name.lower(), card.short_name.lower(), card.base_name.split(" ")[0].lower(), "cardname"}
         if subj.lower() in own or subj.lower() in names_lower:
             continue
         if any(subj.lower() in n or n.startswith(subj.lower()) for n in own):
@@ -279,7 +279,7 @@ def check_leftover_names(card: Card, deck_names: set[str], deck_keywords: set[st
 
 def check_castable(card: Card) -> list[Finding]:
     if card.mana_cost or card.has_type("Land") or card.is_token or card.count == 0 or card.back_of \
-            or card.base_name.lower().endswith(" token"):
+            or card.base_name.lower().endswith(" token") or not card.starts_in_deck:
         return []
     if not card.types or any(t.lower() not in CARD_TYPES for t in card.types) \
             or "herbal" in (x.lower() for x in card.subtypes):
@@ -343,12 +343,27 @@ def check_deck(deck: Deck) -> list[Finding]:
         in_list = [c for c in deck.cards if c.count > 0 and not c.is_token]
         if any("zone" in c.raw for c in deck.cards):
             # the export says where each card starts: only deck and commander cards count
-            in_list = [c for c in in_list if str(c.raw.get("zone") or "deck") in ("deck", "commander")]
+            in_list = [c for c in in_list if c.starts_in_deck]
         total = sum(c.count for c in in_list if c.id not in alt and not is_art_card(c))
         groups = _likely_outside_deck(deck)
         est_out = sum(len(v) for v in groups.values())
         detail = "; ".join(f"{k}: {len(v)}" for k, v in groups.items() if v)
-        if total > 100:
+        zoned = any(c.zone for c in deck.cards)
+        if total > 100 and est_out and zoned:
+            # the export says where cards start, but some still look like they don't start in the deck
+            out.append(_f("error", "deck-size",
+                          f"{total} cards, but a Commander deck is exactly 100. If this is a pool to build the deck "
+                          f"from, the rest stay out of the game until you pick the 100. About {est_out} of the cards "
+                          f"set to start in the deck look like they don't ({detail}), which would leave "
+                          f"~{total - est_out} candidates.",
+                          fix="set where those start in MSE Studio (right-click → Versions → Where it starts in a "
+                              "game), pick the 100, or ignore this while it's a pool"))
+        elif total > 100 and zoned:
+            out.append(_f("error", "deck-size",
+                          f"{total} cards start in the deck, but a Commander deck is exactly 100. If this is a pool "
+                          f"to build the deck from, the rest stay out of the game until you pick the 100.",
+                          fix="pick the 100 (simulations can help decide what to cut), or ignore this while it's a pool"))
+        elif total > 100:
             # often a card pool: the 100 aren't chosen yet and the rest sit out of the game
             # (Deck check lets you ignore this one)
             out.append(_f("error", "deck-size",
@@ -358,6 +373,7 @@ def check_deck(deck: Deck) -> list[Finding]:
                           fix="pick the 100 (simulations can help decide what to cut), or ignore this while it's a pool"))
         elif total < 100:
             out.append(_f("error", "deck-size", f"Only {total} cards; a Commander deck is exactly 100."))
+        marked = any("version" in c.raw for c in deck.cards)
         for base, g in art_groups(deck).items():
             listing = ", ".join(c.name for c in g["all"])
             if g["lone"]:
@@ -388,6 +404,14 @@ def check_deck(deck: Deck) -> list[Finding]:
                               f"“{c.name}” has a name of its own but the same rules as “{m.name}”, so it's "
                               f"played as an alternate of it (one card).", c,
                               fix="if it's meant to be a separate card, drop “[Alt N]” from its name"))
+            # an export that marks versions: two unmarked, unlinked cards with one name are two copies
+            copies = [c for c in g["all"] if not c.marker and not c.version_of and not is_art_card(c)]
+            if marked and g["same"] and len(copies) > 1:
+                out.append(_f("error", "duplicate",
+                              f"“{base}” is in the deck {len(copies)} times as separate cards with the same rules; "
+                              f"Commander allows one copy.", copies[1],
+                              fix="if one is another picture of the card, make it an alternate or an art card "
+                                  "(right-click → Versions); otherwise delete the extra copy"))
             if g["same"]:
                 if len(g["texts"]) > 1:
                     out.append(_f("info", "alt-arts",
@@ -420,7 +444,7 @@ def _meaning(card: Card) -> str:
     """Rules text with wording-only differences removed: the card's own name, reminder
     text in brackets, "also", punctuation and spacing."""
     t = card.rules_text.lower()
-    for n in sorted({card.base_name, card.short_name}, key=len, reverse=True):
+    for n in sorted({card.base_name, card.short_name, "CARDNAME"}, key=len, reverse=True):
         t = t.replace(n.lower(), "~")
     t = re.sub(r"\([^)]*\)", " ", t)
     t = re.sub(r"\balso\b", " ", t)
@@ -531,7 +555,7 @@ def _likely_outside_deck(deck: Deck) -> dict[str, list[Card]]:
     transform_targets = " ".join(c.rules_text for c in deck.cards).lower()
     alt = versions(deck)
     for c in deck.cards:
-        if c.count <= 0 or c.id in alt or is_art_card(c):    # versions are counted once already
+        if c.count <= 0 or c.id in alt or is_art_card(c) or not c.starts_in_deck:    # not counted already
             continue
         tl = c.type_line.lower()
         if c.is_token or c.name.lower().endswith(" token") or "token" in tl:

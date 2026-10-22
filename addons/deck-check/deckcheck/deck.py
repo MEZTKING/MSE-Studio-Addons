@@ -55,6 +55,16 @@ class Card:
         return str(self.raw.get("version_of") or "")
 
     @property
+    def zone(self) -> str:
+        """Where the card starts in a game (the export's "zone": deck, commander, bag,
+        token, rules, outside); empty when the export doesn't say."""
+        return str(self.raw.get("zone") or "")
+
+    @property
+    def starts_in_deck(self) -> bool:
+        return self.zone in ("", "deck", "commander")
+
+    @property
     def marker_number(self) -> int:
         m = VERSION_SUFFIX.search(self.name)
         return int(m.group(2)) if m else 0
