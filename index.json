@@ -90,7 +90,7 @@
     {
       "id": "card-database",
       "name": "Card database",
-      "version": "1.4.7",
+      "version": "1.4.8",
       "kind": "page",
       "description": "Every Magic card on your PC from Scryfall's bulk data (import the file you downloaded, or download it here). Search with filters (legal in Commander, Standard, Modern…), pick random cards, build a whole deck for your format – around a commander, or around a key card in fours for 60-card formats – in a play style and themes you pick, see the cards, pick the ones you want or start a new deck with all of them, and add cards as real cards or as your own cards to edit. Decklists look cards up here first.",
       "author": "MEZTKING",
@@ -116,8 +116,13 @@
         "order": 40,
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.7/card-database-1.4.7.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.8/card-database-1.4.8.zip",
       "versions": [
+        {
+          "version": "1.4.8",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.8/card-database-1.4.8.zip",
+          "date": "2026-10-22"
+        },
         {
           "version": "1.4.7",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.7/card-database-1.4.7.zip",
@@ -189,7 +194,7 @@
         "tooltip": "Check exported decks for the MTG engine"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-check-v0.2.13/deck-check-0.2.13.zip",
-      "downloads": 4,
+      "downloads": 6,
       "versions": [
         {
           "version": "0.2.13",
