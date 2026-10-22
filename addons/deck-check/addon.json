@@ -1,7 +1,7 @@
 {
   "id": "deck-check",
   "name": "Deck check",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "kind": "page",
   "description": "Checks exported decks (.deck.json) before they're played in the MTG engine: data to fix in MSE Studio, wording that needs your ruling, and for every card whether the Forge rules engine can run it as it is, needs new engine code, or has to be resolved by hand. Works only on files you pick; nothing is sent anywhere by itself. With AI switched on in MSE Studio, Check keywords with AI asks your chosen AI service about the deck's keywords.",
   "author": "MEZTKING",
