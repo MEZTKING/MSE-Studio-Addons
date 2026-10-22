@@ -23,10 +23,17 @@ try:
 except ImportError:                     # loaded on its own
     import extend
 
+ZONE = "Art extensions"                 # the zone new extension cards start in
 PREVIEW_MAX = 1600                      # the preview's picture, at most this many pixels
 PICTURES = "Pictures (*.png *.jpg *.jpeg *.webp *.bmp *.tif *.tiff)"
 NO_TEXT = ("casting_cost", "super_type", "sub_type", "rule_text", "flavor_text", "power",
            "toughness", "loyalty")
+
+
+def _zones_here() -> bool:
+    """MSE Studio has zones of the deck's own (0.25.0, later builds)."""
+    from mse_studio.core import versions
+    return hasattr(versions, "add_zone")
 
 
 def read_preview(path: str, progress=None, cancel=None):
@@ -156,6 +163,13 @@ class ArtExtensionsPage(QWidget):
         self.del_btn.setToolTip("Take it off this list – the cards and their art stay as they are")
         self.del_btn.clicked.connect(self.delete_group)
         lv.addWidget(self.del_btn)
+        if hasattr(self.main, "card_kinds"):          # MSE Studio's explanation (0.25.0)
+            self.kinds_btn = QPushButton("What's the difference?")
+            set_icon(self.kinds_btn, "info")
+            self.kinds_btn.setToolTip("Art extensions, art cards, alternates and zones – what "
+                                      "each one is")
+            self.kinds_btn.clicked.connect(self.explain)
+            lv.addWidget(self.kinds_btn)
         split.addWidget(left)
 
         # ---- the one picked
@@ -238,6 +252,13 @@ class ArtExtensionsPage(QWidget):
         self.no_text.setToolTip("New extension cards are pictures: their cost, type line, "
                                 "rules, flavour text and P/T are left empty")
         nf.addRow("", self.no_text)
+        self.in_zone = QCheckBox(f"Together in the zone “{ZONE}” on the Cards page")
+        self.in_zone.setChecked(True)
+        self.in_zone.setToolTip("New extension cards start in a zone of the deck's own: grouped "
+                                "together in the Cards list (Group by → Where they start), never "
+                                "counted in the deck")
+        self.in_zone.setVisible(_zones_here())
+        nf.addRow("", self.in_zone)
         bv.addLayout(nf)
         mv.addWidget(box, 1)
 
@@ -300,10 +321,14 @@ class ArtExtensionsPage(QWidget):
         lay.addWidget(split, 1)
         self._editors = [self.name, self.pic_btn, self.card_pic_btn, self.cards,
                          self.add_open_btn, self.add_pick_btn, self.make_btn, self.up_btn,
-                         self.down_btn, self.out_btn, self.frame, self.no_text, self.mode,
+                         self.down_btn, self.out_btn, self.frame, self.no_text, self.in_zone,
+                         self.mode,
                          self.cols, self.gap, self.zoom, self.dx, self.dy, self.centre_btn,
                          self.put_btn, self.del_btn]
         self.load()
+
+    def explain(self) -> None:
+        self.main.card_kinds("versions")
 
     def _slider(self, lo: int, hi: int, tip: str) -> QSlider:
         s = QSlider(Qt.Horizontal)
@@ -676,6 +701,8 @@ class ArtExtensionsPage(QWidget):
             for key in NO_TEXT + tuple(k + "_2" for k in NO_TEXT):
                 if card.raw(key):
                     card.set_raw(key, "")
+        if self.in_zone.isChecked() and _zones_here():
+            versions.set_zone(p, new, versions.add_zone(p, ZONE))
         g.cards.append(versions.ids(p)[new])
         p.dirty = True
         self.main.record(f"Art extension · a new art card of {p.set.cards[first].name or 'a card'}",

@@ -15,7 +15,9 @@ landscape.
      (lands, other cards, art cards);
    - **Make an extension card** – a new art card of the first card (never
      played, not counted), in the frame you pick under *New ones' frame*
-     and, if you like, without rules text.
+     and, if you like, without rules text. They start in the deck's own
+     zone *Art extensions*, so they sit together on the Cards page (Group
+     by → Where they start).
 4. Put them in order (left to right, then the next row) and set how they
    lie: cards a row, the gap you'll leave between them, zoom and where they
    sit on the picture. The preview shows each card's outline and the part
@@ -27,6 +29,10 @@ landscape.
 5. Press **Put the art on the cards**. Each card gets its part of the
    picture as its art (Undo takes it back). Edit art still works on each
    card afterwards.
+
+**What's the difference?** on the page (and Help → *Kinds of cards and
+zones* in MSE Studio) says how art extensions, art cards, alternates and
+zones differ.
 
 A full-art or borderless frame shows the most of the picture. Big pictures
 print sharpest: upscale the picture first if the page says the art is

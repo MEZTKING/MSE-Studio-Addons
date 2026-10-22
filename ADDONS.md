@@ -301,7 +301,12 @@ class HelloPage(QWidget):
   `versions(i)`, `card_of(i)`, `counts(i)`; `counted(project)` is the cards
   that count for the deck (use it rather than `project.set.cards` for sizes
   and checks – `decklists.deck_cards` already does). `add_version(project, i,
-  kind)`, `set_version`, `unlink`, `share_rules`, `zone(project, i)`. Copies
+  kind)`, `set_version`, `unlink`, `share_rules`, `zone(project, i)`,
+  `set_zone(project, i, zone)`. A deck's own zones (art extensions,
+  promos…): `custom_zones(project)` ({key: name}), `add_zone(project, name)`
+  (returns its key, the same one for the same name), `zone_name`,
+  `rename_zone`, `remove_zone`; their cards are never counted (`played(zone)`).
+  Check `hasattr(versions, "add_zone")` – early 0.25.0 builds haven't got it. Copies
   and backs of a version are kept under `order.card_key(project, card)`
   ("#" + its id), so read them with `order.quantity(project, card)`. Card ids
   (`deck_export.card_ids`) are steady: they stay with their card.
