@@ -339,7 +339,8 @@ class CardDatabasePage(QWidget):
         for c in "WUBRGC":
             b = QPushButton(c)
             b.setCheckable(True)
-            b.setFixedWidth(34)
+            b.setProperty("kind", "chip")      # a fixed width hid the letter
+            b.setMinimumWidth(b.fontMetrics().horizontalAdvance("W") + 24)
             b.setToolTip({"W": "White", "U": "Blue", "B": "Black", "R": "Red", "G": "Green",
                           "C": "Colourless"}[c])
             self.color_btns[c] = b
