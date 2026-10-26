@@ -17,23 +17,15 @@ get an **Update** button when a newer version is listed here.
 | Add-on | Kind | What it does |
 |---|---|---|
 | [Deck notes](addons/deck-notes) | Page | A notes page for each deck, saved as `notes.md` in the deck's folder, with a checklist of the deck's cards. |
-| [Lore](addons/lore) | Page | The deck's world: its characters, places, groups, items and events, what each one is and the cards that name it – gathered from your cards or a series' characters looked up, with a new card for any of them (needs 0.25.0). |
 | [Playtest](addons/playtest) | Page | Goldfish a deck or a decklist: opening hands, mulligans, turns, counters, and the odds of drawing what you need. Came with MSE Studio until 0.25 (needs 0.25.0). |
-| [Deck check](addons/deck-check) | Page | Checks exported decks before they're played in a rules engine: what to fix, wording that needs your ruling, which cards the Forge engine can run, alternate arts; asks the AI about the deck's keywords when AI is on (needs 0.25.0). |
 | [Card database](addons/card-database) | Page | Every Magic card on your PC from Scryfall's bulk data: search, random cards, build a Commander deck around a commander in a play style and themes you pick (see the cards, pick some, or start a new deck with all of it), add cards as real or your own. |
-| [Card prices](addons/card-prices) | Page | What a deck's real cards cost at TCGplayer and Cardmarket: cheapest printings, totals per store, the cheapest mix, in your currency. |
 | [Deck sharing](addons/deck-sharing) | Page | Share decks with friends through a shared OneDrive, Google Drive or Dropbox folder, or send one as a file; a friend's deck opens as a new deck of yours. |
-| [Art extensions](addons/art-extensions) | Page | One picture across several cards, so the art carries on from card to card when they lie side by side – a scene over a card and its art cards, or a row of lands. Makes the extension cards too. |
 | [Art only](addons/art-only) | Page | Just the art of a card for your own cards: cut out of its window, or with the frame and text painted over on full-art cards. Adds *Keep only the art* to the Decklists page. |
 | [Video capture](addons/capture) | Page | Screenshots from a video or game with a hotkey, sorted into episode folders. Came with MSE Studio until 0.15.0. |
 | [Picture grabber](addons/picture-grabber) | Page | Pictures from web pages and folders, with a live mode for the biggest version of each picture. Came with MSE Studio until 0.15.0. |
 | [Dragon cards](addons/dragon-cards) | Card list | Twelve dragon ideas in every colour, with a dragon commander. |
 | [Anime archetypes](addons/anime-archetypes) | Card list | The hero, the rival, the mentor, the mascot, the sealed evil… as cards. |
 | [Gear and auras](addons/gear-and-auras) | Card list | Equipment and Auras for Voltron decks. |
-| [Anime upscaling models](addons/anime-upscaling-models) | Upscaling models | Real-ESRGAN AnimeVideo v3 (2×/3×/4×) and 4xHFA2k. |
-| [NMKD upscaling models](addons/nmkd-upscaling-models) | Upscaling models | NMKD Siax and NMKD Superscale. |
-| [Fast upscaling models](addons/fast-upscaling-models) | Upscaling models | Real-ESRGAN General v3 and 4xLSDIRCompactC3 – quick, for big batches. |
-| [Photo and restoration models](addons/photo-upscaling-models) | Upscaling models | 4xNomos8kSC, 4xLSDIR, 4xLSDIRplusC, Uniscale Restore, "Unknown". |
 
 Card lists show up in MSE Studio's **Card ideas → Example cards**; upscaling
 models in the **Upscale** page's model list (Upscayl's own stays the default).
@@ -45,7 +37,7 @@ models in the **Upscale** page's model list (Upscayl's own stays the default).
 | **Page** – a new page in MSE Studio's side rail (Python + PySide6) | `page` | Yes, inside MSE Studio | [templates/page-addon](templates/page-addon) |
 | **Card list** – example cards for Card ideas (JSON) | `cards` | No | [templates/card-list-addon](templates/card-list-addon) |
 | **Program** – game engines and tools MSE Studio starts | `game-engine`, `tool`, … | Yes, as its own program | [templates/program-addon](templates/program-addon) |
-| **Upscaling models** – extra models for Upscayl | `models` | No | see the anime-upscaling-models add-on |
+| **Upscaling models** – extra models for Upscayl | `models` | No | see [ADDONS.md](ADDONS.md) → Upscaling models |
 
 The full `addon.json` reference is in MSE Studio's
 [ADDONS.md](ADDONS.md) (the same guide as in MSE Studio).

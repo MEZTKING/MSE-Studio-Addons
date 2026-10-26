@@ -46,7 +46,7 @@ class Stopped(RuntimeError):
 
 
 def card_area(size: tuple[int, int]) -> tuple[int, int, int, int]:
-    """The card in a picture: without MPC's 1/8 in margin when it has it."""
+    """The card in a picture: without the 1/8 in print margin when it has it."""
     w, h = size
     if not w or not h:
         return 0, 0, w, h
@@ -58,7 +58,7 @@ def card_area(size: tuple[int, int]) -> tuple[int, int, int, int]:
 
 
 def open_card(path: Path) -> Image.Image:
-    """The card alone (no MPC margin), RGB."""
+    """The card alone (no print margin), RGB."""
     from PIL import ImageOps
     with Image.open(path) as im:
         im = ImageOps.exif_transpose(im).convert("RGB")

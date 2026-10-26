@@ -93,7 +93,7 @@ def has_formats(conn: sqlite3.Connection) -> bool:
 
 def db_path() -> Path:
     """Where the database is kept (outside the add-on, so updates keep it).
-    The Card prices add-on reads it from here too."""
+    Other add-ons may read it from here too."""
     return addons.data_dir("card-database") / "cards.sqlite"
 
 

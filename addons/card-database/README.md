@@ -6,14 +6,13 @@ page under Review.
 - **Import** a Scryfall bulk file you downloaded (`.json`, `.jsonl`, or either
   compressed as `.gz` – like `all-cards-20261013091836.jsonl.gz`), or
   **Download** one here. *Oracle cards* (one of each card, about 160 MB) is
-  enough; *Default cards* has every printing, which the Card prices add-on
-  uses to find each card's cheapest printing. *All cards* works too: only its
+  enough; *Default cards* has every printing. *All cards* works too: only its
   English printings are kept.
 - **Search**: name, rules text, type, colours (within a commander's colours),
   mana value, rarity, **legal in** a format – Commander, Brawl, Oathbreaker,
   Standard, Pioneer, Modern, Legacy, Vintage, Pauper… (the open deck's format
-  to start with) – and a top price with the Card prices add-on; sort by name,
-  mana value, price, popularity (EDHREC) or newest.
+  to start with) ; sort by name,
+  mana value, popularity (EDHREC) or newest.
   **Random** picks cards for you.
 - **Commander ideas and real cards for MSE Studio** (0.22.0): while it's
   installed, *Find a commander*, the Start here commander ideas and *Real cards*
@@ -47,7 +46,7 @@ page under Review.
     cards (the commander as its commander), or **Save as a decklist**.
 - **Seeing the cards** (search results and the built deck, like the
   Decklists page): **Find** a card, **Sort** (deck order, name, mana value,
-  colour, card type, most played, newest, cheapest with Card prices),
+  colour, card type, most played, newest),
   **Cards a row** (how many side by side – they fill the width), and **Bigger view** – everything but the cards
   hidden (press it again to go back). Double-click a card to see it full
   size. Right-click: see it full size, add it to your deck as a real card

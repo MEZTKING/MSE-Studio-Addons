@@ -1,7 +1,7 @@
 {
   "id": "art-only",
   "name": "Art only",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "kind": "page",
   "description": "Just the art of a card, for your own cards: cut out of its window (Scryfall's own cut-out for real cards), or – for full-art and borderless cards – with the name bar, type line, text box, P/T and border painted over by a content-aware fill that rebuilds them from the art around them (offline; AI fill too when AI is switched on). Adds Keep only the art to the Decklists page.",
   "author": "MEZTKING",

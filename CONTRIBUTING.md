@@ -11,7 +11,7 @@ them that add-ons in this store are checked. So before merging a **page** or
 - [ ] It doesn't read or change files outside the open deck's folder, the
       add-on's own folder, its data folder (`addons.data_dir("<id>")`) and
       files the user picks. (Reading another add-on's data folder is fine when
-      the description says so – Card prices reads the Card database.) MSE's
+      the description says so – reading the Card database's, say.) MSE's
       own data folder is changed only through MSE Studio's frame-pack
       installer (`mse_packages.install_zip` / `remove_package`), never by
       writing files there. Fonts are installed only

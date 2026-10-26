@@ -2,8 +2,7 @@
 
 This repository is the add-on **store** for MSE Studio (a PySide6 desktop app
 around Magic Set Editor 2.5.7 for custom Magic: The Gathering Commander decks:
-MSE draws the cards → Upscayl enlarges them → they're printed through
-MakePlayingCards). Every copy of MSE Studio reads `index.json` from `main`.
+MSE draws the cards → Upscayl enlarges them → they're printed). Every copy of MSE Studio reads `index.json` from `main`.
 
 MSE Studio itself lives in the private repository **MEZTKING/MSE**. Its code
 is the API add-ons use; read it (`mse_studio/core`, `mse_studio/pipeline`,
@@ -48,7 +47,7 @@ two the same).
 | Program | `game-engine`, `tool`, `exporter`, `art`, `other` | A separate program MSE Studio starts with the chosen decks' `.deck.json` files | `templates/program-addon` |
 | Formats | `formats` | Deck formats (house rules) for the Deck page and New deck window: `"formats": ["formats/….json"]`, the same files as My formats → Export (needs MSE Studio 0.25.0) | `addons/more-formats` |
 | Click areas | `click-areas` | Where you click to edit each field on a frame, fixed by hand: `"click_areas": ["click_areas.json"]` – what *Share…* in MSE Studio's Click areas window makes (needs MSE Studio 0.25.0) | ADDONS.md → Click area add-ons |
-| Upscaling models | `models` | `.param` + `.bin` model pairs for Upscayl in a `models` folder, offered on the Upscale page (needs MSE Studio 0.12.1) | `addons/anime-upscaling-models` |
+| Upscaling models | `models` | `.param` + `.bin` model pairs for Upscayl in a `models` folder, offered on the Upscale page (needs MSE Studio 0.12.1) | ADDONS.md → Upscaling models |
 | Ability templates | `templates` | Ability wordings for the Templates… window: `"templates": ["templates.txt"]`, MSE Studio's template format – what *Share → My templates as an add-on…* makes (needs MSE Studio 0.25.0) | ADDONS.md → Ability template add-ons |
 | Characters | `characters` | Characters' stories and picked abilities for the Cards page's *Abilities from a character's story…*: `"characters": ["characters.json"]` – what *Share → This character as an add-on…* makes (needs MSE Studio 0.25.0) | ADDONS.md → Character add-ons |
 
@@ -60,7 +59,7 @@ into the add-on). Credit model authors in the add-on's
 README.
 
 **Playtest** was MSE Studio's own page until 0.25: MSE Studio's tests install
-it – and Card database, More example cards, More formats and Paint studio –
+it – and Card database, More example cards, More formats –
 from this repository (its build checks out `main`), so a change to them must
 keep MSE Studio's tests passing – run them with the app's
 source next to this repository (`python -m pytest` there finds it, or set
@@ -110,10 +109,10 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `mse_studio.gui.common`: `Job`, `start`, `forget`, `error`, `info`, `confirm`, `PathEdit` | `Job(fn, label="What it does")` runs `fn(progress=…, cancel=…)` on a worker thread (with a label, Stop cancels it); `job.signals.progress(done, total, text)`, `.finished(result)`, `.failed(text)`; `start(job)`; keep jobs in a list and call `forget(jobs)` in `shutdown()` (0.13.0) |
 | `mse_studio.gui.icons`: `icon(name)`, `set_icon(button, name)` | Icons that follow the theme |
 | `mse_studio.gui.web_window`: `open_web(parent, url, title, on_picture=, on_download=)`, `WebPanel(parent, url, …)`, `available()` | A browser inside MSE Studio (0.16.0): right-click a picture → your `on_picture(url, page, title)`; files the site downloads → `on_download(path, page)`. Make a `WebPanel` when the page is first opened and `close_browser()` it in `shutdown()` |
-| `mse_studio.pipeline.print_prep.make_print(img, spec, margin="auto")`, `has_mpc_margin(img)` | A print file; MPC's margin added only when the picture hasn't got it (0.16.0) |
+| `mse_studio.pipeline.print_prep.make_print(img, spec, margin="auto")`, `has_cut_margin(img)` | A print file; the cut margin (bleed) added only when the picture hasn't got it (0.16.0; `has_cut_margin` 0.25.0) |
 | `mse_studio.gui.thumbs.cache()` / `.large()` | Picture caches at 300 px / 1400 px (`large` is 0.16.0) |
 | `mse_studio.core.picture_tools.register(id, label, run, owner=self)` | A tool for card pictures, offered on the Decklists page – `run(parent, picture, info)` (0.17.0; see the art-only add-on) |
-| `picture_tools.register_painter(label, run, owner=self)` | MSE Studio's *Paint this card's art* opens your add-on: `run(card, base, start_blank)` returns True when it opened (0.25.0; see paint-studio) |
+| `picture_tools.register_painter(label, run, owner=self)` | MSE Studio's *Paint this card's art* opens your add-on: `run(card, base, start_blank)` returns True when it opened (0.25.0) |
 | `picture_tools.register_art_source(id, label, find, owner=self)` + `"art_source": {"label"}` in addon.json | Card art your add-on finds (an image search…): offered as *Art for your cards* for a deck from a prompt, New art ▾ and right-click on the Cards page. `find(info, cancel)` on a worker thread returns bytes, a path or `{"data"/"path", "credit"}` (0.25.0) |
 | `for_addons.ask_json(…, cache=True)`, `AnswerCut` / `AnswerUnusable`; `mse_studio.ai.usage` (`mark`, `since`, `used_text`, `cost`) | The same system prompt several times in a row (Claude keeps it); a cut-off / non-JSON answer (ask again); the tokens used (0.25.0) |
 | `main.decklists_tab.add_custom(entries, source, frame=, pictures=, keep_unknown=True)` | Your own cards to edit with the text, a frame and their own art, fitted like Force to fit (0.17.0) |
@@ -135,7 +134,7 @@ What a page can use (all optional; check `main.project is None` = no deck open):
 | `real_cards.add_source(PictureSource(key, label, find, fetch, ready))`, `remove_source(key)`, `picture_sources()`, `source_label(key)` | Print-ready pictures for real cards, asked before Scryfall. `find`/`fetch` run on a worker thread (no widgets). Add in `__init__`, remove in `shutdown()` (0.25.0) |
 | `main.choose_card_back()`, `main.print_home(rows)`, `main.proof_sheet()`, `main.make_backs(rows)`, `main.cards_tab.set_copies(rows)`, `main.cards_tab.show_real(name)`; `mse_studio.pipeline.order` (`slots`, `readiness`) | Printing (0.25.0) |
 | `main.addon_page(id)`, `main.open_addon_page(id, why)`, `main.offer_addon(id, why, then=fn)` | Another add-on's page; offer to install a store add-on – only one the user's lists have; `main.addon_available(id)` (0.25.0). `main.playtest_tab` is the Playtest add-on's page or None |
-| `mse_studio.gui.lore_dialog.open_for(main, name=, story=)`, `mse_studio.core.lore`: `lookup`, `cast(series, kind)` / `CastMember`, `character_card(name, text, about, kept, role)`, `SOURCE_KINDS` | A character's story → abilities; a series' characters; a card for one (`card_ideas.add_to_deck`). `lookup`/`cast` go online: in a `Job` (0.25.0; see lore) |
+| `mse_studio.gui.lore_dialog.open_for(main, name=, story=)`, `mse_studio.core.lore`: `lookup`, `cast(series, kind)` / `CastMember`, `character_card(name, text, about, kept, role)`, `SOURCE_KINDS` | A character's story → abilities; a series' characters; a card for one (`card_ideas.add_to_deck`). `lookup`/`cast` go online: in a `Job` (0.25.0) |
 | Taken out of MSE Studio in 0.25.0 | `gui.playtest_tab`, `core.playtest` – now in the playtest add-on. `core.addons.RETIRED`: add-ons the store dropped, not loaded |
 | PySide6, Pillow, NumPy, OpenCV | Come with MSE Studio. Other packages: pure-Python ones copied into the add-on's folder |
 

@@ -219,7 +219,7 @@ class CardDatabasePage(QWidget):
         self._fit_timer.stop()
 
     def _prices_on(self) -> bool:
-        """Prices are for the Card prices add-on: only when it's installed and on."""
+        """Prices only when an add-on that gives them is installed and on."""
         try:
             from mse_studio.core import addons
             a = addons.get("card-prices")
@@ -388,7 +388,7 @@ class CardDatabasePage(QWidget):
         self.max_usd.setRange(0, 10000)
         self.max_usd.setSpecialValueText("any")
         self.max_usd.setToolTip("Leave out cards dearer than this (Scryfall's TCGplayer price; "
-                                "the database's day) – with the Card prices add-on")
+                                "the database's day)")
         pr.addWidget(self.max_usd)
         g.addWidget(self.price_box, 1, 4)
         self.sort = QComboBox()
@@ -975,8 +975,7 @@ class CardDatabasePage(QWidget):
         self.build_price = QDoubleSpinBox()
         self.build_price.setRange(0, 10000)
         self.build_price.setSpecialValueText("any")
-        self.build_price.setToolTip("Leave out cards dearer than this (in US dollars) – with the "
-                                    "Card prices add-on")
+        self.build_price.setToolTip("Leave out cards dearer than this (in US dollars)")
         self.build_price_lbl = QLabel("Max price per card")
         f.addRow(self.build_price_lbl, self.build_price)
         self.build_usd = self.build_price            # the name before 1.1

@@ -140,7 +140,7 @@ class HelloPage(QWidget):
 - **Real cards with your pictures** (MSE Studio 0.15.0): add them with
   `mse_studio.core.decklists.add_to_project(project, entries)`, then
   `mse_studio.pipeline.real_cards.use_picture(project, entry, picture, side,
-  credit)` prints each with a picture file (MPC's bleed is added when it
+  credit)` prints each with a picture file (the cut margin is added when it
   hasn't got it; `credit` – who made it, where from – stays with the card),
   then `main.real_pictures(entries)` makes the print files (MSE Studio 0.25.0;
   before, `main.order_tab.real_pictures(entries)`).
@@ -156,8 +156,9 @@ class HelloPage(QWidget):
   your usual browser. Logins and cookies are kept, apart from the user's own
   browser.
 - **Print files** (MSE Studio 0.16.0): `mse_studio.pipeline.print_prep.make_print(img,
-  spec, margin="auto")` makes a picture print-ready – `"auto"` adds MPC's
-  margin unless the picture already has it (`has_mpc_margin(img)`), `"has"`
+  spec, margin="auto")` makes a picture print-ready – `"auto"` adds the
+  cut margin (bleed) unless the picture already has it (`has_cut_margin(img)`,
+  MSE Studio 0.25.0), `"has"`
   only sizes it, `"add"` always adds it.
 - **Sharper pictures** (MSE Studio 0.16.0): `mse_studio.gui.thumbs.large()` is a
   second picture cache at 1400 px next to `thumbs.cache()` (300 px) – the same
@@ -176,7 +177,7 @@ class HelloPage(QWidget):
   add-on instead of MSE Studio's own paint window: `run(card, base,
   start_blank)` – `base` a PIL picture to start from (the art just edited) or
   None – returns True when it opened. `picture_tools.painter()` is the one
-  registered now (see the paint-studio add-on).
+  registered now.
 - **Card art from your add-on** (MSE Studio 0.25.0):
   `picture_tools.register_art_source(id, label, find, tooltip="",
   owner=self)` – `id` is your add-on's id – offers your pictures as *Art for
@@ -302,7 +303,7 @@ class HelloPage(QWidget):
   that count for the deck (use it rather than `project.set.cards` for sizes
   and checks – `decklists.deck_cards` already does). `add_version(project, i,
   kind)`, `set_version`, `unlink`, `share_rules`, `zone(project, i)`,
-  `set_zone(project, i, zone)`. A deck's own zones (art extensions,
+  `set_zone(project, i, zone)`. A deck's own zones (extra art,
   promos…): `custom_zones(project)` ({key: name}), `add_zone(project, name)`
   (returns its key, the same one for the same name), `zone_name`,
   `rename_zone`, `remove_zone`; their cards are never counted (`played(zone)`).
@@ -326,7 +327,7 @@ class HelloPage(QWidget):
   fetch, ready))` – asked before Scryfall when real cards get their pictures.
   `find(names, cancel)` returns {card name: [choice, …] best first} (a choice is
   `{"id", "name", "dpi", "source", "thumb", "extension"}`), `fetch(pick,
-  timeout)` the chosen picture's bytes with MPC's margin, `ready()` "" or what
+  timeout)` the chosen picture's bytes with the cut margin, `ready()` "" or what
   to set up first. Both run on a worker thread: no widgets, a plain copy of
   your settings. Add it in the page's `__init__`, `remove_source(key)` in
   `shutdown()` (pages being rebuilt clear them all first). `picture_sources()`,
@@ -358,8 +359,7 @@ class HelloPage(QWidget):
   `card_ideas.CardIdea` for them (the type, colours, cost and abilities their
   story fits; `card_ideas.add_to_deck(project, ideas)` adds it). `lookup` and
   `cast` go online: run them in a `Job`. `SOURCE_KINDS` – what a story can be
-  from (`"anime"`, `"game"`, `"book"`, `"screen"`, `"comic"`). See the lore
-  add-on.
+  from (`"anime"`, `"game"`, `"book"`, `"screen"`, `"comic"`).
 - **Taken out of MSE Studio in 0.25.0** (now in the Playtest add-on):
   `mse_studio.gui.playtest_tab` and `core.playtest`. An add-on that needs one
   of them is out of date: MSE Studio says so on the Add-ons page.
@@ -510,11 +510,11 @@ copied from somewhere that doesn't allow it.
 
 ```json
 {
-  "id": "anime-upscaling-models",
-  "name": "Anime upscaling models",
+  "id": "my-upscaling-models",
+  "name": "My upscaling models",
   "version": "1.0.0",
   "kind": "models",
-  "description": "Real-ESRGAN AnimeVideo v3 and 4xHFA2k.",
+  "description": "Two models for drawn art.",
   "min_app_version": "0.12.1"
 }
 ```
