@@ -54,7 +54,7 @@
         "tooltip": "The art of a card without its frame and text"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/art-only-v1.1.3/art-only-1.1.3.zip",
-      "downloads": 1,
+      "downloads": 2,
       "versions": [
         {
           "version": "1.1.3",
@@ -98,7 +98,7 @@
         "tooltip": "Every Magic card: search, random cards, build a deck"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/card-database-v1.4.9/card-database-1.4.9.zip",
-      "downloads": 1,
+      "downloads": 2,
       "versions": [
         {
           "version": "1.4.9",
@@ -301,6 +301,7 @@
         "formats/more-formats.json"
       ],
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/more-formats-v1.0.0/more-formats-1.0.0.zip",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
@@ -335,6 +336,7 @@
         "order": 11
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/picture-grabber-v1.0.0/picture-grabber-1.0.0.zip",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
@@ -369,6 +371,7 @@
         "tooltip": "Playtest · opening hands, turns and odds"
       },
       "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/playtest-v1.0.0/playtest-1.0.0.zip",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
