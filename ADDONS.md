@@ -273,6 +273,15 @@ class HelloPage(QWidget):
   tokens every answer used are counted (`mse_studio.ai.usage`: `mark()` /
   `since(mark)` for your job, `used_text(…)` to show it,
   `cost(model, tokens_in, tokens_out)` for Claude's prices).
+  With Claude (0.25.0): a `schema` whose every object is closed
+  (`"additionalProperties": false`) with every property in `required` is
+  enforced – the answer always follows it (`for_addons.strict_schema(schema)`
+  says whether yours is); other schemas are sent as text, as before.
+  `ask_json(…, effort="high")` makes Claude think harder for work that has to
+  be right ("low" … "max"; leave it out for the model's own default), and a
+  request a safety check declines is run again on the model the API
+  recommends. Check before passing `effort`, for older MSE Studio:
+  `"effort" in getattr(ai, "ASK_JSON_OPTIONS", ())`.
 - **AI switched off** (MSE Studio 0.25.0): AI is an experiment people switch
   on (Settings → Advanced → Experimental → AI – off until they do). Off, MSE
   Studio shows no AI option or wording at all, and add-ons do the same:
