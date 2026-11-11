@@ -341,6 +341,14 @@ class HelloPage(QWidget):
   your settings. Add it in the page's `__init__`, `remove_source(key)` in
   `shutdown()` (pages being rebuilt clear them all first). `picture_sources()`,
   `source_label(key)`.
+- **A real card's picture by name** (MSE Studio 0.25.1), no deck needed – for a
+  game table or a card browser: `mse_studio.pipeline.real_cards.picture_for_name(
+  name, set_code=None, cancel=None)` returns a Path (basic lands too; an add-on's
+  picture source first, then Scryfall's normal-size picture), kept on disk so
+  the next call is instant. Call it on a worker thread (a `Job`); it never
+  raises – None when offline, stopped or not found (not asked again for a day).
+  `picture_for_name_cached(name, set_code=None)` only looks at what's been got
+  (no network) – for painting on the GUI thread.
 - **Printing** (MSE Studio 0.25.0): `main.choose_card_back()` (the deck's card
   back from the gallery), `main.print_home(rows)`, `main.proof_sheet()`,
   `main.make_backs(rows)`, `main.cards_tab.set_copies(rows)`;
