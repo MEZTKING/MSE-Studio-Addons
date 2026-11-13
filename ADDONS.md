@@ -350,6 +350,15 @@ class HelloPage(QWidget):
   `mse_studio.gui.theme.current()` (colours: `.primary`, `.surface`…) and
   `current_shape()` (radii in pixels: `.radius_button`, `.radius_card`,
   `.radius_control`, `.radius_list`).
+- **Simple view** (MSE Studio 0.25.2; View → Simple view, on for new users):
+  `mse_studio.gui.nav.more_menu([buttons])` puts buttons already in a row
+  behind a *More* button in Simple view (they stay in the row in the full
+  view; each menu entry clicks its button, so nothing changes in your code;
+  `button.setProperty("more_text", "…")` names an icon-only one), and
+  `mse_studio.gui.common.Collapsible(title, key, widget)` is a section that
+  folds – closed at first in Simple view, then remembered per `key`.
+  `mse_studio.gui.common.simple_view()` says which view is on. Keep the main
+  thing a page does in the row.
 - **A real card's picture by name** (MSE Studio 0.25.1), no deck needed – for a
   game table or a card browser: `mse_studio.pipeline.real_cards.picture_for_name(
   name, set_code=None, cancel=None)` returns a Path (basic lands too; an add-on's
