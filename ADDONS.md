@@ -529,6 +529,32 @@ skills. `abilities` are rules text in the template format's wording
 (`CARDNAME` for the card's name). Write stories in your own words – not
 copied from somewhere that doesn't allow it.
 
+## Look add-ons
+
+Whole looks for **Settings → Appearance → Look** (MSE Studio 0.25.2): colours,
+buttons, corners and letters at once. *Mine and sharing → Save this look to a
+file to share…* there makes a `.look.json`; put one or more in an add-on:
+
+```json
+{"id": "looks-evening", "name": "Evening looks",
+ "version": "1.0.0", "kind": "themes", "min_app_version": "0.25.2",
+ "description": "Calm, dark-friendly looks.",
+ "themes": ["themes/evening.look.json"]}
+```
+
+A look file: `{"name": "Evening", "look": {...}}`, or several:
+`{"looks": [{"name", "look"}, …]}`. Only JSON – no code. The settings a look
+can set (anything else is ignored): `theme_style` (Neutral, Soft, Warm paper,
+Cool slate, Midnight, Forest, Rose, Sand, Graphite, Plum, Mint, Dusk, Snow),
+`contrast` (Standard, High), `accent` (a name from the Accent colour list or
+`"#rrggbb"`), `density` (Comfortable, Compact), `button_shape` (Square,
+Rounded, Pill), `button_look` (Filled, Outlined, Flat), `corner_roundness`
+(Square, Standard, Round), `font_family` (`""` for the computer's font,
+Atkinson Hyperlegible, Nunito, Literata, JetBrains Mono), `letter_spacing`
+(Normal, Wide), `font_size` (8–22) and `card_text_size` (0–30, 0 = the same
+as the text). A look never chooses light or dark – that stays the person's.
+Installed looks show in the Look list with the add-on's name.
+
 ## Upscaling model add-ons
 
 ```json

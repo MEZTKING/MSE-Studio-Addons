@@ -50,6 +50,7 @@ two the same).
 | Upscaling models | `models` | `.param` + `.bin` model pairs for Upscayl in a `models` folder, offered on the Upscale page (needs MSE Studio 0.12.1) | ADDONS.md → Upscaling models |
 | Ability templates | `templates` | Ability wordings for the Templates… window: `"templates": ["templates.txt"]`, MSE Studio's template format – what *Share → My templates as an add-on…* makes (needs MSE Studio 0.25.0) | ADDONS.md → Ability template add-ons |
 | Characters | `characters` | Characters' stories and picked abilities for the Cards page's *Abilities from a character's story…*: `"characters": ["characters.json"]` – what *Share → This character as an add-on…* makes (needs MSE Studio 0.25.0) | ADDONS.md → Character add-ons |
+| Looks | `themes` | Whole looks for Settings → Appearance → Look (colours, buttons, corners, letters): `"themes": ["themes/….look.json"]` – what *Mine and sharing → Save this look to a file to share…* makes; JSON only (needs MSE Studio 0.25.2) | ADDONS.md → Look add-ons |
 
 Big files (models, programs) aren't committed: list them in `fetch` (`path`,
 `url` pinned to a commit or release tag, `sha256`) and `tools/build_index.py`

@@ -29,12 +29,12 @@ ROOT = Path(__file__).resolve().parent.parent
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,63}$")
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 KINDS = {"game-engine", "tool", "page", "cards", "models", "exporter", "art", "formats",
-         "click-areas", "templates", "characters", "other"}
+         "click-areas", "templates", "characters", "themes", "other"}
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SECTIONS = {"Create", "Produce", "Review", "Manage"}
 FIELDS = ["id", "name", "version", "kind", "description", "author", "homepage", "license",
           "min_app_version", "tags", "screenshots", "run", "page", "cards", "formats",
-          "click_areas", "templates", "characters"]
+          "click_areas", "templates", "characters", "themes"]
 SKIP = {"__pycache__", ".DS_Store", "Thumbs.db"}
 
 
@@ -62,7 +62,7 @@ def check(addon: dict, folder: Path | None) -> list[str]:
     if not str(addon.get("description", "")).strip():
         out.append("needs a description")
     for key in ("tags", "screenshots", "cards", "formats", "click_areas", "templates",
-                "characters"):
+                "characters", "themes"):
         if key in addon and not isinstance(addon[key], list):
             out.append(f"{key} must be a list")
     if kind == "page":
@@ -96,6 +96,21 @@ def check(addon: dict, folder: Path | None) -> list[str]:
         out.append("a formats add-on needs \"formats\": [\"formats/….json\"]")
     if kind == "click-areas" and not addon.get("click_areas"):
         out.append("a click-areas add-on needs \"click_areas\": [\"click_areas.json\"]")
+    if kind == "themes" and not addon.get("themes"):
+        out.append("a themes add-on needs \"themes\": [\"themes/….look.json\"]")
+    for rel in addon.get("themes") or []:
+        if folder is None:
+            continue
+        try:
+            data = json.loads((folder / rel).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as e:
+            out.append(f"{rel}: {e}")
+            continue
+        looks = data.get("looks") if isinstance(data, dict) and "looks" in data else [data]
+        if not isinstance(looks, list) or not looks or any(
+                not isinstance(d, dict) or not str(d.get("name", "")).strip()
+                or not isinstance(d.get("look"), dict) or not d["look"] for d in looks):
+            out.append(f"{rel}: every look needs a \"name\" and a \"look\" of settings")
     if kind == "templates" and not addon.get("templates"):
         out.append("a templates add-on needs \"templates\": [\"templates.txt\"]")
     for rel in addon.get("templates") or []:
