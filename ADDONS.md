@@ -62,6 +62,9 @@ my-engine-0.1.0.zip
 | `formats` | Formats: the format files in the add-on, e.g. `["formats/house.json"]` (0.25.0). |
 | `templates` | Ability templates: text files in the template format, e.g. `["templates.txt"]` (0.25.0). |
 | `characters` | Characters: their files, e.g. `["characters.json"]` (0.25.0). |
+| `themes` | Looks: their `.look.json` files (0.25.2; see Look add-ons). |
+| `tasks` | The steps the add-on is for, e.g. `["card-ideas"]` (0.25.2): MSE Studio fetches it quietly the first time someone reaches one of them – see *Add-ons that arrive when needed*. |
+| `priority` | With `tasks`: a whole number; higher is fetched first when several are waiting (0.25.2). |
 | `fetch` | Big files the store downloads when it builds the zip (see Upscaling models). |
 | `tags` | Words for the store's search, e.g. `["art", "fun"]`. |
 | `screenshots` | Picture links shown in the store (the first three). |
@@ -601,6 +604,39 @@ has used Settings → Tools → *Move to another folder…* (0.25.0), in the
 come with MSE Studio (the Card ideas lists) are in the app's
 `resources\addons` folder; an installed copy with the same id replaces the
 bundled one.
+
+## Add-ons that arrive when needed
+
+From MSE Studio 0.25.2, a store add-on with `tasks` isn't offered up front:
+the first time someone reaches one of its steps, it's downloaded quietly in
+the background and is simply there. New users aren't shown a list of things
+to install. The steps:
+
+| Step | When |
+|---|---|
+| `cards`, `art`, `keywords`, `export`, `upscale`, `print`, `guide`, `decklists`, `history`, `backup`, `set-info`, `deck` | That page is opened |
+| an add-on page's `id` (e.g. `card-ideas`) | That page is opened |
+| `new-deck` | The New deck window opens |
+| `playtest` | Someone presses a button that playtests |
+| `settings` | Settings opens |
+
+- One at a time, highest `priority` first; reaching a step again, or a button
+  that needs the add-on (`main.offer_addon`), puts it first.
+- Downloads carry on where they stopped, wait while MSE Studio is busy, while
+  offline and on a slow connection, and are checked against the index's
+  `sha256` and `size` before they're installed.
+- Over 100 MB, it asks once – at the step.
+- Only add-ons from the person's own lists: nothing is fetched (or named)
+  that they can't get.
+- An add-on fetched this way that isn't used for 60 days is *offered* for
+  removal in Settings → Behaviour, never removed.
+- Settings → Behaviour shows what's on its way and has *Download everything
+  now*; the same place switches it off.
+
+`tools/build_index.py` writes `size_mb`, `size` and `sha256` into
+`index.json` for each add-on's zip – nothing to add by hand. Keep `tasks` for
+add-ons that belong to a step; pages people choose for themselves (a capture
+tool, a sharing page) are better found in the store.
 
 ## Testing an add-on
 

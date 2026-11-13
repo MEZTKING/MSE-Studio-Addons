@@ -1,7 +1,7 @@
 {
   "id": "more-example-cards",
   "name": "More example cards",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "kind": "cards",
   "description": "21 more lists for Card ideas – 407 cards of our own: decks of a creature type (Vampires, Zombies, Elves, Goblins, Angels, Merfolk, Knights, Beasts), play styles (spells, +1/+1 counters, artifacts, enchantments, graveyard, life gain, tokens, poison, lands, control), two-colour pairs, planeswalkers and tokens to print. Each has commanders and the cards a deck of its kind needs.",
   "author": "MEZTKING",
@@ -37,5 +37,9 @@
     "lists/two_colour_pairs.json",
     "lists/planeswalkers.json",
     "lists/token_cards.json"
-  ]
+  ],
+  "tasks": [
+    "card-ideas"
+  ],
+  "priority": 10
 }

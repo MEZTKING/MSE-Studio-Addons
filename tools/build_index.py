@@ -34,7 +34,7 @@ SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SECTIONS = {"Create", "Produce", "Review", "Manage"}
 FIELDS = ["id", "name", "version", "kind", "description", "author", "homepage", "license",
           "min_app_version", "tags", "screenshots", "run", "page", "cards", "formats",
-          "click_areas", "templates", "characters", "themes"]
+          "click_areas", "templates", "characters", "themes", "tasks", "priority"]
 SKIP = {"__pycache__", ".DS_Store", "Thumbs.db"}
 
 
@@ -96,6 +96,13 @@ def check(addon: dict, folder: Path | None) -> list[str]:
         out.append("a formats add-on needs \"formats\": [\"formats/….json\"]")
     if kind == "click-areas" and not addon.get("click_areas"):
         out.append("a click-areas add-on needs \"click_areas\": [\"click_areas.json\"]")
+    tasks = addon.get("tasks")
+    if tasks is not None and (not isinstance(tasks, list) or any(
+            not isinstance(t, str) or not re.fullmatch(r"[a-z][a-z-]{1,30}", t) for t in tasks)):
+        out.append("tasks must be a list of steps like \"print\" or \"card-ideas\"")
+    if "priority" in addon and (not isinstance(addon["priority"], int)
+                                or isinstance(addon["priority"], bool)):
+        out.append("priority must be a whole number (higher = fetched first)")
     if kind == "themes" and not addon.get("themes"):
         out.append("a themes add-on needs \"themes\": [\"themes/….look.json\"]")
     for rel in addon.get("themes") or []:
@@ -251,27 +258,31 @@ def gh(*args: str, check_ok: bool = True) -> subprocess.CompletedProcess:
     return subprocess.run(["gh", *args], capture_output=True, text=True, check=check_ok)
 
 
-def release_assets(repo: str, private: bool = False) -> list[tuple[str, str, int, str, str]]:
-    """Every release's zips: (tag, asset name, downloads, link, date). ``private``:
-    the link is the file's API address – the one a token can read in a private
-    repository."""
+def release_assets(repo: str, private: bool = False) -> list[tuple]:
+    """Every release's zips: (tag, asset name, downloads, link, date, bytes,
+    sha256 – "" when GitHub has none). ``private``: the link is the file's API
+    address – the one a token can read in a private repository."""
     link = ".url" if private else ".browser_download_url"
     r = gh("api", f"repos/{repo}/releases", "--paginate", "--jq",
            ".[] | .tag_name as $t | .published_at as $p | .assets[] | "
-           f"[$t, .name, .download_count, {link}, ($p // \"\")] | @tsv")
+           f"[$t, .name, .download_count, {link}, ($p // \"\"), (.size // 0), "
+           "(.digest // \"\")] | @tsv")
     out = []
     for line in r.stdout.splitlines():
         parts = line.split("\t")
         if len(parts) >= 4:
             tag, name, n, url = parts[:4]
-            out.append((tag, name, int(n or 0), url, parts[4] if len(parts) > 4 else ""))
+            size = int(parts[5] or 0) if len(parts) > 5 and parts[5].isdigit() else 0
+            digest = parts[6].removeprefix("sha256:") if len(parts) > 6 else ""
+            out.append((tag, name, int(n or 0), url, parts[4] if len(parts) > 4 else "",
+                        size, digest if SHA256_RE.match(digest) else ""))
     return out
 
 
 def download_counts(repo: str, assets: list | None = None) -> dict[str, int]:
     """Downloads per release asset name, over all releases."""
     counts: dict[str, int] = {}
-    for _tag, name, n, _url, _date in (release_assets(repo) if assets is None else assets):
+    for _tag, name, n, *_rest in (release_assets(repo) if assets is None else assets):
         counts[name] = counts.get(name, 0) + n
     return counts
 
@@ -285,7 +296,7 @@ def versions_of(addon_id: str, assets: list) -> list[dict]:
     Add-ons page offers them (Other versions…)."""
     found = {}
     tag_re = re.compile(rf"^{re.escape(addon_id)}-v(\d+\.\d+\.\d+)$")
-    for tag, name, _n, url, date in assets:
+    for tag, name, _n, url, date, *_rest in assets:
         m = tag_re.match(tag)
         if m and name.endswith(".zip") and m.group(1) not in found:
             found[m.group(1)] = {"version": m.group(1), "download": url, "date": date[:10]}
@@ -293,9 +304,14 @@ def versions_of(addon_id: str, assets: list) -> list[dict]:
 
 
 def entry(addon: dict, download: str, downloads: int = 0,
-          versions: list | None = None) -> dict:
+          versions: list | None = None, size: int = 0, sha256: str = "") -> dict:
     e = {k: addon[k] for k in FIELDS if k in addon and addon[k] not in ("", [], {}, None)}
     e["download"] = download
+    if size:                    # MSE Studio fetches add-ons as they're needed (0.25.2)
+        e["size_mb"] = round(size / 1e6, 1)
+        e["size"] = size
+    if sha256:
+        e["sha256"] = sha256
     if downloads:
         e["downloads"] = downloads
     if versions:
@@ -346,17 +362,21 @@ def main() -> int:
         tag = f"{addon['id']}-v{addon['version']}"
         if args.local:
             z = zip_addon(folder, ROOT / "dist" / name, addon)
-            entries.append(entry(addon, z.resolve().as_uri()))
+            entries.append(entry(addon, z.resolve().as_uri(), size=z.stat().st_size,
+                                 sha256=hashlib.sha256(z.read_bytes()).hexdigest()))
             continue
+        size, digest = next(((a[5], a[6]) for a in assets if a[0] == tag and a[1] == name),
+                            (0, ""))
         if gh("release", "view", tag, "--repo", repo, check_ok=False).returncode != 0:
             z = zip_addon(folder, ROOT / "dist" / name, addon)
+            size, digest = z.stat().st_size, hashlib.sha256(z.read_bytes()).hexdigest()
             gh("release", "create", tag, str(z), "--repo", repo,
                "--title", f"{addon['name']} {addon['version']}",
                "--notes", addon.get("description", ""))
             print(f"released {tag}")
         link = f"https://github.com/{repo}/releases/download/{tag}/{name}"
         if args.private:            # the file's API address (a token can read it)
-            link = next((u for t, n, _c, u, _d in release_assets(repo, True)
+            link = next((u for t, n, _c, u, *_r in release_assets(repo, True)
                          if t == tag and n == name), link)
         total = sum(n for asset, n in counts.items() if asset.startswith(f"{addon['id']}-")
                     and asset.endswith(".zip"))
@@ -364,7 +384,7 @@ def main() -> int:
         if addon["version"] not in {v["version"] for v in versions}:     # released just now
             versions.insert(0, {"version": addon["version"], "download": link,
                                 "date": __import__("datetime").date.today().isoformat()})
-        entries.append(entry(addon, link, total, versions))
+        entries.append(entry(addon, link, total, versions, size, digest))
     entries += [entry(a, a["download"], int(a.get("downloads") or 0)) for a in external]
     entries.sort(key=lambda e: e["name"].lower())
     if args.private:

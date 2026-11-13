@@ -1,7 +1,7 @@
 {
   "id": "more-formats",
   "name": "More formats",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "kind": "formats",
   "description": "Six more deck formats to choose on the Deck page and in the New deck window: Duel Commander, PreDH, Premodern, Penny Dreadful, Historic and Timeless – their deck size, copies, life and which real cards are allowed (Scryfall's lists). Make your own under My formats.",
   "author": "MEZTKING",
@@ -15,5 +15,10 @@
   ],
   "formats": [
     "formats/more-formats.json"
-  ]
+  ],
+  "tasks": [
+    "new-deck",
+    "deck"
+  ],
+  "priority": 5
 }
