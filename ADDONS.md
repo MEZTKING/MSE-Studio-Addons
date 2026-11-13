@@ -341,6 +341,12 @@ class HelloPage(QWidget):
   your settings. Add it in the page's `__init__`, `remove_source(key)` in
   `shutdown()` (pages being rebuilt clear them all first). `picture_sources()`,
   `source_label(key)`.
+- **The look the person chose** (MSE Studio 0.25.2): pages use MSE Studio's
+  stylesheet, so buttons, boxes and fields follow Settings → Appearance by
+  themselves. A widget that paints its own rounded corners can read
+  `mse_studio.gui.theme.current()` (colours: `.primary`, `.surface`…) and
+  `current_shape()` (radii in pixels: `.radius_button`, `.radius_card`,
+  `.radius_control`, `.radius_list`).
 - **A real card's picture by name** (MSE Studio 0.25.1), no deck needed – for a
   game table or a card browser: `mse_studio.pipeline.real_cards.picture_for_name(
   name, set_code=None, cancel=None)` returns a Path (basic lands too; an add-on's
