@@ -111,6 +111,57 @@ def _files(project, renders: bool, art: bool):
                 yield p, "art/" + p.relative_to(root).as_posix()
 
 
+FRAMES = "frames/"                    # MSE's frame packages the deck's cards use
+
+
+def frame_dirs(project, data_dir) -> list[Path]:
+    """The frame package folders (magic-<frame>.mse-style) the deck's cards
+    use, found in MSE's data folder ``data_dir``."""
+    if not data_dir:
+        return []
+    names = sorted({str(getattr(c, "stylesheet", "") or "") for c in project.set.cards} - {""})
+    out = []
+    for n in names:
+        d = Path(data_dir) / f"magic-{n}.mse-style"
+        if d.is_dir():
+            out.append(d)
+    return out
+
+
+def _frame_files(project, data_dir):
+    for d in frame_dirs(project, data_dir):
+        for dirpath, _dirs, files in os.walk(d):
+            for n in files:
+                p = Path(dirpath) / n
+                yield p, FRAMES + d.name + "/" + p.relative_to(d).as_posix()
+
+
+def frames_in(path: Path) -> list[str]:
+    """The frame packages a shared deck carries (their folder names)."""
+    try:
+        with zipfile.ZipFile(path) as z:
+            return sorted({n.split("/")[1] for n in z.namelist()
+                           if n.startswith(FRAMES) and n.count("/") >= 2
+                           and n.split("/")[1].endswith(".mse-style")})
+    except (OSError, zipfile.BadZipFile):
+        return []
+
+
+def frames_zip(path: Path, names: list[str], out: Path) -> Path:
+    """The chosen frame packages from a shared deck as a zip MSE Studio's
+    frame installer takes (each package a folder at the top)."""
+    keep = set(names)
+    with zipfile.ZipFile(path) as z, zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as o:
+        for info in z.infolist():
+            parts = info.filename.split("/")
+            if len(parts) < 3 or parts[0] != "frames" or parts[1] not in keep or info.is_dir():
+                continue
+            if ".." in parts or info.filename.startswith("/"):
+                continue
+            o.writestr("/".join(parts[1:]), z.read(info))
+    return out
+
+
 def estimate(project, renders: bool, art: bool) -> int:
     total = 0
     for p, _ in _files(project, renders, art):
@@ -150,11 +201,15 @@ def _preview(project) -> Optional[bytes]:
 
 def pack(project, out: Path, by: str, note: str = "", renders: bool = False,
          art: bool = False, version: str = "",
-         progress: Optional[Callable[[int, int, str], None]] = None, cancel=None) -> Path:
-    """The deck in one file at ``out``."""
+         progress: Optional[Callable[[int, int, str], None]] = None, cancel=None,
+         frames_from=None) -> Path:
+    """The deck in one file at ``out``. ``frames_from``: MSE's data folder –
+    the frames the deck uses go in too (for friends who don't have them)."""
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
     files = list(_files(project, renders, art))
+    if frames_from:
+        files += list(_frame_files(project, frames_from))
     _root, inside = _art(project)
     tmp = out.with_name(out.name + ".partial")
     try:
@@ -164,6 +219,7 @@ def pack(project, out: Path, by: str, note: str = "", renders: bool = False,
                 "when": _dt.datetime.now().isoformat(timespec="seconds"),
                 "cards": len(project.set.cards), "note": note, "renders": renders,
                 "art": art, "art_in_deck": inside if art else "",
+                "frames": bool(frames_from),
                 "made_with": version}, indent=2))
             pic = _preview(project)
             if pic:

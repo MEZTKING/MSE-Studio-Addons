@@ -38,3 +38,14 @@ None of its own: OneDrive, Google Drive or Dropbox keep the shared folder in
 step. It reads and writes `.msedeck` files only in the folder you choose (or
 where you save one), and unpacks a friend's deck into a new folder in your decks
 folder. Your name and the shared folder are kept in the add-on's data folder.
+
+## New in 1.1.0
+
+- **The frames it uses** go in the file too (ticked unless you untick *With the frames it
+  uses*). A friend who hasn't got them is asked whether to install them in MSE when they
+  open the deck.
+- **Double-click a `.msedeck`** in Windows and it opens in MSE Studio (0.25.2 and later):
+  it's added to your decks, like *Open a file…* here.
+- Comments people leave on cards (the card's Card tab in MSE Studio 0.25.2) travel with the
+  deck, so friends see them and can answer.
+
