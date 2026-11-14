@@ -24,6 +24,7 @@
       "size_mb": 0.0,
       "size": 2200,
       "sha256": "8135ff5fe8bb2e1d09b0b491dfaf3b55586aaff46015200a057e90bd8e81a31d",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
@@ -60,7 +61,7 @@
       "size_mb": 0.0,
       "size": 13385,
       "sha256": "d98e75705070404a356dc9912f0981247a49121e3b461dcbe615893769777fe4",
-      "downloads": 2,
+      "downloads": 4,
       "versions": [
         {
           "version": "1.1.3",
@@ -110,7 +111,7 @@
       "size_mb": 0.0,
       "size": 31373,
       "sha256": "f4c4cdcf69c3920461bd3f54e18561950984d688b5b16acacb539e6eaa6b99a8",
-      "downloads": 2,
+      "downloads": 6,
       "versions": [
         {
           "version": "1.4.10",
@@ -156,6 +157,7 @@
       "size_mb": 0.0,
       "size": 2108,
       "sha256": "9fd558c6eaf62a2b39e03e885cf3d9c76ae24cdc6084ebd3c69cc02590e067dc",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
@@ -194,6 +196,7 @@
       "size_mb": 0.0,
       "size": 9815,
       "sha256": "d3fc12c3b0b86888a4e10553402ed1ca06b0429befb3ef4da67f73a5d4a6443e",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.1",
@@ -224,6 +227,7 @@
       "size_mb": 0.0,
       "size": 1720,
       "sha256": "81fed303e362f9c9e39eb4307314f12566c93cf83d3154fb3e33f4ec03c79950",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
@@ -254,6 +258,7 @@
       "size_mb": 0.0,
       "size": 1698,
       "sha256": "cf70c0621fcb8bbdd801b234f6561b178b705d730cc9c1ed8e9da96053ce7bba",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
@@ -310,6 +315,7 @@
       "size_mb": 0.0,
       "size": 43073,
       "sha256": "1299e05db9d1a289d8dc96880f1a4c0905ade164b1614483a6c9f271eb29bc0e",
+      "downloads": 3,
       "versions": [
         {
           "version": "1.0.1",
@@ -350,7 +356,7 @@
       "size_mb": 0.0,
       "size": 1164,
       "sha256": "ebbb2d1524d457ff4056f47655d92f8f560912192c101d9230024a13b39c7499",
-      "downloads": 1,
+      "downloads": 5,
       "versions": [
         {
           "version": "1.0.1",
@@ -393,7 +399,7 @@
       "size_mb": 0.0,
       "size": 1482,
       "sha256": "1fa973e84072fe82a11cb7eb5f3ed9508638efd9ffdd88da48f166a47c65fa1c",
-      "downloads": 1,
+      "downloads": 2,
       "versions": [
         {
           "version": "1.0.0",
@@ -435,7 +441,7 @@
       "size_mb": 0.0,
       "size": 13114,
       "sha256": "c3ee25f32ac0b8cfb57656f2a4b43fd7d84aef4877fbbe85ed1baa444ba5d77e",
-      "downloads": 1,
+      "downloads": 4,
       "versions": [
         {
           "version": "1.0.1",
@@ -477,6 +483,7 @@
       "size_mb": 0.0,
       "size": 1261,
       "sha256": "18360266724a9a1ca0ce9ec776231f336022dad3d26050e90fea4da774360f86",
+      "downloads": 1,
       "versions": [
         {
           "version": "1.0.0",
