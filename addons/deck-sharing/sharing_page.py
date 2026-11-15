@@ -33,6 +33,11 @@ class SharingPage(QWidget):
         self.main = main
         self._jobs: list = []
         self.shared: list[sh.Shared] = []
+        try:                                  # double-clicked .msedeck files (MSE Studio 0.25.2)
+            from mse_studio.core import file_handlers
+            file_handlers.register(sh.SUFFIX, self._open_path, owner=self)
+        except ImportError:
+            pass
         lay = QVBoxLayout(self)
         lay.addWidget(page_header(
             "Deck sharing", "Share decks with friends through a folder you all can see – a "
@@ -141,6 +146,11 @@ class SharingPage(QWidget):
         self.art.setToolTip("Your art library for this deck (screenshots and pictures), so "
                             "friends can re-crop the art")
         box.addWidget(self.art)
+        self.frames = QCheckBox("With the frames it uses")
+        self.frames.setToolTip("The card frames from MSE that the deck uses, for friends who "
+                               "don't have them – offered to them when they open it")
+        self.frames.setChecked(True)
+        box.addWidget(self.frames)
         lay.addLayout(box)
         row = QHBoxLayout()
         b = QPushButton("Send as a file…")
@@ -169,6 +179,18 @@ class SharingPage(QWidget):
 
     def shutdown(self):
         forget(self._jobs)
+        try:
+            from mse_studio.core import file_handlers
+            file_handlers.remove_owner(self)
+        except ImportError:
+            pass
+
+    def _open_path(self, _main, path):
+        """A .msedeck double-clicked in Windows (MSE Studio 0.25.2 hands it here)."""
+        try:
+            self._unpack(sh.read(Path(path)))
+        except sh.ShareError as e:
+            error(self, "Deck sharing", str(e))
 
     # ------------------------------------------------------------ the shared folder
     def pick_folder(self):
@@ -271,8 +293,14 @@ class SharingPage(QWidget):
                                         "the deck.")
             return
 
+        frames_from = None
+        if self.frames.isChecked():
+            from mse_studio.core import styles
+            frames_from = styles.data_dir(getattr(self.main.settings, "mse_path", "") or "")
+
         def work(progress=None, cancel=None):
-            return str(sh.pack(p, out, by, note, renders, art, __version__, progress, cancel))
+            return str(sh.pack(p, out, by, note, renders, art, __version__, progress, cancel,
+                               frames_from=frames_from))
 
         self.status.setText(f"{label}…")
         job = Job(work, label=label)
@@ -359,6 +387,7 @@ class SharingPage(QWidget):
     def _unpack(self, s: sh.Shared):
         decks = Path(getattr(self.main.settings, "decks_dir", "") or Path.home() / "MSE decks")
         target = sh.target_for(decks, s)
+        self._frames_from = s.path
 
         def work(progress=None, cancel=None):
             progress(0, 0, f"Unpacking {s.deck}…")
@@ -373,6 +402,48 @@ class SharingPage(QWidget):
     def _unpacked(self, folder: str):
         try:
             self.status.setText(f"Added to your decks: {Path(folder).name}")
+            self._offer_frames(getattr(self, "_frames_from", None))
             self.main.open_project(Path(folder))
+        except RuntimeError:
+            return
+
+    def missing_frames(self, path) -> list[str]:
+        """Frames the shared deck carries that this MSE hasn't got."""
+        from mse_studio.core import styles
+        data = styles.data_dir(getattr(self.main.settings, "mse_path", "") or "")
+        if path is None or data is None:
+            return []
+        return [n for n in sh.frames_in(Path(path)) if not (Path(data) / n).exists()]
+
+    def _offer_frames(self, path) -> None:
+        missing = self.missing_frames(path)
+        if not missing:
+            return
+        from PySide6.QtWidgets import QMessageBox
+        names = ", ".join(n[len("magic-"):-len(".mse-style")] if n.startswith("magic-") else n
+                          for n in missing)
+        if QMessageBox.question(self, "Deck sharing",
+                                f"This deck uses {len(missing)} frame(s) you haven't got: "
+                                f"{names}. Install them in MSE now?") != QMessageBox.Yes:
+            return
+        import tempfile
+        from mse_studio.core import mse_packages, styles
+        data = styles.data_dir(getattr(self.main.settings, "mse_path", "") or "")
+        src = Path(path)
+
+        def work(progress=None, cancel=None):
+            tmp = Path(tempfile.mkdtemp()) / "frames.zip"
+            sh.frames_zip(src, missing, tmp)
+            return mse_packages.install_zip(tmp, data)
+        job = Job(work, label="Installing the deck's frames")
+        job.signals.finished.connect(self._frames_installed)
+        job.signals.failed.connect(self._failed)
+        self._jobs.append(start(job))
+
+    def _frames_installed(self, _res):
+        try:
+            self.status.setText("The deck's frames are installed.")
+            if hasattr(self.main, "frames_changed"):
+                self.main.frames_changed()
         except RuntimeError:
             return

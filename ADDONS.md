@@ -350,6 +350,11 @@ class HelloPage(QWidget):
   `mse_studio.gui.theme.current()` (colours: `.primary`, `.surface`…) and
   `current_shape()` (radii in pixels: `.radius_button`, `.radius_card`,
   `.radius_control`, `.radius_list`).
+- **Files your add-on opens** (MSE Studio 0.25.2): `mse_studio.core.file_handlers.register(
+  ".myext", fn, owner=self)` in your page's `__init__`, `remove_owner(self)` in
+  `shutdown()`. MSE Studio calls `fn(main, path)` when such a file is given to it at
+  start (double-clicked in Windows, if the installer registers the ending) or opened with
+  `main.open_path(path)`. Guard the import (`try: … except ImportError`) for older copies.
 - **Simple view** (MSE Studio 0.25.2; View → Simple view, on for new users):
   `mse_studio.gui.nav.more_menu([buttons])` puts buttons already in a row
   behind a *More* button in Simple view (they stay in the row in the full
