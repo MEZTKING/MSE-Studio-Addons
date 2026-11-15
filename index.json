@@ -169,7 +169,7 @@
     {
       "id": "deck-sharing",
       "name": "Deck sharing",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "kind": "page",
       "description": "Share decks with friends: pick a folder you all share on OneDrive, Google Drive or Dropbox and your decks and theirs show up on one list, with a picture, who shared it and a note. Open a friend's deck and it's added to your decks (never over one of yours). Or send a deck as one file on Discord or by e-mail.",
       "author": "MEZTKING",
@@ -192,12 +192,17 @@
         "order": 60,
         "tooltip": "Share decks with friends through a shared folder or a file"
       },
-      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
+      "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.1.0/deck-sharing-1.1.0.zip",
       "size_mb": 0.0,
-      "size": 9815,
-      "sha256": "d3fc12c3b0b86888a4e10553402ed1ca06b0429befb3ef4da67f73a5d4a6443e",
+      "size": 11341,
+      "sha256": "82274665fdb3db8fd0f3a087b4e73334ac6ebf813b5711d180e4cbbf9cc08655",
       "downloads": 1,
       "versions": [
+        {
+          "version": "1.1.0",
+          "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.1.0/deck-sharing-1.1.0.zip",
+          "date": "2026-11-15"
+        },
         {
           "version": "1.0.1",
           "download": "https://github.com/MEZTKING/MSE-Studio-Addons/releases/download/deck-sharing-v1.0.1/deck-sharing-1.0.1.zip",
