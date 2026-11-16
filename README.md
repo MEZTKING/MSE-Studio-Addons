@@ -17,7 +17,7 @@ get an **Update** button when a newer version is listed here.
 | Add-on | Kind | What it does |
 |---|---|---|
 | [Deck notes](addons/deck-notes) | Page | A notes page for each deck, saved as `notes.md` in the deck's folder, with a checklist of the deck's cards. |
-| [Playtest](addons/playtest) | Page | Goldfish a deck or a decklist: opening hands, mulligans, turns, counters, and the odds of drawing what you need. Came with MSE Studio until 0.25 (needs 0.25.0). |
+| [Quick playtest](addons/playtest) | Page | A quick goldfish of a deck or a decklist: opening hands, mulligans, turns, counters, and the odds of drawing what you need. Came with MSE Studio until 0.25 (needs 0.25.0). |
 | [Card database](addons/card-database) | Page | Every Magic card on your PC from Scryfall's bulk data: search, random cards, build a Commander deck around a commander in a play style and themes you pick (see the cards, pick some, or start a new deck with all of it), add cards as real or your own. |
 | [Deck sharing](addons/deck-sharing) | Page | Share decks with friends through a shared OneDrive, Google Drive or Dropbox folder, or send one as a file; a friend's deck opens as a new deck of yours. |
 | [Art only](addons/art-only) | Page | Just the art of a card for your own cards: cut out of its window, or with the frame and text painted over on full-art cards. Adds *Keep only the art* to the Decklists page. |

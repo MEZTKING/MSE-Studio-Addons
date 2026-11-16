@@ -1,4 +1,4 @@
-# Playtest
+# Quick playtest
 
 Goldfish a deck – yours, or one on the Decklists page:
 
@@ -13,11 +13,11 @@ Goldfish a deck – yours, or one on the Decklists page:
 - **Odds**: the chance of having at least *k* of a kind of card (lands, ramp,
   draw…) by a given turn, and a quick simulation of how many you'll usually
   have.
-- **Decklists → Playtest** plays an imported decklist here.
+- **Decklists → Quick playtest** plays an imported decklist here.
 
 Until MSE Studio 0.25 this page came with the app; now it's here so it's only
 there for people who want it. Without it, MSE Studio offers to get it when you
-press Playtest on the Decklists page.
+press Quick playtest on the Decklists page.
 
 Needs MSE Studio 0.25.0 or newer.
 
@@ -25,3 +25,7 @@ Needs MSE Studio 0.25.0 or newer.
 
 Only the pictures of real cards that aren't downloaded yet (from Scryfall, the
 same pictures MSE Studio shows elsewhere).
+
+## 1.0.2
+
+Called *Quick playtest* now: a quick goldfish of opening hands, turns and odds.

@@ -1,9 +1,9 @@
 {
   "id": "playtest",
-  "name": "Playtest",
-  "version": "1.0.1",
+  "name": "Quick playtest",
+  "version": "1.0.2",
   "kind": "page",
-  "description": "Goldfish your deck: deal opening hands (with the free mulligan of multiplayer Commander), keep or mulligan, play turns – draw, play cards, tap them, life and poison counters – and see the odds of having the cards you need by a given turn. Plays your own cards as MSE draws them, real cards with their real pictures, or any decklist (Decklists → Playtest). Until MSE Studio 0.25 this page came with the app.",
+  "description": "A quick goldfish of your deck: deal opening hands (with the free mulligan of multiplayer Commander), keep or mulligan, play turns – draw, play cards, tap them, life and poison counters – and see the odds of having the cards you need by a given turn. Plays your own cards as MSE draws them, real cards with their real pictures, or any decklist (Decklists → Quick playtest). Until MSE Studio 0.25 this page came with the app.",
   "author": "MEZTKING",
   "homepage": "https://github.com/MEZTKING/MSE-Studio-Addons/tree/main/addons/playtest",
   "license": "MIT",
@@ -17,11 +17,11 @@
   "page": {
     "module": "playtest_page",
     "class": "PlaytestPage",
-    "title": "Playtest",
+    "title": "Quick playtest",
     "icon": "playing_cards",
     "section": "Review",
     "order": 10,
-    "tooltip": "Playtest · opening hands, turns and odds"
+    "tooltip": "Quick playtest · opening hands, turns and odds"
   },
   "tasks": [
     "playtest",

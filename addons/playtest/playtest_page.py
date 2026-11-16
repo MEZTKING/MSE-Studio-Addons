@@ -1,5 +1,5 @@
 """Playtest page: goldfish opening hands and turns, and the odds of drawing
-what the deck needs – for your deck or a decklist (Decklists → Playtest).
+what the deck needs – for your deck or a decklist (Decklists → Quick playtest).
 
 Until MSE Studio 0.25 this page came with the app (mse_studio.gui.playtest_tab)."""
 from __future__ import annotations
@@ -82,7 +82,7 @@ class PlaytestPage(QWidget):
         self._draw_again = False
         lay = QVBoxLayout(self)
         lay.addWidget(page_header(
-            "Playtest", "Goldfish the deck: draw an opening hand, mulligan (London rule), play "
+            "Quick playtest", "Goldfish the deck: draw an opening hand, mulligan (London rule), play "
                         "turn by turn, and see the odds of drawing what you need. Card pictures "
                         "come from 1 Exported (cards that changed since are drawn by MSE first) and "
                         "Scryfall for real cards. Imported decklists can be played too."))
